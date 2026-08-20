@@ -4,6 +4,7 @@ lotm/
 # Derived corpora and local models may be large or contain licensed source text.
 data/raw/
 data/processed/
+official_ru_scans/
 models/
 *.gguf
 *.safetensors

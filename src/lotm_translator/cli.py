@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 from pathlib import Path
 
 from .epub import chapters, extract
 from .alignment import build_chapter_alignment
 from .ollama import translate_sample
+from .ocr import find_tesseract, ocr_images
 from .text import clean_story_text
 
 
@@ -62,6 +64,12 @@ def main() -> None:
     translate_command.add_argument("--model", default="qwen3:14b")
     translate_command.add_argument("--paragraphs", type=int, default=5)
 
+    ocr_command = commands.add_parser("ocr-russian", help="Run local Russian OCR on scanned page images.")
+    ocr_command.add_argument("input", type=Path, help="Directory containing JPG, PNG, TIFF, or WEBP page scans")
+    ocr_command.add_argument("output", type=Path)
+    ocr_command.add_argument("--tesseract", type=Path, help="Optional explicit tesseract.exe path")
+    ocr_command.add_argument("--psm", type=int, default=6, help="Tesseract page segmentation mode (default: 6)")
+
     args = parser.parse_args()
     if args.command == "inspect":
         for chapter in chapters(args.epub):
@@ -80,11 +88,17 @@ def main() -> None:
     elif args.command == "align-chapters":
         records = build_chapter_alignment(args.zh, args.en, args.ru_fan, args.output)
         print(f"Matched {len(records)} chapters in {args.output}")
-    else:
+    elif args.command == "translate-sample":
         if args.paragraphs < 1:
             parser.error("--paragraphs must be at least 1")
         translate_sample(args.zh, args.en, args.glossary, args.output, args.model, args.paragraphs)
         print(f"Translation written to {args.output}")
+    else:
+        try:
+            result = ocr_images(args.input, args.output, find_tesseract(args.tesseract), args.psm)
+        except (FileNotFoundError, ValueError, subprocess.CalledProcessError) as error:
+            parser.error(str(error))
+        print(f"OCR completed for {len(result)} pages in {args.output}")
 
 
 if __name__ == "__main__":
