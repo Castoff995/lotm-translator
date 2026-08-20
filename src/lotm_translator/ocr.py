@@ -16,6 +16,100 @@ _LATIN_LOOKALIKES = str.maketrans({
     "a": "а", "c": "с", "e": "е", "h": "н", "k": "к", "m": "м", "o": "о", "p": "р", "t": "т", "x": "х", "y": "у",
 })
 _LOOKALIKE_CHARS = set("ABCEHKMOPTXYacehkmoptxy")
+_KNOWN_TRUE_HYPHENS = {
+    "багрово-красная", "бледно-алой", "веб-новеллах", "е-гуна", "кто-то", "по-прежнему",
+    "серо-белая", "серо-белые", "темно-красный", "темно-красным", "хе-хе", "что-то", "ярко-красный",
+}
+_KNOWN_WRAPPED_HYPHENS = {
+    "благо-состоянием": "благосостоянием", "боль-шинства": "большинства", "дво-ре": "дворе",
+    "драко-нам": "драконам", "есте-ственно": "естественно", "из-лучая": "излучая", "мучи-ла": "мучила",
+    "на-стенная": "настенная", "необра-ботанного": "необработанного", "ору-жия": "оружия",
+    "отшат-нулся": "отшатнулся", "по-думать": "подумать", "попытал-ся": "попытался",
+    "предположе-ний": "предположений", "при-мечательная": "примечательная", "прижже-ны": "прижжены",
+    "пульсирую-щему": "пульсирующему", "пульсирую-щую": "пульсирующую", "раз-вернулся": "развернулся",
+    "ре-вольвер": "револьвер", "сила-ми": "силами", "сно-видений": "сновидений",
+}
+_RUSSIAN_DICTIONARY = None
+_OCR_LEXICON = None
+_RUSSIAN_MORPHOLOGY = None
+
+
+def _ocr_joinable_prefixes() -> set[str]:
+    """Read project-specific proper-name roots allowed to cross a line wrap."""
+    global _OCR_LEXICON
+    if _OCR_LEXICON is None:
+        path = Path(__file__).resolve().parents[2] / "config" / "ocr_lexicon.json"
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            _OCR_LEXICON = {str(item).lower() for item in payload.get("joinable_prefixes", [])}
+        except (OSError, json.JSONDecodeError):
+            _OCR_LEXICON = set()
+    return _OCR_LEXICON
+
+
+def _russian_dictionary():
+    """Load the bundled Hunspell dictionary once, on demand."""
+    global _RUSSIAN_DICTIONARY
+    if _RUSSIAN_DICTIONARY is None:
+        try:
+            from spylls.hunspell import Dictionary
+            root = Path(__file__).resolve().parents[2] / "data" / "dictionaries" / "ru_RU" / "ru_RU"
+            _RUSSIAN_DICTIONARY = Dictionary.from_files(str(root)) if root.with_suffix(".dic").is_file() else False
+        except (ImportError, OSError):
+            _RUSSIAN_DICTIONARY = False
+    return _RUSSIAN_DICTIONARY or None
+
+
+def _russian_morphology():
+    """Load Russian morphology for word forms absent from the Hunspell list."""
+    global _RUSSIAN_MORPHOLOGY
+    if _RUSSIAN_MORPHOLOGY is None:
+        try:
+            import pymorphy3
+            _RUSSIAN_MORPHOLOGY = pymorphy3.MorphAnalyzer()
+        except ImportError:
+            _RUSSIAN_MORPHOLOGY = False
+    return _RUSSIAN_MORPHOLOGY or None
+
+
+def _known_russian_word(word: str, dictionary) -> bool:
+    if dictionary and dictionary.lookup(word.lower()):
+        return True
+    morphology = _russian_morphology()
+    return bool(morphology and morphology.word_is_known(word.lower()))
+
+
+def _known_hyphenated_word(word: str, dictionary) -> bool:
+    """Hunspell can over-accept arbitrary hyphenated forms via affix rules."""
+    if word.lower() in _KNOWN_TRUE_HYPHENS:
+        return True
+    morphology = _russian_morphology()
+    if morphology:
+        return morphology.word_is_known(word.lower())
+    return bool(dictionary and dictionary.lookup(word.lower()))
+
+
+def _fix_dictionary_confirmed_wraps(line: str) -> str:
+    """Join a wrap only when its joined spelling is confirmed by the dictionary."""
+    dictionary = _russian_dictionary()
+
+    def replace(match: re.Match[str]) -> str:
+        hyphenated = match.group(0)
+        left, right = hyphenated.split("-", maxsplit=1)
+        joined = left + right
+        if left.lower() in _ocr_joinable_prefixes():
+            return joined
+        if not _known_hyphenated_word(hyphenated, dictionary) and _known_russian_word(joined, dictionary):
+            return joined
+        return hyphenated
+
+    return re.sub(r"\b[А-Яа-яЁё]+-[А-Яа-яЁё]+\b", replace, line)
+
+
+def _normalise_known_hyphens(line: str) -> str:
+    for source, replacement in _KNOWN_WRAPPED_HYPHENS.items():
+        line = re.sub(rf"\b{re.escape(source)}\b", replacement, line, flags=re.IGNORECASE)
+    return line
 
 
 def find_tesseract(explicit_path: Path | None = None) -> str:
@@ -115,16 +209,23 @@ def assemble_ocr_chapter(
     chunks: list[str] = []
     line_map: list[dict[str, object]] = []
     draft_line = 3  # title, then a blank line
+    normalized_title = re.sub(r"[^А-Яа-яЁё]", "", title).lower()
     for index, page in enumerate(selected):
         lines = page.read_text(encoding="utf-8").splitlines()
         cleaned: list[str] = []
         for line in lines:
+            # Apple Live Text may join a running header and the first prose
+            # line. Strip the header prefix only; never discard its prose.
+            line = re.sub(
+                r"^\s*(?:\d+\s*)?(?:Е\s*ЮАНЬ?|ПОВЕЛИТЕЛЬ\s*ТА[ЙИ]Н)\s*(?:\d+\s*)?",
+                "",
+                line,
+                flags=re.IGNORECASE,
+            ).strip()
             normalized = re.sub(r"[^А-Яа-яЁё]", "", line).lower()
             # Known running/chapter headers are not literary body text.  Keep
             # the verified title below instead of the OCR-corrupted copy.
-            if "повелительтайн" in normalized:
-                continue
-            if index == 0 and "багров" in normalized:
+            if index == 0 and ("глава" in normalized or normalized == normalized_title):
                 continue
             cleaned.append(line)
         chunk = "\n".join(cleaned).strip()
@@ -160,6 +261,23 @@ def clean_ocr_chapter_for_review(source: Path, output: Path, report_path: Path) 
     cleaned_lines: list[str] = []
     candidates: list[dict[str, object]] = []
 
+    # Apple Live Text occasionally inserts a cluster of 1–3-character page
+    # artefacts between two normal book lines (for example ``BE / CH / C``).
+    # A real prose word can be short, so remove only a *run* of such fragments;
+    # standalone doubtful words remain available for review.
+    short_fragment = re.compile(r"^[A-Za-zА-Яа-яЁё'`’]{1,3}$")
+    fragment_runs: set[int] = set()
+    run: list[int] = []
+    for index, raw in enumerate(raw_lines):
+        if short_fragment.fullmatch(raw.strip()):
+            run.append(index)
+        else:
+            if len(run) >= 2:
+                fragment_runs.update(run)
+            run = []
+    if len(run) >= 2:
+        fragment_runs.update(run)
+
     def replace_token(match: re.Match[str]) -> str:
         token = match.group(0)
         letters = [char for char in token if char.isalpha()]
@@ -170,12 +288,29 @@ def clean_ocr_chapter_for_review(source: Path, output: Path, report_path: Path) 
         return token
 
     for number, raw in enumerate(raw_lines, start=1):
+        if number - 1 in fragment_runs or re.fullmatch(r"\s*\d{1,4}\s*", raw):
+            continue
         line = raw.replace("|", "").replace("©", "").replace("®", " ")
         # Between letters these are OCR substitutes for a missing space, not a
         # Russian apostrophe.  Preserve word boundaries rather than joining.
         line = re.sub(r"(?<=[А-Яа-яЁё])['`\u2018\u2019](?=[А-Яа-яЁё])", " ", line)
         line = re.sub(r"[A-Za-zА-Яа-яЁё]+", replace_token, line)
+        line = _normalise_known_hyphens(line)
+        line = _fix_dictionary_confirmed_wraps(line)
         line = re.sub(r"[ \t]+", " ", line).strip()
+        # Decorative fragments often contain a letter plus punctuation, or no
+        # Cyrillic at all (``Ш:``, ``Ч;``, ``）``, ``é-``). They are never
+        # prose on their own. Do not treat ordinary short Russian words alike.
+        if len(line) <= 3 and (
+            not re.search(r"[А-Яа-яЁё]", line)
+            or re.fullmatch(r"[А-ЯЁ]{1,2}[;:]", line)
+        ):
+            continue
+        # A 2–3-letter isolated token with no vowel is not Russian prose
+        # (e.g. ``Пс``/``СЛ`` produced from a page decoration).  Keep one-letter
+        # prepositions such as «в» and «с» untouched.
+        if re.fullmatch(r"[А-Яа-яЁё]{2,3}", line) and not re.search(r"[АЕЁИОУЫЭЮЯаеёиоуыэюя]", line):
+            continue
         # OCR's single-character debris at a line edge never carries prose.
         line = re.sub(r"^[\s|`~#_]+", "", line)
         line = re.sub(r"[\s|`~#_]+$", "", line)
@@ -188,18 +323,117 @@ def clean_ocr_chapter_for_review(source: Path, output: Path, report_path: Path) 
             reasons.append("ocr_symbols_remain")
         if re.search(r"[.!?…][А-ЯЁ]", line):
             reasons.append("missing_space_after_sentence")
-        if re.search(r"\b[А-Яа-яЁё]+-[А-Яа-яЁё]+\b", line):
+        hyphen_words = [word.lower() for word in re.findall(r"\b[А-Яа-яЁё]+-[А-Яа-яЁё]+\b", line)]
+        if any(word not in _KNOWN_TRUE_HYPHENS for word in hyphen_words):
             reasons.append("hyphenated_word_requires_photo_check")
         if reasons:
-            item = {"line": number, "raw": raw, "cleaned": line, "reasons": reasons}
+            # ``line`` is retained for opening the source photo; ``output_line``
+            # is the actual position in the cleaned draft and must be used when
+            # applying a reviewed correction.
+            item = {"line": number, "output_line": len(cleaned_lines), "raw": raw, "cleaned": line, "reasons": reasons}
             if number in line_map:
                 item["source"] = line_map[number]
             candidates.append(item)
 
     text = "\n".join(cleaned_lines)
+    # Confirmed Apple Live Text artefact from the page-24/25 spread of the
+    # official book: the print reads «о самих днях недели», not «днях не, не».
+    text = re.sub(r"(?<=\bднях) не,\s*не\s*\n\s*(?=недели\b)", " ", text, flags=re.IGNORECASE)
     text = re.sub(r"(?<=[А-Яа-яЁё])-[ \t]*\n[ \t]*(?=[А-Яа-яЁё])", "", text)
+    # Joining a word split across two physical OCR lines changes later line
+    # numbers. Resolve each candidate against the actual cleaned output in
+    # order, rather than relying on its pre-join position.
+    final_lines = text.strip().splitlines()
+    search_from = 0
+    for candidate in candidates:
+        target = str(candidate.get("cleaned", ""))
+        for position in range(search_from, len(final_lines)):
+            if final_lines[position] == target:
+                candidate["output_line"] = position + 1
+                search_from = position + 1
+                break
+        else:
+            candidate.pop("output_line", None)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(text.strip() + "\n", encoding="utf-8")
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(json.dumps({"source": str(source), "candidates": candidates}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return {"lines": len(cleaned_lines), "candidates": len(candidates)}
+
+
+def apply_ocr_review(cleaned: Path, candidates_path: Path, qwen_review_path: Path, output: Path) -> dict[str, int]:
+    candidates = json.loads(candidates_path.read_text(encoding="utf-8")).get("candidates", [])
+    review = json.loads(qwen_review_path.read_text(encoding="utf-8")).get("items", [])
+    by_id = {item.get("id"): item for item in review if isinstance(item, dict)}
+    lines = cleaned.read_text(encoding="utf-8").splitlines()
+    applied = manual = deleted = 0
+    for index, candidate in enumerate(candidates, start=1):
+        if not isinstance(candidate, dict):
+            continue
+        item = by_id.get(index, {})
+        decision = item.get("review", {}).get("decision") if isinstance(item.get("review", {}), dict) else None
+        replacement = item.get("review", {}).get("replacement", "") if isinstance(item.get("review", {}), dict) else ""
+        suggestion = item.get("suggested_russian", "")
+        chosen = replacement if decision == "manual_fix" else suggestion if decision == "approved" else ""
+        line = candidate.get("output_line", candidate.get("line"))
+        if chosen and isinstance(line, int) and 1 <= line <= len(lines):
+            # In the review UI, the explicit marker 111 means that the whole
+            # candidate line is non-prose (for example, a stray header) and
+            # must be removed from the final chapter rather than inserted.
+            if decision == "manual_fix" and str(chosen).strip() == "111":
+                lines[line - 1] = ""
+                deleted += 1
+            else:
+                lines[line - 1] = str(chosen)
+            applied += 1
+            manual += decision == "manual_fix"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text("\n".join(lines).strip() + "\n", encoding="utf-8")
+    return {"applied": applied, "manual": manual, "deleted": deleted}
+
+
+def migrate_ocr_review_decisions(old_candidates_path: Path, old_qwen_path: Path, new_candidates_path: Path) -> dict[str, int]:
+    """Keep manual OCR decisions when a deterministic filter removes candidates."""
+    old_candidates = json.loads(old_candidates_path.read_text(encoding="utf-8")).get("candidates", [])
+    review_payload = json.loads(old_qwen_path.read_text(encoding="utf-8"))
+    old_items = review_payload.get("items", [])
+    new_candidates = json.loads(new_candidates_path.read_text(encoding="utf-8")).get("candidates", [])
+
+    def key(candidate: dict) -> tuple[str, str, tuple[str, ...]]:
+        return (str(candidate.get("raw", "")), str(candidate.get("cleaned", "")), tuple(candidate.get("reasons", [])))
+
+    available: list[tuple[dict, dict, bool]] = []
+    for index, candidate in enumerate(old_candidates):
+        if isinstance(candidate, dict) and index < len(old_items) and isinstance(old_items[index], dict):
+            available.append((candidate, old_items[index], False))
+
+    migrated: list[dict] = []
+    missing = 0
+    for index, candidate in enumerate(new_candidates, start=1):
+        match_index = next(
+            (position for position, (old_candidate, _item, used) in enumerate(available)
+             if not used and isinstance(candidate, dict) and key(old_candidate) == key(candidate)),
+            None,
+        )
+        # A dictionary may fix one word in a long candidate line while the
+        # remaining issue and the user's decision are unchanged. In that
+        # case, the raw OCR line is the stable identity.
+        if match_index is None:
+            raw = str(candidate.get("raw", "")) if isinstance(candidate, dict) else ""
+            match_index = next(
+                (position for position, (old_candidate, _item, used) in enumerate(available)
+                 if not used and str(old_candidate.get("raw", "")) == raw),
+                None,
+            )
+        if match_index is None:
+            missing += 1
+            continue
+        _old_candidate, old_item, _used = available[match_index]
+        available[match_index] = (_old_candidate, old_item, True)
+        item = dict(old_item)
+        item["id"] = index
+        migrated.append(item)
+    review_payload["items"] = migrated
+    review_payload["migration_note"] = "Manual decisions retained after deterministic OCR filtering."
+    old_qwen_path.write_text(json.dumps(review_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return {"migrated": len(migrated), "missing": missing}

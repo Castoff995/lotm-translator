@@ -6,6 +6,7 @@ if "%CHAPTER%"=="" exit /b
 
 set "BASE=data\raw\official_ru_apple\chapters\ch_%CHAPTER%_ru_official_apple"
 set "IMAGES=lotm\ocr_input\chapter%CHAPTER%"
+if not exist "%IMAGES%" set "IMAGES=lotm\ocr_input\Lotm2-6"
 
 if not exist "%BASE%_qwen_review.json" (
   echo Qwen review was not found for chapter %CHAPTER%.

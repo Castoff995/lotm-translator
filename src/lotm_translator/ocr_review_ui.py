@@ -115,7 +115,7 @@ class OcrReview(tk.Tk):
         item = self.items[self.pos]
         replacement = self.correction.get("1.0", "end").strip()
         if decision == "manual_fix" and not replacement:
-            self.status.config(text="Сначала введи исправленный текст.")
+            self.status.config(text="Сначала введи исправленный текст. Введи 111, чтобы удалить всю строку.")
             return
         item["review"] = {"decision": decision, "comment": self.comment.get("1.0", "end").strip(), "replacement": replacement}
         self.qwen_path.write_text(json.dumps(self.qwen, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

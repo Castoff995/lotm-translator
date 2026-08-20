@@ -9,12 +9,17 @@ from .epub import chapters, extract
 from .alignment import build_chapter_alignment
 from .audit import audit_aligned_fan_translation, audit_bertalign_fan_translation, audit_embedding_aligned_fan_translation, audit_fan_translation
 from .mirnovel import download_chapters
-from .ocr import assemble_ocr_chapter, clean_ocr_chapter_for_review, find_tesseract, ocr_images
+from .ocr import apply_ocr_review, assemble_ocr_chapter, clean_ocr_chapter_for_review, find_tesseract, migrate_ocr_review_decisions, ocr_images
 from .ocr_review import review_ocr_candidates
 from .ollama import translate_sample
+from .glossary_candidates import extract_candidates
+from .corpus_status import build_status
+from .official_alignment_text import prepare_official_alignment_text
+from .official_triples import build_official_triples
+from .comparison_report import render_comparison, render_comparison_html
 from .qwen_alignment import prepare_alignment
 from .sequential_alignment import align_sequential
-from .embedding_alignment import align_pair, review_boundary, validate_pair
+from .embedding_alignment import align_pair, review_boundary, score_bertalign_groups, validate_pair
 from .text import clean_story_text
 
 
@@ -70,6 +75,41 @@ def main() -> None:
     translate_command.add_argument("--model", default="qwen3:14b")
     translate_command.add_argument("--paragraphs", type=int, default=5)
 
+    glossary_command = commands.add_parser("draft-glossary", help="Create approval-only multilingual term candidates using local Qwen.")
+    glossary_command.add_argument("output", type=Path)
+    glossary_command.add_argument("--zh", type=Path, nargs="+", required=True)
+    glossary_command.add_argument("--en", type=Path, nargs="+", required=True)
+    glossary_command.add_argument("--ru", type=Path, nargs="+", required=True)
+    glossary_command.add_argument("--model", default="qwen3:14b")
+
+    status_command = commands.add_parser("corpus-status", help="Create a read-only chapter-by-chapter corpus status passport.")
+    status_command.add_argument("output", type=Path, nargs="?", default=Path("data/processed/corpus_status.json"))
+    status_command.add_argument("--chapters", type=int, default=10)
+
+    official_alignment_text_command = commands.add_parser("prepare-official-alignment-text", help="Create a derived paragraph-unit copy of reviewed official OCR.")
+    official_alignment_text_command.add_argument("source", type=Path)
+    official_alignment_text_command.add_argument("output", type=Path)
+
+    official_triples_command = commands.add_parser("build-official-triples", help="Join BGE pair alignments into Chinese–English–official-Russian groups.")
+    official_triples_command.add_argument("zh", type=Path)
+    official_triples_command.add_argument("en", type=Path)
+    official_triples_command.add_argument("ru_units", type=Path)
+    official_triples_command.add_argument("zh_en_alignment", type=Path)
+    official_triples_command.add_argument("en_ru_alignment", type=Path)
+    official_triples_command.add_argument("output", type=Path)
+
+    comparison_command = commands.add_parser("render-comparison", help="Create readable text-bearing reports from an alignment and BGE QA.")
+    comparison_command.add_argument("alignment", type=Path)
+    comparison_command.add_argument("bge_qa", type=Path)
+    comparison_command.add_argument("fan", type=Path)
+    comparison_command.add_argument("official_units", type=Path)
+    comparison_command.add_argument("output_json", type=Path)
+    comparison_command.add_argument("output_markdown", type=Path)
+
+    comparison_html_command = commands.add_parser("render-comparison-html", help="Create a two-column local HTML comparison viewer.")
+    comparison_html_command.add_argument("source_json", type=Path)
+    comparison_html_command.add_argument("output_html", type=Path)
+
     ocr_command = commands.add_parser("ocr-russian", help="Run local Russian OCR on scanned page images.")
     ocr_command.add_argument("input", type=Path, help="Directory containing JPG, PNG, TIFF, or WEBP page scans")
     ocr_command.add_argument("output", type=Path)
@@ -90,6 +130,17 @@ def main() -> None:
     clean_ocr_command.add_argument("input", type=Path)
     clean_ocr_command.add_argument("output", type=Path)
     clean_ocr_command.add_argument("report", type=Path)
+
+    apply_ocr_command = commands.add_parser("apply-ocr-review", help="Create a reviewed OCR copy from approved decisions; preserves the source draft.")
+    apply_ocr_command.add_argument("cleaned", type=Path)
+    apply_ocr_command.add_argument("candidates", type=Path)
+    apply_ocr_command.add_argument("review", type=Path)
+    apply_ocr_command.add_argument("output", type=Path)
+
+    migrate_ocr_command = commands.add_parser("migrate-ocr-review", help="Retain OCR decisions after deterministic filtering changes.")
+    migrate_ocr_command.add_argument("old_candidates", type=Path)
+    migrate_ocr_command.add_argument("qwen_review", type=Path)
+    migrate_ocr_command.add_argument("new_candidates", type=Path)
 
     review_ocr_command = commands.add_parser("review-ocr-candidates", help="Ask local Qwen to classify OCR candidates; does not edit OCR text.")
     review_ocr_command.add_argument("review", type=Path)
@@ -169,6 +220,15 @@ def main() -> None:
     embedding_command.add_argument("--model-path", type=Path, default=Path("models/embeddings/bge-m3"))
     embedding_command.add_argument("--device", choices=("cpu", "dml"), default="dml", help="dml is the default and uses the AMD GPU; cpu is the fallback")
 
+    bert_bge_command = commands.add_parser("score-bertalign-bge", help="Use BGE-M3 to semantically QA fixed Bertalign groups.")
+    bert_bge_command.add_argument("alignment", type=Path)
+    bert_bge_command.add_argument("left", type=Path)
+    bert_bge_command.add_argument("right", type=Path)
+    bert_bge_command.add_argument("output", type=Path)
+    bert_bge_command.add_argument("--model-path", type=Path, default=Path("models/embeddings/bge-m3"))
+    bert_bge_command.add_argument("--device", choices=("cpu", "dml"), default="dml")
+    bert_bge_command.add_argument("--minimum-similarity", type=float, default=0.65)
+
     bertalign_command = commands.add_parser("bertalign-pair", help="Align a pair of locally cleaned chapter files with Bertalign + LaBSE.")
     bertalign_command.add_argument("left", type=Path)
     bertalign_command.add_argument("right", type=Path)
@@ -215,6 +275,26 @@ def main() -> None:
             parser.error("--paragraphs must be at least 1")
         translate_sample(args.zh, args.en, args.glossary, args.output, args.model, args.paragraphs)
         print(f"Translation written to {args.output}")
+    elif args.command == "draft-glossary":
+        if not (len(args.zh) == len(args.en) == len(args.ru)):
+            parser.error("--zh, --en and --ru must contain the same number of chapters")
+        result = extract_candidates(list(zip(args.zh, args.en, args.ru)), args.output, args.model)
+        print(f"Glossary draft created: {len(result['terms'])} candidates in {args.output}")
+    elif args.command == "corpus-status":
+        result = build_status(Path("."), args.output, args.chapters)
+        print(f"Corpus status created for {len(result['chapters'])} chapters in {args.output}")
+    elif args.command == "prepare-official-alignment-text":
+        count = prepare_official_alignment_text(args.source, args.output)
+        print(f"Official OCR alignment copy created: {count} paragraph units in {args.output}")
+    elif args.command == "build-official-triples":
+        result = build_official_triples(args.zh, args.en, args.ru_units, args.zh_en_alignment, args.en_ru_alignment, args.output)
+        print(f"Official triple alignment created: {len(result['groups'])} groups in {args.output}")
+    elif args.command == "render-comparison":
+        result = render_comparison(args.alignment, args.bge_qa, args.fan, args.official_units, args.output_json, args.output_markdown)
+        print(f"Readable comparison created: {len(result['groups'])} groups")
+    elif args.command == "render-comparison-html":
+        count = render_comparison_html(args.source_json, args.output_html)
+        print(f"Two-column comparison created: {count} groups")
     elif args.command == "download-mirnovel":
         try:
             count = download_chapters(args.start_url, args.output, args.count, args.delay, args.refresh)
@@ -260,6 +340,9 @@ def main() -> None:
     elif args.command == "embed-align-pair":
         report = align_pair(args.left, args.right, args.output, args.model_path, device=args.device)
         print(f"BGE-M3 aligned {report['left_paragraphs']} and {report['right_paragraphs']} paragraphs in {args.output}")
+    elif args.command == "score-bertalign-bge":
+        report = score_bertalign_groups(args.alignment, args.left, args.right, args.output, args.model_path, args.device, args.minimum_similarity)
+        print(f"BGE checked {len(report['groups'])} Bertalign groups; {len(report['review_groups'])} need review")
     elif args.command == "bertalign-pair":
         from .bertalign_adapter import align_pair as bertalign_pair
 
@@ -302,6 +385,12 @@ def main() -> None:
     elif args.command == "clean-ocr-chapter":
         result = clean_ocr_chapter_for_review(args.input, args.output, args.report)
         print(f"OCR draft cleaned: {result['lines']} lines; {result['candidates']} review candidates")
+    elif args.command == "apply-ocr-review":
+        result = apply_ocr_review(args.cleaned, args.candidates, args.review, args.output)
+        print(f"Reviewed OCR created: {result['applied']} changes, including {result['manual']} manual edits")
+    elif args.command == "migrate-ocr-review":
+        result = migrate_ocr_review_decisions(args.old_candidates, args.qwen_review, args.new_candidates)
+        print(f"OCR decisions migrated: {result['migrated']}; unmatched candidates: {result['missing']}")
     elif args.command == "review-ocr-candidates":
         result = review_ocr_candidates(args.review, args.english, args.output, args.model)
         print(f"OCR candidate review created: {len(result.get('items', []))} items in {args.output}")

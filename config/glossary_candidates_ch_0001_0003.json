@@ -1,0 +1,361 @@
+{
+  "status": "approved_with_existing_glossary_override",
+  "source": "local_qwen_candidate_extraction",
+  "terms": [
+    {
+      "zh": "绯红",
+      "en": "Crimson",
+      "ru": "Багровый",
+      "category": "term",
+      "confidence": "high",
+      "note_ru": "Повторяющийся цвет, описывающий свет, луну и атмосферу.",
+      "chapters": [
+        1
+      ]
+    },
+    {
+      "zh": "左轮手枪",
+      "en": "revolver",
+      "ru": "револьвер",
+      "category": "object",
+      "confidence": "high",
+      "note_ru": "Повторяющийся предмет, находящийся на столе.",
+      "chapters": [
+        1,
+        3
+      ]
+    },
+    {
+      "zh": "赫密斯文",
+      "en": "Hermes script",
+      "ru": "Гермесовский язык",
+      "category": "term",
+      "confidence": "high",
+      "note_ru": "Повторяющийся язык, используемый в тексте на столе.",
+      "chapters": [
+        1
+      ]
+    },
+    {
+      "zh": "克莱恩.莫雷蒂",
+      "en": "Clairmont Moretti",
+      "ru": "Клейн Моретти",
+      "category": "character",
+      "confidence": "high",
+      "note_ru": "Повторяющееся имя персонажа, связанное с главным героем.",
+      "chapters": [
+        1
+      ]
+    },
+    {
+      "zh": "血手印",
+      "en": "blood handprint",
+      "ru": "Кровавый отпечаток руки",
+      "category": "object",
+      "confidence": "medium",
+      "note_ru": "Упоминается один раз, но имеет важное значение.",
+      "chapters": [
+        1
+      ]
+    },
+    {
+      "zh": "天鹅绒幕布",
+      "en": "velvet curtain",
+      "ru": "бархатный занавес",
+      "category": "term",
+      "confidence": "medium",
+      "note_ru": "Повторяющийся элемент в описании луны.",
+      "chapters": [
+        1
+      ]
+    },
+    {
+      "zh": "绯红之月",
+      "en": "crimson moon",
+      "ru": "Багровая луна",
+      "category": "term",
+      "confidence": "high",
+      "note_ru": "Повторяющийся элемент, описывающий луну.",
+      "chapters": [
+        1
+      ]
+    },
+    {
+      "zh": "笔记本",
+      "en": "notebook",
+      "ru": "тетрадь",
+      "category": "object",
+      "confidence": "high",
+      "note_ru": "Повторяющийся предмет, находящийся на столе.",
+      "chapters": [
+        1
+      ]
+    },
+    {
+      "zh": "墨水瓶",
+      "en": "ink bottle",
+      "ru": "чернильница",
+      "category": "object",
+      "confidence": "high",
+      "note_ru": "Повторяющийся предмет, находящийся на столе.",
+      "chapters": [
+        1
+      ]
+    },
+    {
+      "zh": "钢笔",
+      "en": "pen",
+      "ru": "перо",
+      "category": "object",
+      "confidence": "high",
+      "note_ru": "Повторяющийся предмет, находящийся на столе.",
+      "chapters": [
+        1
+      ]
+    },
+    {
+      "zh": "煤气灯",
+      "en": "gas lamp",
+      "ru": "газовая лампа",
+      "category": "object",
+      "confidence": "high",
+      "note_ru": "Упоминается как стандартное освещение в доме.",
+      "chapters": [
+        2
+      ]
+    },
+    {
+      "zh": "瓦斯计费器",
+      "en": "gas meter",
+      "ru": "газовый счётчик",
+      "category": "object",
+      "confidence": "high",
+      "note_ru": "Устройство для учёта расхода газа.",
+      "chapters": [
+        2
+      ]
+    },
+    {
+      "zh": "铜便士",
+      "en": "copper penny",
+      "ru": "медный пенни",
+      "category": "object",
+      "confidence": "high",
+      "note_ru": "Наиболее мелкая монета в королевстве Лоэн.",
+      "chapters": [
+        2,
+        3
+      ]
+    },
+    {
+      "zh": "鲁恩王国",
+      "en": "Loen Kingdom",
+      "ru": "Королевство Лоэн",
+      "category": "place",
+      "confidence": "high",
+      "note_ru": "Упоминается как страна, где происходит действие.",
+      "chapters": [
+        2,
+        3
+      ]
+    },
+    {
+      "zh": "克莱恩.莫雷蒂",
+      "en": "Klein Moretti",
+      "ru": "Клейн Моретти",
+      "category": "character",
+      "confidence": "high",
+      "note_ru": "Главный герой, о котором вспоминается в тексте.",
+      "chapters": [
+        2
+      ]
+    },
+    {
+      "zh": "班森",
+      "en": "Benson",
+      "ru": "Бенсон",
+      "category": "character",
+      "confidence": "high",
+      "note_ru": "Старший брат Клейна Моретти.",
+      "chapters": [
+        2
+      ]
+    },
+    {
+      "zh": "转运仪式",
+      "en": "divination ritual",
+      "ru": "ритуал перенаправления судьбы",
+      "category": "term",
+      "confidence": "medium",
+      "note_ru": "Упоминается как возможная причина переноса в другой мир.",
+      "chapters": [
+        2
+      ]
+    },
+    {
+      "zh": "方术纪要",
+      "en": "records of esoteric arts",
+      "ru": "записи о фаншю",
+      "category": "term",
+      "confidence": "medium",
+      "note_ru": "Книга, упоминаемая в тексте как источник знаний.",
+      "chapters": [
+        2
+      ]
+    },
+    {
+      "zh": "霍伊大学",
+      "en": "Khoy University",
+      "ru": "Хойский университет",
+      "category": "place",
+      "confidence": "medium",
+      "note_ru": "Упоминается как место, куда стремился поступить Клейн.",
+      "chapters": [
+        2
+      ]
+    },
+    {
+      "zh": "弗兰奇先生",
+      "en": "Mr. Franky",
+      "ru": "Господин Франки",
+      "category": "character",
+      "confidence": "medium",
+      "note_ru": "Собственник квартиры, упоминаемый в тексте.",
+      "chapters": [
+        2
+      ]
+    },
+    {
+      "zh": "梅丽莎",
+      "en": "Melissa",
+      "ru": "Мелисса",
+      "category": "character",
+      "confidence": "high",
+      "note_ru": "Персонаж, упоминаемый в тексте",
+      "chapters": [
+        3
+      ]
+    },
+    {
+      "zh": "廷根大学",
+      "en": "Tingen University",
+      "ru": "Тингенский университет",
+      "category": "place",
+      "confidence": "high",
+      "note_ru": "Упоминается как учебное заведение",
+      "chapters": [
+        3
+      ]
+    },
+    {
+      "zh": "黑夜女神教会",
+      "en": "Church of Evernight",
+      "ru": "Церковь Богини Вечной Ночи",
+      "category": "organization",
+      "confidence": "high",
+      "note_ru": "Упоминается как религиозная организация",
+      "chapters": [
+        3
+      ]
+    },
+    {
+      "zh": "蒸汽与机械之神",
+      "en": "God of Steam and Machinery",
+      "ru": "Бог Пара и Машин",
+      "category": "term",
+      "confidence": "high",
+      "note_ru": "Упоминается как божество",
+      "chapters": [
+        3
+      ]
+    },
+    {
+      "zh": "怀表",
+      "en": "watch",
+      "ru": "часы",
+      "category": "object",
+      "confidence": "medium",
+      "note_ru": "Упоминается как предмет",
+      "chapters": [
+        3
+      ]
+    },
+    {
+      "zh": "初等教育法",
+      "en": "Basic Education Law",
+      "ru": "Закон о начальном образовании",
+      "category": "term",
+      "confidence": "medium",
+      "note_ru": "Упоминается как закон",
+      "chapters": [
+        3
+      ]
+    },
+    {
+      "zh": "廷根技术学校",
+      "en": "Tingen Technical School",
+      "ru": "Тингенская техническая школа",
+      "category": "place",
+      "confidence": "medium",
+      "note_ru": "Упоминается как учебное заведение",
+      "chapters": [
+        3
+      ]
+    },
+    {
+      "zh": "贝克兰德大学",
+      "en": "Backlund University",
+      "ru": "Бэклундский университет",
+      "category": "place",
+      "confidence": "medium",
+      "note_ru": "Упоминается как учебное заведение",
+      "chapters": [
+        3
+      ]
+    },
+    {
+      "zh": "鲁恩王国的大学",
+      "en": "Loen Kingdom’s universities",
+      "ru": "Университеты Королевства Лоэн",
+      "category": "organization",
+      "confidence": "medium",
+      "note_ru": "Упоминаются как учебные заведения",
+      "chapters": [
+        3
+      ]
+    },
+    {
+      "zh": "风暴之主",
+      "en": "Lord of Storms",
+      "ru": "Повелитель Бурь",
+      "category": "term",
+      "confidence": "medium",
+      "note_ru": "Упоминается как божество",
+      "chapters": [
+        3
+      ]
+    },
+    {
+      "zh": "知识与智慧之神",
+      "en": "God of Knowledge and Wisdom",
+      "ru": "Бог Знаний и Мудрости",
+      "category": "term",
+      "confidence": "medium",
+      "note_ru": "Упоминается как божество",
+      "chapters": [
+        3
+      ]
+    },
+    {
+      "zh": "大地母神",
+      "en": "Earth Mother Goddess",
+      "ru": "Богиня Земли",
+      "category": "term",
+      "confidence": "medium",
+      "note_ru": "Упоминается как божество",
+      "chapters": [
+        3
+      ]
+    }
+  ]
+}

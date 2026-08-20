@@ -136,6 +136,28 @@ def validate_pair(
     return report
 
 
+def score_bertalign_groups(alignment_path: Path, left_path: Path, right_path: Path, output: Path, model_path: Path, device: str = "cpu", minimum_similarity: float = 0.65) -> dict[str, object]:
+    """Use BGE-M3 only as a semantic QA pass over fixed Bertalign groups."""
+    alignment = json.loads(alignment_path.read_text(encoding="utf-8")).get("alignments", [])
+    left, right = _paragraphs(left_path), _paragraphs(right_path)
+    left_vectors, right_vectors = _encode(left, model_path, device), _encode(right, model_path, device)
+    groups = []
+    for number, row in enumerate(alignment, start=1):
+        left_ids = [value for value in row.get("left", []) if isinstance(value, int) and 1 <= value <= len(left)]
+        right_ids = [value for value in row.get("right", []) if isinstance(value, int) and 1 <= value <= len(right)]
+        if not left_ids or not right_ids:
+            similarity = None
+        else:
+            a = left_vectors[np.array(left_ids) - 1].mean(axis=0)
+            b = right_vectors[np.array(right_ids) - 1].mean(axis=0)
+            similarity = float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
+        groups.append({"group": number, "left": left_ids, "right": right_ids, "similarity": None if similarity is None else round(similarity, 4), "status": "review" if similarity is None or similarity < minimum_similarity else "ok"})
+    result = {"method": "bertalign_labse_then_bge_m3_semantic_qa", "device": device, "minimum_similarity": minimum_similarity, "groups": groups, "review_groups": [row["group"] for row in groups if row["status"] == "review"]}
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return result
+
+
 def review_boundary(validation_path: Path, output: Path, model: str) -> dict[str, object]:
     """Ask Qwen to judge one BGE boundary; it never changes the alignment itself."""
     from .ollama import chat

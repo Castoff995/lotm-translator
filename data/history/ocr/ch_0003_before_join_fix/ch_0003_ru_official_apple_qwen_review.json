@@ -1,0 +1,164 @@
+{
+  "source_review": "data\\raw\\official_ru_apple\\chapters\\ch_0003_ru_official_apple_review.json",
+  "english_reference": "data\\raw\\en\\0007_Chapter 3_ Melissa.txt",
+  "model": "qwen3:14b",
+  "instructions": "Suggestions are review-only and do not modify official OCR.",
+  "items": [
+    {
+      "id": 1,
+      "verdict": "confident_fix",
+      "suggested_russian": "Беатру",
+      "reason_ru": "OCR ошибочно распознал 'Beauto' вместо 'Беатру', что соответствует контексту имен в главе.",
+      "review": {
+        "decision": "manual_fix",
+        "comment": "",
+        "replacement": "111"
+      }
+    },
+    {
+      "id": 2,
+      "verdict": "leave_as_is",
+      "suggested_russian": "",
+      "reason_ru": "Текст соответствует контексту и не содержит очевидных ошибок OCR.",
+      "review": {
+        "decision": "approved",
+        "comment": "",
+        "replacement": ""
+      }
+    },
+    {
+      "id": 3,
+      "verdict": "leave_as_is",
+      "suggested_russian": "",
+      "reason_ru": "Текст соответствует контексту и не содержит очевидных ошибок OCR.",
+      "review": {
+        "decision": "approved",
+        "comment": "",
+        "replacement": ""
+      }
+    },
+    {
+      "id": 4,
+      "verdict": "confident_fix",
+      "suggested_russian": "«Выпускники университета в королевстве Лоен не придерживались традиции оставаться в своей альма-матер. Наставник дал мне рекомендательные письма для Тингенского университета и университета Беклунд...»",
+      "reason_ru": "OCR правильно распознал текст, но добавил лишний дефис, который не соответствует оригиналу.",
+      "review": {
+        "decision": "approved",
+        "comment": "",
+        "replacement": ""
+      }
+    },
+    {
+      "id": 5,
+      "verdict": "leave_as_is",
+      "suggested_russian": "",
+      "reason_ru": "Текст соответствует контексту и не содержит очевидных ошибок OCR.",
+      "review": {
+        "decision": "approved",
+        "comment": "",
+        "replacement": ""
+      }
+    },
+    {
+      "id": 6,
+      "verdict": "leave_as_is",
+      "suggested_russian": "",
+      "reason_ru": "Текст соответствует контексту и не содержит очевидных ошибок OCR.",
+      "review": {
+        "decision": "approved",
+        "comment": "",
+        "replacement": ""
+      }
+    },
+    {
+      "id": 7,
+      "verdict": "leave_as_is",
+      "suggested_russian": "",
+      "reason_ru": "Текст соответствует контексту и не содержит очевидных ошибок OCR.",
+      "review": {
+        "decision": "approved",
+        "comment": "",
+        "replacement": ""
+      }
+    },
+    {
+      "id": 8,
+      "verdict": "confident_fix",
+      "suggested_russian": "по-слышалось",
+      "reason_ru": "В оригинальном тексте на английском используется 'tick-tocking', что соответствует 'по-слышалось тиканье стрелок' в русском языке. 'по-слышалось' является правильным русским выражением для передачи звука тиканья.",
+      "review": {
+        "decision": "leave_as_is",
+        "comment": "",
+        "replacement": ""
+      }
+    },
+    {
+      "id": 9,
+      "verdict": "confident_fix",
+      "suggested_russian": "щелк - крышка открылась, клац - закрылась",
+      "reason_ru": "В оригинальном тексте на английском используется 'click! The pocket watch opened. Clack! The pocket watch closed', что соответствует 'щелк - крышка открылась, клац - закрылась' в русском языке. Это правильное русское выражение для передачи звуков.",
+      "review": {
+        "decision": "leave_as_is",
+        "comment": "",
+        "replacement": ""
+      }
+    },
+    {
+      "id": 10,
+      "verdict": "confident_fix",
+      "suggested_russian": "третьесортные чайные листья",
+      "reason_ru": "В оригинальном тексте на английском используется 'third-rate tea leaves', что соответствует 'третьесортные чайные листья' в русском языке. Это правильное русское выражение для передачи качества чая.",
+      "review": {
+        "decision": "leave_as_is",
+        "comment": "",
+        "replacement": ""
+      }
+    },
+    {
+      "id": 11,
+      "verdict": "confident_fix",
+      "suggested_russian": "«Хоть в этом хлебе и нет опилок и чрезмерного количества глютена, он все равно какой-то невкусный...» - Слабость в теле Чжоу Минжуя не проходила, а чувство голода только усилилось. Но он все же заставил себя допить чай и проглотить остатки хлеба.",
+      "reason_ru": "OCR содержит явную ошибку в виде лишнего дефиса в слове \"Чжоу Мин-жуй\". В официальном английском тексте имя персонажа указано как \"Zhou Mingrui\", что подтверждает правильное написание \"Чжоу Минжуй\" без дефиса.",
+      "review": {
+        "decision": "leave_as_is",
+        "comment": "",
+        "replacement": ""
+      }
+    },
+    {
+      "id": 12,
+      "verdict": "confident_fix",
+      "suggested_russian": "Путь от апартаментов до Технического училища занимал около пятидесяти минут. Существовали общественные конные экипажи, они стоили один пенни за километр с минимальной ценой четыре пенни в городе и шесть пенни в пригороде. Но Мелисса, чтобы сэкономить деньги, специально выходила пораньше каждый день и шла пешком.",
+      "reason_ru": "OCR содержит явную ошибку в виде лишнего дефиса в слове \"при-городе\". В официальном английском тексте указано \"suburb\" (пригород), что подтверждает правильное написание \"пригороде\" без дефиса.",
+      "review": {
+        "decision": "approved",
+        "comment": "",
+        "replacement": ""
+      }
+    },
+    {
+      "id": 13,
+      "verdict": "confident_fix",
+      "suggested_russian": "- Клейн, баранины и гороха тоже сильно много не покупай, Бенсен, скорее всего, только в воскресенье вернется.",
+      "reason_ru": "OCR содержит явную ошибку в виде лишнего дефиса в слове \"не-купай\". В официальном английском тексте указано \"don’t buy too much\", что подтверждает правильное написание \"не покупай\" без дефиса.",
+      "review": {
+        "decision": "approved",
+        "comment": "",
+        "replacement": ""
+      }
+    },
+    {
+      "id": 14,
+      "verdict": "confident_fix",
+      "suggested_russian": "- Да, хорошо, - уже раздраженно ответил Чжоу Минжуй.",
+      "reason_ru": "OCR содержит явную ошибку в виде лишнего дефиса в слове \"Чжоу Мин-жуй\". В официальном английском тексте имя персонажа указано как \"Zhou Mingrui\", что подтверждает правильное написание \"Чжоу Минжуй\" без дефиса.",
+      "review": {
+        "decision": "approved",
+        "comment": "",
+        "replacement": ""
+      }
+    }
+  ],
+  "errors": [],
+  "migration_note": "Manual decisions retained after deterministic OCR filtering."
+}

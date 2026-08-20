@@ -4,8 +4,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import cv2
-import numpy as np
+try:
+    import cv2
+    import numpy as np
+except ImportError:  # The DirectML alignment environment intentionally has no OpenCV.
+    cv2 = None
+    np = None
 
 
 def _read_image(path: Path) -> np.ndarray:
@@ -88,6 +92,8 @@ def _crop_to_text_region(gray: np.ndarray) -> np.ndarray:
 
 def prepare_book_page(source: Path, destination: Path) -> Path:
     """Deskew/crop a photographed page and make its text contrast OCR-friendly."""
+    if cv2 is None or np is None:
+        raise ImportError("OpenCV is required only for image OCR preprocessing. Install opencv-python in this environment to use it.")
     image = _read_image(source)
     # Phone photos with a light page on a dark table are already sharp enough
     # for Tesseract.  A perspective warp can enlarge tiny lens artefacts, so
