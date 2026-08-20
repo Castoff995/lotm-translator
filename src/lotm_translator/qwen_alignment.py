@@ -50,14 +50,23 @@ def _review_required(output: Path, chapter: int, window: int, attempts: list[dic
     _write_progress(output, **payload)
 
 
-def prepare_alignment(zh_dir: Path, en_dir: Path, ru_dir: Path, output: Path, model: str, start_chapter: int = 1) -> int:
+def _normalise_alignment(value: object) -> object:
+    if isinstance(value, dict) and isinstance(value.get("alignments"), list):
+        return value["alignments"]
+    if isinstance(value, dict) and all(isinstance(item, dict) for item in value.values()):
+        return list(value.values())
+    return value
+
+
+def prepare_alignment(zh_dir: Path, en_dir: Path, ru_dir: Path, output: Path, model: str, start_chapter: int = 1, end_chapter: int | None = None) -> int:
     sources = (_files(zh_dir), _files(en_dir), _files(ru_dir))
     count = min(map(len, sources))
     if count < 1:
         raise ValueError("No matching chapter files found")
     output.mkdir(parents=True, exist_ok=True)
+    final_chapter = min(count, end_chapter or count)
     for chapter_index in range(count):
-        if chapter_index + 1 < start_chapter:
+        if chapter_index + 1 < start_chapter or chapter_index + 1 > final_chapter:
             continue
         zh, en, ru = (_paragraphs(group[chapter_index]) for group in sources)
         window = _window_size(zh, en, ru)
@@ -75,7 +84,7 @@ def prepare_alignment(zh_dir: Path, en_dir: Path, ru_dir: Path, output: Path, mo
                 paragraph_counts={"zh": len(zh), "en": len(en), "ru": len(ru)},
             )
             prompt = (
-                "You align literary paragraphs. Return JSON only: an array of objects with keys zh, en, ru, note. "
+                "You align literary paragraphs. Return JSON only in exactly this form: {\"alignments\":[{\"zh\":[1],\"en\":[1],\"ru\":[1],\"note\":\"\"}]}. "
                 "Each value except note is an array of local paragraph numbers. Preserve all meaning; do not translate or rewrite. "
                 "Use empty arrays only for genuine omissions.\n\n"
                 f"Chinese paragraphs (numbered from {offset + 1}):\n" + "\n".join(f"{i}: {p}" for i, p in enumerate(zh[offset:offset + window], offset + 1)) +
@@ -96,7 +105,7 @@ def prepare_alignment(zh_dir: Path, en_dir: Path, ru_dir: Path, output: Path, mo
                     _write_progress(output, status="retrying", chapter=chapter_index + 1, window=window_number, total_windows=total_windows, attempt=attempt, attempts_left=3 - attempt, last_failure=attempts[-1])
                     continue
                 duration_seconds = round(time.monotonic() - started, 1)
-                aligned = candidate
+                aligned = _normalise_alignment(candidate)
                 break
             if aligned is None:
                 _review_required(output, chapter_index + 1, window_number, attempts)
@@ -118,5 +127,5 @@ def prepare_alignment(zh_dir: Path, en_dir: Path, ru_dir: Path, output: Path, mo
         }
         (output / f"ch_{chapter_index + 1:04d}_alignment.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         _write_progress(output, status="chapter_complete", chapter=chapter_index + 1, windows=len(windows), slow_windows=payload["detector"]["slow_windows"])
-    _write_progress(output, status="complete", chapters=count - start_chapter + 1)
-    return count
+    _write_progress(output, status="complete", chapters=final_chapter - start_chapter + 1)
+    return final_chapter - start_chapter + 1

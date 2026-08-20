@@ -16,12 +16,20 @@ only the Russian translation. Do not add a chapter title, footnotes,
 explanations, translator notes, headings, markdown, or commentary."""
 
 
-def chat(prompt: str, model: str = "qwen3:14b", temperature: float = 0.0, context: int = 4096, timeout: int = 120, json_mode: bool = False) -> str:
+def chat(
+    prompt: str,
+    model: str = "qwen3:14b",
+    temperature: float = 0.0,
+    context: int = 4096,
+    timeout: int = 120,
+    json_mode: bool = False,
+    max_predict: int = 1024,
+) -> str:
     payload = {
         "model": model,
         "stream": False,
         "think": False,
-        "options": {"temperature": temperature, "num_ctx": context, "num_predict": 1024},
+        "options": {"temperature": temperature, "num_ctx": context, "num_predict": max_predict},
         "messages": [{"role": "user", "content": prompt}],
     }
     if json_mode:

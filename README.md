@@ -29,6 +29,38 @@ is the position in the EPUB table of contents, not necessarily the visible
 chapter number. Review the two manifests before aligning chapters: prefaces,
 tables of contents, and bonus chapters may differ between editions.
 
+## BGE-M3 paragraph alignment
+
+AMD GPU through DirectML (default, separate `.venv-directml`):
+
+```powershell
+.\.venv-directml\Scripts\python.exe -m src.lotm_translator.cli embed-align-pair <left.txt> <right.txt> <output.json>
+```
+
+CPU fallback (main `.venv`):
+
+```powershell
+.\.venv\Scripts\python.exe -m src.lotm_translator.cli embed-align-pair <left.txt> <right.txt> <output.json> --device cpu
+```
+
+The model and alignment algorithm are identical; only the calculation device changes.
+
+## Local process monitor
+
+```powershell
+.\.venv\Scripts\python.exe -m src.lotm_translator.cli monitor
+```
+
+The monitor lists only processes whose command line contains this project path, plus `progress.json` reports and recently changed files under `data/processed`.
+
+## Audit review window
+
+```powershell
+.\.venv\Scripts\python.exe -m src.lotm_translator.cli review-audit
+```
+
+For each Qwen finding, choose **Approve**, **Reject**, or **Later**. The decision and optional comment are written back to the matching audit JSON.
+
 ## Source policy
 
 Fan translations are imported as a separately labelled source and never treated
@@ -69,21 +101,24 @@ analysis, but needlessly slows a deterministic literary translation.
 
 ## Local Russian OCR
 
-The OCR stage works entirely on the local computer and expects one clean scan
-per image file. Install Tesseract OCR for Windows with Russian (`rus`) and
-English (`eng`) language data, then place iPhone scans in
-`official_ru_scans/`.
+The OCR stage works entirely on the local computer and expects one photographed
+page per image file. Install Tesseract OCR for Windows with Russian (`rus`) and
+English (`eng`) language data, then place iPhone JPEGs in `lotm/ocr_input/`.
+Before OCR, the project locally crops physical margins and background and
+gently improves contrast. The prepared page images are retained under
+`preprocessed/` beside the result for visual checking.
 
 ```powershell
 python -m src.lotm_translator.cli ocr-russian `
-  ".\official_ru_scans" `
+  ".\lotm\ocr_input" `
   ".\data\raw\official_ru_ocr"
 ```
 
 The tool accepts JPG, PNG, TIFF and WEBP. It writes one UTF-8 `.txt` file per
 page, removes soft hyphens created by line wrapping, and does not use an LLM to
-fill missing text. Review output against scans before treating it as an
-official reference.
+fill missing text. Use `--no-preprocess` only when an original image produces
+better OCR. Review output against photos before treating it as an official
+reference.
 
 ## Planned pipeline
 
