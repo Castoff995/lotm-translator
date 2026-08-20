@@ -65,6 +65,24 @@ python -m src.lotm_translator.cli translate-sample `
 Qwen 3 reasoning is disabled for translation requests: it is useful for
 analysis, but needlessly slows a deterministic literary translation.
 
+## Local Russian OCR
+
+The OCR stage works entirely on the local computer and expects one clean scan
+per image file. Install Tesseract OCR for Windows with Russian (`rus`) and
+English (`eng`) language data, then place iPhone scans in
+`official_ru_scans/`.
+
+```powershell
+python -m src.lotm_translator.cli ocr-russian `
+  ".\official_ru_scans" `
+  ".\data\raw\official_ru_ocr"
+```
+
+The tool accepts JPG, PNG, TIFF and WEBP. It writes one UTF-8 `.txt` file per
+page, removes soft hyphens created by line wrapping, and does not use an LLM to
+fill missing text. Review output against scans before treating it as an
+official reference.
+
 ## Planned pipeline
 
 `EPUB → chapter extraction → manual/assisted alignment → terminology glossary →
