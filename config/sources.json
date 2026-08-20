@@ -1,0 +1,11 @@
+[
+  {
+    "id": "ru_fan_75_ranobelib",
+    "label": "fan_75",
+    "language": "ru",
+    "type": "chapter_catalog",
+    "url": "https://ranobelib.me/ru/book/20818--lord-of-the-mysteries?bid=18696&section=chapters",
+    "usage": "reference_only",
+    "notes": "Import only the story text from selected chapters; discard editorial messages, ads, links, and footnotes."
+  }
+]

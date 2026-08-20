@@ -1,0 +1,12 @@
+# Source books are kept outside the repository through the local `lotm` junction.
+lotm/
+
+# Derived corpora and local models may be large or contain licensed source text.
+data/raw/
+data/processed/
+models/
+*.gguf
+*.safetensors
+
+__pycache__/
+.venv/
