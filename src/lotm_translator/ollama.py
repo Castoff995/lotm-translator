@@ -16,6 +16,21 @@ only the Russian translation. Do not add a chapter title, footnotes,
 explanations, translator notes, headings, markdown, or commentary."""
 
 
+def chat(prompt: str, model: str = "qwen3:14b", temperature: float = 0.0, context: int = 4096, timeout: int = 120, json_mode: bool = False) -> str:
+    payload = {
+        "model": model,
+        "stream": False,
+        "think": False,
+        "options": {"temperature": temperature, "num_ctx": context, "num_predict": 1024},
+        "messages": [{"role": "user", "content": prompt}],
+    }
+    if json_mode:
+        payload["format"] = "json"
+    request = Request("http://127.0.0.1:11434/api/chat", data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"}, method="POST")
+    with urlopen(request, timeout=timeout) as response:
+        return json.loads(response.read().decode("utf-8"))["message"]["content"]
+
+
 def _first_paragraphs(path: Path, paragraph_count: int) -> str:
     text = clean_story_text(path.read_text(encoding="utf-8"))
     if text.startswith("# "):

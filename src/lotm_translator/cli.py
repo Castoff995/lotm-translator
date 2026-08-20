@@ -7,8 +7,10 @@ from pathlib import Path
 
 from .epub import chapters, extract
 from .alignment import build_chapter_alignment
-from .ollama import translate_sample
+from .mirnovel import download_chapters
 from .ocr import find_tesseract, ocr_images
+from .ollama import translate_sample
+from .qwen_alignment import prepare_alignment
 from .text import clean_story_text
 
 
@@ -69,6 +71,20 @@ def main() -> None:
     ocr_command.add_argument("output", type=Path)
     ocr_command.add_argument("--tesseract", type=Path, help="Optional explicit tesseract.exe path")
     ocr_command.add_argument("--psm", type=int, default=6, help="Tesseract page segmentation mode (default: 6)")
+    mirnovel_command = commands.add_parser("download-mirnovel", help="Download public MirNovel chapters slowly into local ignored data.")
+    mirnovel_command.add_argument("start_url")
+    mirnovel_command.add_argument("output", type=Path)
+    mirnovel_command.add_argument("--count", type=int, default=10)
+    mirnovel_command.add_argument("--delay", type=float, default=3.0)
+    mirnovel_command.add_argument("--refresh", action="store_true", help="Re-download chapters and replace local cached copies.")
+
+    qwen_align_command = commands.add_parser("qwen-align", help="Ask local Qwen to align paragraph windows for matching chapters.")
+    qwen_align_command.add_argument("--zh", type=Path, required=True)
+    qwen_align_command.add_argument("--en", type=Path, required=True)
+    qwen_align_command.add_argument("--ru", type=Path, required=True)
+    qwen_align_command.add_argument("--output", type=Path, required=True)
+    qwen_align_command.add_argument("--model", default="qwen3:14b")
+    qwen_align_command.add_argument("--start-chapter", type=int, default=1)
 
     args = parser.parse_args()
     if args.command == "inspect":
@@ -93,7 +109,19 @@ def main() -> None:
             parser.error("--paragraphs must be at least 1")
         translate_sample(args.zh, args.en, args.glossary, args.output, args.model, args.paragraphs)
         print(f"Translation written to {args.output}")
-    else:
+    elif args.command == "download-mirnovel":
+        try:
+            count = download_chapters(args.start_url, args.output, args.count, args.delay, args.refresh)
+        except ValueError as error:
+            parser.error(str(error))
+        print(f"Downloaded {count} MirNovel chapters to {args.output}")
+    elif args.command == "qwen-align":
+        try:
+            count = prepare_alignment(args.zh, args.en, args.ru, args.output, args.model, start_chapter=args.start_chapter)
+        except ValueError as error:
+            parser.error(str(error))
+        print(f"Qwen prepared {count} chapter alignment files in {args.output}")
+    elif args.command == "ocr-russian":
         try:
             result = ocr_images(args.input, args.output, find_tesseract(args.tesseract), args.psm)
         except (FileNotFoundError, ValueError, subprocess.CalledProcessError) as error:

@@ -1,0 +1,13 @@
+{
+  "project": "LOTM local translator",
+  "development_assistant": {
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "low",
+    "role": "Initial project design and implementation"
+  },
+  "planned_review": {
+    "model": "gpt-5.6-sol",
+    "role": "Future independent review of architecture, OCR pipeline, corpus safeguards, and training workflow",
+    "status": "planned"
+  }
+}

@@ -39,6 +39,8 @@ footnote explanations unless this policy is deliberately changed later.
 Translation decisions are versioned in `config/translation_rules.md`; approved
 names and terms are stored in `config/glossary.json`.
 Known chapter catalogues are recorded in `config/sources.json`.
+Development-model provenance and the planned future review are recorded in
+`config/project_metadata.json`.
 
 ## Current corpus state
 

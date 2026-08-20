@@ -6,6 +6,17 @@
     "type": "chapter_catalog",
     "url": "https://ranobelib.me/ru/book/20818--lord-of-the-mysteries?bid=18696&section=chapters",
     "usage": "reference_only",
-    "notes": "Import only the story text from selected chapters; discard editorial messages, ads, links, and footnotes."
+    "quality": "good_with_semantic_caveat",
+    "notes": "Import only the story text from selected chapters; discard editorial messages, ads, links, and footnotes. The prose is polished but may add imagery, details, and character implications absent from the original. Use it for style/reference only; verify meaning against Chinese and official English before training or approving terminology."
+  },
+  {
+    "id": "ru_fan_75_mirnovel",
+    "label": "fan_75",
+    "language": "ru",
+    "type": "public_chapter_page",
+    "url": "https://mirnovel.ru/book/povelitel-tayn/chapter-53992751",
+    "usage": "reference_only",
+    "quality": "good_with_semantic_caveat",
+    "notes": "Public chapter page with fan_75 text. Import only the story text from article.reeder_chapter_article; discard the legal notice, navigation, ads, links, and footnotes. Do not use an account, bypass access restrictions, or publish imported text. The prose may add imagery, details, and character implications absent from the original; verify meaning against Chinese and official English before training or approving terminology."
   }
 ]
