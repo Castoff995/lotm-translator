@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://castoff995.github.io/lotm-translator/schemas/v2/paragraphization-artifact.schema.json",
+  "title": "LOTM v2 Manual Paragraphization Artifact",
+  "type": "object",
+  "required": ["schema_version", "artifact_version", "status", "work_id", "source_id", "chapter", "mode", "raw_sha256", "raw_line_count", "spans"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "artifact_version": {"type": "string"},
+    "status": {"enum": ["draft", "confirmed"]},
+    "work_id": {"type": "string"},
+    "source_id": {"type": "string"},
+    "chapter": {"type": "integer", "minimum": 1},
+    "mode": {"const": "manual_spans"},
+    "raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "raw_line_count": {"type": "integer", "minimum": 1},
+    "spans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["start_line", "end_line", "disposition"],
+        "properties": {
+          "start_line": {"type": "integer", "minimum": 1},
+          "end_line": {"type": "integer", "minimum": 1},
+          "disposition": {"enum": ["paragraph", "excluded"]},
+          "reason": {"type": ["string", "null"], "enum": ["heading", "metadata", "ocr_artifact", "other", null]},
+          "note": {"type": ["string", "null"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "note": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}

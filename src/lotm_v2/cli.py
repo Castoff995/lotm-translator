@@ -6,7 +6,7 @@ import hashlib
 from pathlib import Path
 
 from . import SOURCE_MANIFEST_SCHEMA_VERSION
-from .domain import Chapter, Language, SourceDescriptor, SourceFormat, SourceId, SourceManifest, SourceRole
+from .domain import Chapter, Language, ParagraphizationMode, SourceDescriptor, SourceFormat, SourceId, SourceManifest, SourceRole
 from .gold.model import GoldChapter
 from .gold.draft import create_gold_draft
 from .gold.io import load_gold, save_gold
@@ -15,6 +15,7 @@ from .infrastructure.corpus_io import load_chapter, load_manifest, save_chapter,
 from .infrastructure.paths import PathPolicy
 from .ingest import ingest_text_chapter
 from .normalize import normalize_manifest_chapter
+from .normalize.paragraphization import load_artifact, register_artifact, validate_artifact
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -29,7 +30,8 @@ def build_parser() -> argparse.ArgumentParser:
     manifest.add_argument("--role", choices=[item.value for item in SourceRole], required=True)
     manifest.add_argument("--edition", required=True)
     manifest.add_argument("--format", choices=[item.value for item in SourceFormat], required=True)
-    manifest.add_argument("--normalization-version", default="2.0")
+    manifest.add_argument("--normalization-version", default="2.1-draft")
+    manifest.add_argument("--paragraphization-mode", choices=[item.value for item in ParagraphizationMode], default="blank_lines")
 
     ingest = commands.add_parser("ingest-text", help="Import one UTF-8 chapter into immutable v2 raw storage")
     ingest.add_argument("manifest", type=Path)
@@ -42,6 +44,18 @@ def build_parser() -> argparse.ArgumentParser:
     normalize.add_argument("--chapter", type=int, required=True)
     normalize.add_argument("--root", type=Path, default=Path.cwd())
     normalize.add_argument("--output", type=Path)
+
+    paragraphization_check = commands.add_parser("paragraphization-check", help="Validate a manual-spans artifact without registering it")
+    paragraphization_check.add_argument("manifest", type=Path)
+    paragraphization_check.add_argument("artifact", type=Path)
+    paragraphization_check.add_argument("--chapter", type=int, required=True)
+    paragraphization_check.add_argument("--root", type=Path, default=Path.cwd())
+
+    paragraphization_register = commands.add_parser("paragraphization-register", help="Freeze a confirmed manual-spans artifact in source provenance")
+    paragraphization_register.add_argument("manifest", type=Path)
+    paragraphization_register.add_argument("artifact", type=Path)
+    paragraphization_register.add_argument("--chapter", type=int, required=True)
+    paragraphization_register.add_argument("--root", type=Path, default=Path.cwd())
 
     draft = commands.add_parser("gold-draft", help="Create an empty draft from normalized chapter JSON files")
     draft.add_argument("normalized", type=Path, nargs="+")
@@ -79,6 +93,7 @@ def main(argv: list[str] | None = None) -> int:
                     language=Language(args.language), role=SourceRole(args.role),
                     edition=args.edition, source_format=SourceFormat(args.format),
                     normalization_version=args.normalization_version,
+                    paragraphization_mode=ParagraphizationMode(args.paragraphization_mode),
                 ),
             )
             save_manifest(args.output, manifest)
@@ -94,6 +109,19 @@ def main(argv: list[str] | None = None) -> int:
             output = args.output or paths.normalized_chapter(chapter.source, args.chapter)
             save_chapter(output, chapter)
             print(f"Normalized chapter created: {output} ({len(chapter.paragraphs)} paragraphs)")
+        elif args.command == "paragraphization-check":
+            paths = PathPolicy(args.root)
+            manifest = load_manifest(args.manifest)
+            source = manifest.chapter(args.chapter)
+            raw_text = paths.resolve(source.raw_location).read_text(encoding="utf-8")
+            artifact = load_artifact(args.artifact)
+            validate_artifact(artifact, raw_text, manifest, args.chapter, source.sha256)
+            print(f"Paragraphization artifact is valid: {args.artifact} ({len(artifact.spans)} spans)")
+        elif args.command == "paragraphization-register":
+            manifest = load_manifest(args.manifest)
+            updated = register_artifact(manifest, args.manifest, args.artifact, args.chapter, PathPolicy(args.root))
+            source = updated.chapter(args.chapter)
+            print(f"Paragraphization artifact registered: {source.paragraphization_artifact} sha256={source.paragraphization_sha256}")
         elif args.command == "gold-draft":
             paths = PathPolicy(args.root)
             normalized_paths = tuple(path.resolve() for path in args.normalized)

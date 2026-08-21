@@ -26,12 +26,18 @@
           "metadata": {"type": "object"},
           "provenance": {
             "type": ["object", "null"],
+            "required": ["source_manifest", "raw_location", "raw_sha256", "start_line", "end_line", "normalization_version"],
             "properties": {
               "source_manifest": {"type": "string"},
               "raw_location": {"type": "string"},
               "raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-              "raw_paragraph_index": {"type": "integer", "minimum": 1},
-              "normalization_version": {"type": "string"}
+              "start_line": {"type": "integer", "minimum": 1},
+              "end_line": {"type": "integer", "minimum": 1},
+              "raw_paragraph_index": {"type": ["integer", "null"], "minimum": 1},
+              "normalization_version": {"type": "string"},
+              "paragraphization_artifact": {"type": ["string", "null"]},
+              "paragraphization_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+              "paragraphization_version": {"type": ["string", "null"]}
             }
           }
         }

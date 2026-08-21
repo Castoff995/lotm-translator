@@ -8,7 +8,7 @@
     "schema_version": {"type": "string"},
     "source": {
       "type": "object",
-      "required": ["source_id", "work_id", "language", "role", "edition", "format", "normalization_version"],
+      "required": ["source_id", "work_id", "language", "role", "edition", "format", "normalization_version", "paragraphization_mode"],
       "properties": {
         "source_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
         "work_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
@@ -16,7 +16,8 @@
         "role": {"enum": ["original", "official", "secondary"]},
         "edition": {"type": "string", "minLength": 1},
         "format": {"enum": ["epub", "text", "ocr"]},
-        "normalization_version": {"type": "string", "minLength": 1}
+        "normalization_version": {"type": "string", "minLength": 1},
+        "paragraphization_mode": {"enum": ["blank_lines", "one_per_line", "manual_spans"]}
       },
       "additionalProperties": false
     },
@@ -28,7 +29,10 @@
         "properties": {
           "number": {"type": "integer", "minimum": 1},
           "raw_location": {"type": "string", "minLength": 1},
-          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "paragraphization_artifact": {"type": ["string", "null"]},
+          "paragraphization_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+          "paragraphization_version": {"type": ["string", "null"]}
         },
         "additionalProperties": false
       }

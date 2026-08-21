@@ -7,8 +7,10 @@ from .model import (
     Paragraph,
     ParagraphId,
     ParagraphRef,
+    ParagraphizationMode,
     ParagraphType,
     Provenance,
+    SourceSpan,
     SourceChapter,
     SourceDescriptor,
     SourceFormat,
@@ -19,6 +21,6 @@ from .model import (
 
 __all__ = [
     "Chapter", "ChapterId", "Language", "Paragraph", "ParagraphId",
-    "ParagraphRef", "ParagraphType", "Provenance", "SourceChapter",
+    "ParagraphRef", "ParagraphizationMode", "ParagraphType", "Provenance", "SourceSpan", "SourceChapter",
     "SourceDescriptor", "SourceFormat", "SourceId", "SourceManifest", "SourceRole",
 ]

@@ -41,6 +41,12 @@ class ParagraphType(str, Enum):
     UNKNOWN = "unknown"
 
 
+class ParagraphizationMode(str, Enum):
+    BLANK_LINES = "blank_lines"
+    ONE_PER_LINE = "one_per_line"
+    MANUAL_SPANS = "manual_spans"
+
+
 @dataclass(frozen=True, order=True)
 class SourceId:
     value: str
@@ -104,6 +110,7 @@ class SourceDescriptor:
     edition: str
     source_format: SourceFormat
     normalization_version: str
+    paragraphization_mode: ParagraphizationMode = ParagraphizationMode.BLANK_LINES
 
     def __post_init__(self) -> None:
         if not _ID_PART.fullmatch(self.work_id):
@@ -117,10 +124,18 @@ class SourceChapter:
     number: int
     raw_location: str
     sha256: str
+    paragraphization_artifact: str | None = None
+    paragraphization_sha256: str | None = None
+    paragraphization_version: str | None = None
 
     def __post_init__(self) -> None:
         if self.number < 1 or not self.raw_location or not re.fullmatch(r"[0-9a-f]{64}", self.sha256):
             raise ValueError("Invalid source chapter entry")
+        artifact_fields = (self.paragraphization_artifact, self.paragraphization_sha256, self.paragraphization_version)
+        if any(artifact_fields) and not all(artifact_fields):
+            raise ValueError("Paragraphization artifact path, hash and version must be set together")
+        if self.paragraphization_sha256 and not re.fullmatch(r"[0-9a-f]{64}", self.paragraphization_sha256):
+            raise ValueError("Invalid paragraphization artifact checksum")
 
 
 @dataclass(frozen=True)
@@ -142,20 +157,59 @@ class SourceManifest:
         existing[chapter.number] = chapter
         return replace(self, chapters=tuple(existing[key] for key in sorted(existing)))
 
+    def with_paragraphization(self, number: int, artifact_path: str, artifact_sha256: str, artifact_version: str) -> "SourceManifest":
+        current = self.chapter(number)
+        if current.paragraphization_sha256:
+            existing = (current.paragraphization_artifact, current.paragraphization_sha256, current.paragraphization_version)
+            requested = (artifact_path, artifact_sha256, artifact_version)
+            if existing != requested:
+                raise ValueError(
+                    "Confirmed paragraphization cannot be replaced for the same source/chapter; "
+                    "create an explicit new source_id or source revision"
+                )
+            return self
+        updated = replace(
+            current, paragraphization_artifact=artifact_path,
+            paragraphization_sha256=artifact_sha256, paragraphization_version=artifact_version,
+        )
+        return replace(self, chapters=tuple(updated if item.number == number else item for item in self.chapters))
+
 
 @dataclass(frozen=True)
 class Provenance:
     source_manifest: str
     raw_location: str
     raw_sha256: str
-    raw_paragraph_index: int
+    start_line: int
+    end_line: int
     normalization_version: str
+    raw_paragraph_index: int | None = None
+    paragraphization_artifact: str | None = None
+    paragraphization_sha256: str | None = None
+    paragraphization_version: str | None = None
 
     def __post_init__(self) -> None:
-        if self.raw_paragraph_index < 1:
+        if self.start_line < 1 or self.end_line < self.start_line:
+            raise ValueError("Provenance line span must be 1-based and ordered")
+        if self.raw_paragraph_index is not None and self.raw_paragraph_index < 1:
             raise ValueError("Raw paragraph index must be positive")
         if not re.fullmatch(r"[0-9a-f]{64}", self.raw_sha256):
             raise ValueError("Invalid provenance checksum")
+        artifact_fields = (self.paragraphization_artifact, self.paragraphization_sha256, self.paragraphization_version)
+        if any(artifact_fields) and not all(artifact_fields):
+            raise ValueError("Paragraphization provenance must include path, hash and version")
+        if self.paragraphization_sha256 and not re.fullmatch(r"[0-9a-f]{64}", self.paragraphization_sha256):
+            raise ValueError("Invalid paragraphization provenance checksum")
+
+
+@dataclass(frozen=True)
+class SourceSpan:
+    start_line: int
+    end_line: int
+
+    def __post_init__(self) -> None:
+        if self.start_line < 1 or self.end_line < self.start_line:
+            raise ValueError("Source span must be 1-based and ordered")
 
 
 @dataclass(frozen=True)
@@ -204,4 +258,3 @@ class Chapter:
         for paragraph in self.paragraphs:
             if paragraph.chapter != self.id or paragraph.source != self.source or paragraph.language != self.language:
                 raise ValueError("Paragraph coordinates differ from chapter coordinates")
-

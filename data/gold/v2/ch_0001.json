@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0-draft",
+  "status": "draft",
+  "work_id": "lotm",
+  "chapter": 1,
+  "sources": [
+    {
+      "source_id": "zh",
+      "language": "zh",
+      "normalized_path": "data/normalized/v2/zh/ch_0001.json",
+      "normalized_sha256": "7109f897a25177fd6b183c046246ccbad34da383443eef35af47395167a90dc2"
+    },
+    {
+      "source_id": "en",
+      "language": "en",
+      "normalized_path": "data/normalized/v2/en/ch_0001.json",
+      "normalized_sha256": "2ee7f67ac11aff1c5fea5cb29094103856287ea871b0ec004ed47146edea6691"
+    },
+    {
+      "source_id": "ru-official",
+      "language": "ru",
+      "normalized_path": "data/normalized/v2/ru-official/ch_0001.json",
+      "normalized_sha256": "bc7f4234d0653014146f061f6eef9f623b450bfb01bcc86d751771823d46f03c"
+    }
+  ],
+  "alignment_units": [],
+  "boundaries": [],
+  "notes": "Generated draft. Alignment units and JOIN/BREAK boundaries require human review."
+}

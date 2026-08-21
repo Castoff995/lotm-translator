@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.1",
+  "source": {
+    "source_id": "ru-official",
+    "work_id": "lotm",
+    "language": "ru",
+    "role": "official",
+    "edition": "Official Russian print OCR, human-reviewed pilot",
+    "format": "ocr",
+    "normalization_version": "2.1-draft",
+    "paragraphization_mode": "manual_spans"
+  },
+  "chapters": [
+    {
+      "number": 1,
+      "raw_location": "data/raw/v2/ru-official/ch_0001.txt",
+      "sha256": "2a4339bb3ab5c7dc7cf4cd0dafd8bc8278ffafc565e227361c00c9a72a5df4dd",
+      "paragraphization_artifact": "data/manifests/v2/paragraphization/ru-official/ch_0001.json",
+      "paragraphization_sha256": "84b4a43179e2ea1802b95a4b2eb5294ff5ac34c7b4a28d116970a5be81f91f91",
+      "paragraphization_version": "chapter-1-v1"
+    }
+  ]
+}

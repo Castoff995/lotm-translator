@@ -9,11 +9,16 @@ $python = ".\.venv\Scripts\python.exe"
 
 & $python -m src.lotm_v2.cli manifest-init data\manifests\v2\zh.json --source-id zh --language zh --role original --edition "Chinese EPUB pilot" --format text
 & $python -m src.lotm_v2.cli manifest-init data\manifests\v2\en.json --source-id en --language en --role official --edition "Official English pilot" --format text
-& $python -m src.lotm_v2.cli manifest-init data\manifests\v2\ru-official.json --source-id ru-official --language ru --role official --edition "Official Russian pilot" --format text
+& $python -m src.lotm_v2.cli manifest-init data\manifests\v2\ru-official.json --source-id ru-official --language ru --role official --edition "Official Russian pilot" --format ocr --paragraphization-mode manual_spans
 
 & $python -m src.lotm_v2.cli ingest-text data\manifests\v2\zh.json ".\path\to\ZH_CHAPTER_1.txt" --chapter 1
 & $python -m src.lotm_v2.cli ingest-text data\manifests\v2\en.json ".\path\to\EN_CHAPTER_1.txt" --chapter 1
 & $python -m src.lotm_v2.cli ingest-text data\manifests\v2\ru-official.json ".\path\to\RU_CHAPTER_1.txt" --chapter 1
+
+# Create and review a versioned manual-spans JSON artifact from the Russian
+# source/photos, then validate and freeze its exact hash in the manifest.
+& $python -m src.lotm_v2.cli paragraphization-check data\manifests\v2\ru-official.json data\manifests\v2\paragraphization\ru-official\ch_0001.json --chapter 1
+& $python -m src.lotm_v2.cli paragraphization-register data\manifests\v2\ru-official.json data\manifests\v2\paragraphization\ru-official\ch_0001.json --chapter 1
 
 & $python -m src.lotm_v2.cli normalize data\manifests\v2\zh.json --chapter 1
 & $python -m src.lotm_v2.cli normalize data\manifests\v2\en.json --chapter 1
