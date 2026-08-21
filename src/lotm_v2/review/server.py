@@ -10,6 +10,9 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
+from ..domain import Language, Paragraph
+from ..glossary import GlossaryDuplicateError, GlossaryService
+from ..hints import HintService, bundle_to_dict
 from .service import ReviewError, ReviewSession
 
 
@@ -17,10 +20,36 @@ STATIC_DIR = Path(__file__).with_name("static")
 
 
 class ReviewHTTPServer(ThreadingHTTPServer):
-    def __init__(self, address: tuple[str, int], session: ReviewSession) -> None:
+    def __init__(
+        self, address: tuple[str, int], session: ReviewSession,
+        hint_service: HintService | None = None,
+        glossary_service: GlossaryService | None = None,
+    ) -> None:
         super().__init__(address, ReviewHandler)
         self.session = session
+        self.hints = hint_service or HintService(session.root / "data" / "cache" / "v2" / "hints")
+        self.glossary = glossary_service or GlossaryService(
+            session.root / "data" / "glossary" / "v2" / f"{session.gold.chapter.work_id}.json",
+            session.gold.chapter.work_id,
+        )
         self.review_token = secrets.token_urlsafe(32)
+
+    def zh_paragraph(self, paragraph_id: str) -> Paragraph:
+        chapter = self.session.chapter_by_language[Language.ZH]
+        paragraph = next((item for item in chapter.paragraphs if str(item.id) == paragraph_id), None)
+        if paragraph is None:
+            raise ReviewError("Hints require a Paragraph ID from the displayed Chinese source")
+        return paragraph
+
+    def glossary_context(self, payload: dict[str, Any]) -> tuple[Paragraph, int, int]:
+        paragraph = self.zh_paragraph(str(payload["paragraph_id"]))
+        start, end = int(payload["start_offset"]), int(payload["end_offset"])
+        if start < 0 or end <= start or end > len(paragraph.normalized_text):
+            raise ReviewError("Glossary offsets are outside the Chinese Paragraph")
+        selected = paragraph.normalized_text[start:end]
+        if selected != str(payload["zh_term"]):
+            raise ReviewError("Glossary Chinese term must exactly match the selected Paragraph span")
+        return paragraph, start, end
 
 
 class ReviewHandler(BaseHTTPRequestHandler):
@@ -56,6 +85,38 @@ class ReviewHandler(BaseHTTPRequestHandler):
             route = urlparse(self.path).path
             if route == "/api/preview":
                 result = self.server.session.preview(payload)
+            elif route == "/api/hints":
+                paragraph = self.server.zh_paragraph(str(payload["paragraph_id"]))
+                result = bundle_to_dict(self.server.hints.get(
+                    str(paragraph.id), paragraph.normalized_text,
+                ))
+                result["glossary_occurrences"] = self.server.glossary.occurrences(
+                    paragraph.normalized_text,
+                )
+            elif route == "/api/glossary/list":
+                result = self.server.glossary.list(
+                    str(payload.get("query", "")), payload.get("status"),
+                )
+            elif route == "/api/glossary/preview":
+                paragraph, start, end = self.server.glossary_context(payload)
+                result = self.server.glossary.preview(
+                    str(payload["zh_term"]), str(payload["en_term"]),
+                    paragraph.chapter.number, str(paragraph.id), start, end,
+                    payload.get("notes"),
+                )
+            elif route == "/api/glossary/add":
+                paragraph, start, end = self.server.glossary_context(payload)
+                entry = self.server.glossary.add(
+                    str(payload["zh_term"]), str(payload["en_term"]),
+                    paragraph.chapter.number, str(paragraph.id), start, end,
+                    payload.get("notes"),
+                )
+                result = {"saved": True, "entry": self.server.glossary.entry_payload(entry)}
+            elif route == "/api/glossary/alias":
+                entry = self.server.glossary.add_alias(
+                    str(payload["zh_term"]), str(payload["language"]), str(payload["alias"]),
+                )
+                result = {"saved": True, "entry": self.server.glossary.entry_payload(entry)}
             elif route == "/api/confirm":
                 result = self.server.session.confirm(payload)
             elif route == "/api/disposition":
@@ -76,6 +137,10 @@ class ReviewHandler(BaseHTTPRequestHandler):
                 self._json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
                 return
             self._json(HTTPStatus.OK, result)
+        except GlossaryDuplicateError as error:
+            self._json(HTTPStatus.CONFLICT, {
+                "error": str(error), "existing": self.server.glossary.entry_payload(error.entry),
+            })
         except (ReviewError, ValueError, KeyError, TypeError) as error:
             self._json(HTTPStatus.BAD_REQUEST, {"error": str(error)})
         except Exception as error:  # pragma: no cover - defensive HTTP boundary

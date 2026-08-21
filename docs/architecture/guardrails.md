@@ -33,3 +33,11 @@ Task 001 must not implement BGE/SONAR/AWESOME-align, Bertalign ensembles,
 reranking, dynamic-programming alignment, candidate scoring, confidence colors,
 Qwen alignment judgment, trilingual reconciliation, semantic grouping models,
 production `TrainingBlock` builders, training JSONL export, or LoRA.
+
+Approved narrow Phase 2 exception: the isolated `hints` subsystem may use
+AWESOME-align or an equivalent specialized word aligner only for temporary
+paragraph-internal lexical visualization between one displayed ZH Paragraph and
+its local machine-generated EN hint. It remains prohibited for corpus/Paragraph
+alignment, AlignmentUnit ranking or suggestion, Gold evidence, and cursor/Gold
+mutation. `hints` has no Gold write dependency. Any broader use requires a new
+Architecture Guardrail decision.

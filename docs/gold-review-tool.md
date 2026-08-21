@@ -2,8 +2,10 @@
 
 The reusable Phase 2 review tool captures human alignment truth for any Gold
 Draft compatible with the current Architecture v2 Gold Schema. It contains no
-aligner, embeddings, LLM, similarity score, recommendation, confidence label,
-or automatic acceptance.
+corpus/Paragraph aligner, AlignmentUnit recommendation, confidence ranking, or
+automatic acceptance. An optional isolated hints subsystem may provide clearly
+labelled local machine translation and paragraph-internal lexical visualization;
+those hints have no Gold write access and are never corpus truth.
 
 ## Requirements and launch
 
@@ -51,6 +53,54 @@ Keyboard shortcuts are shown in the UI: Tab/Shift+Tab changes the active source,
 1–9 changes its selection size, Enter previews/confirms, Esc cancels, and Ctrl+Z
 undoes the last review action. Font size and scroll position are stored locally in the
 browser; neither is corpus truth.
+
+## Local Chinese hints and glossary
+
+The optional Phase 2 hints subsystem is opened explicitly with `ZH hints`.
+Nothing is loaded at Review Tool startup. For the current displayed ZH
+Paragraph it may run this local-only pipeline:
+
+```text
+normalized ZH text (read-only input)
+-> Ollama ZH-to-EN machine hint
+-> Jieba Chinese word segmentation
+-> SimAlign paragraph-internal lexical correspondences
+-> temporary hover/selection data
+```
+
+Install the optional packages with `pip install -r requirements-hints.txt` and
+make the configured Ollama model available locally. Missing packages, model
+files, or Ollama display `Translation hints unavailable`; Gold review remains
+usable. Translation, segmentation, and lexical results are cached separately
+under `data/cache/v2/hints`. Cache keys include provider/model/prompt version
+and text hashes, so model or source-text changes cannot reuse stale hints.
+
+The panel is always labelled `LOCAL MACHINE TRANSLATION HINT`. Hovering a ZH
+token temporarily highlights its soft EN span; reverse EN hover is also
+supported. Click selects a token, Shift-click or the range buttons selects a
+contiguous multi-token term, and the EN phrase remains human-editable. Scores
+are visualization aids only. They do not enter Gold, source provenance,
+normalized corpus, paragraph correspondence, cursors, or Phase 3 evidence.
+
+`Add to LOTM glossary` opens a preview containing ZH, editable EN, pending RU,
+chapter and stable Paragraph ID. Only explicit confirmation writes the separate
+versioned artifact at `data/glossary/v2/<work_id>.json`. The `1.0-draft`
+glossary entry stores a stable term ID, canonical ZH/EN, nullable canonical RU,
+status (`needs_ru`, `complete`, or `needs_review`), language-specific aliases,
+exact ZH Paragraph character span, notes, and created/updated provenance.
+Duplicate ZH canonical forms or aliases are shown rather than overwritten.
+
+The `LOTM Glossary` panel supports search, status filtering, counts, and source
+references. Known-term highlighting is opt-in. A new entry starts with
+`ru_term: null` and `status: needs_ru`; no generated RU phrase becomes canonical
+without a later explicit human workflow. `RussianTermSuggestionProvider` is
+only an extension point and has no implementation in this phase.
+
+The Review HTTP layer passes only the already displayed Paragraph ID/text to
+the hints service. The hints package does not import or call Gold services and
+has no routes that can create AlignmentUnit, GAP, ParagraphDisposition,
+JOIN/BREAK, or move cursors. Glossary confirmation is a terminology decision,
+not a Gold alignment decision.
 
 ## Save, resume and corrections
 

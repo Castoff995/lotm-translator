@@ -12,6 +12,8 @@ from urllib.request import Request, urlopen
 from src.lotm_v2 import GOLD_SCHEMA_VERSION
 from src.lotm_v2.domain import Chapter, ChapterId, Language, Paragraph, ParagraphId, ParagraphType, SourceId
 from src.lotm_v2.gold.io import load_gold, save_gold
+from src.lotm_v2.glossary import GlossaryService
+from src.lotm_v2.hints import HintService, HintToken, LexicalAlignment
 from src.lotm_v2.gold.model import (
     GoldAlignmentSide, GoldAlignmentUnit, GoldChapter, GoldSourceRef, GoldStatus, alignment_unit_id,
 )
@@ -274,6 +276,58 @@ class ReviewSessionTests(unittest.TestCase):
             disposition_result = json.loads(urlopen(disposition_request, timeout=3).read())
             self.assertEqual(disposition_result["progress"]["cursors"], {"zh": 0, "en": 1, "ru": 0})
             self.assertEqual(len(load_gold(fixture.gold_path).paragraph_dispositions), 1)
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
+    def test_hints_api_and_glossary_preview_do_not_mutate_gold(self) -> None:
+        class Translation:
+            provider_id = "synthetic-translation:v1"
+            def translate(self, text, source_language, target_language):
+                return "Synthetic English hint"
+
+        class Segmentation:
+            provider_id = "synthetic-segmentation:v1"
+            def segment(self, text):
+                return (HintToken(0, text, 0, len(text)),)
+
+        class Alignment:
+            provider_id = "synthetic-alignment:v1"
+            def align(self, zh_text, en_text, zh_tokens, en_tokens):
+                return (LexicalAlignment(0, 1, 0, 1, 0.8),)
+
+        fixture = Fixture(self.root)
+        session = ReviewSession(fixture.gold_path, self.root)
+        hints = HintService(self.root / "cache", Translation(), Segmentation(), Alignment())
+        glossary = GlossaryService(self.root / "glossary.json", "synthetic-work")
+        server = ReviewHTTPServer(("127.0.0.1", 0), session, hints, glossary)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        base = f"http://127.0.0.1:{server.server_port}"
+        original_gold = fixture.gold_path.read_bytes()
+        try:
+            paragraph = fixture.chapters[0].paragraphs[0]
+            headers = {"Content-Type": "application/json", "X-Review-Token": server.review_token}
+            hint_request = Request(
+                base + "/api/hints", data=json.dumps({"paragraph_id": str(paragraph.id)}).encode(),
+                method="POST", headers=headers,
+            )
+            hint = json.loads(urlopen(hint_request, timeout=3).read())
+            self.assertEqual(hint["label"], "LOCAL MACHINE TRANSLATION HINT")
+            self.assertEqual(hint["alignments"][0]["score"], 0.8)
+            preview_request = Request(
+                base + "/api/glossary/preview",
+                data=json.dumps({
+                    "paragraph_id": str(paragraph.id), "start_offset": 0,
+                    "end_offset": len(paragraph.normalized_text),
+                    "zh_term": paragraph.normalized_text, "en_term": "Synthetic term",
+                }).encode(), method="POST", headers=headers,
+            )
+            preview = json.loads(urlopen(preview_request, timeout=3).read())
+            self.assertFalse(preview["duplicate"])
+            self.assertFalse(glossary.path.exists())
+            self.assertEqual(fixture.gold_path.read_bytes(), original_gold)
         finally:
             server.shutdown()
             server.server_close()

@@ -9,11 +9,21 @@
 <body data-token="__REVIEW_TOKEN__">
   <header>
     <div><h1>Human Gold Review Tool</h1><p id="identity">Загрузка…</p></div>
-    <div class="toolbar"><button id="fontDown">A−</button><button id="fontUp">A+</button><button id="undo">Отменить последнее действие (Ctrl+Z)</button><button id="finish">Полная проверка</button></div>
+    <div class="toolbar"><button id="fontDown">A−</button><button id="fontUp">A+</button><button id="openHints">ZH hints</button><button id="openGlossary">LOTM Glossary</button><button id="undo">Отменить последнее действие (Ctrl+Z)</button><button id="finish">Полная проверка</button></div>
   </header>
   <div id="notice" role="status"></div>
   <section class="progress"><div id="progressText"></div><div class="bar"><span id="progressBar"></span></div></section>
   <main id="columns"></main>
+  <section id="hintsPanel" class="assistPanel" hidden>
+    <div class="panelHead"><div><h2>LOCAL MACHINE TRANSLATION HINT</h2><p>Локальная подсказка. Не source truth, не Gold и не решение paragraph alignment.</p></div><button id="closeHints">Закрыть</button></div>
+    <div id="hintStatus" role="status"></div>
+    <div id="hintContent"></div>
+  </section>
+  <section id="glossaryPanel" class="assistPanel" hidden>
+    <div class="panelHead"><div><h2>LOTM Glossary</h2><p>Отдельный human-curated artifact; записи появляются только после подтверждения.</p></div><button id="closeGlossary">Закрыть</button></div>
+    <div class="glossaryTools"><label>Поиск <input id="glossarySearch"></label><label>Статус <select id="glossaryStatus"><option value="">Все</option><option value="needs_ru">needs_ru</option><option value="complete">complete</option><option value="needs_review">needs_review</option></select></label><button id="refreshGlossary">Обновить</button></div>
+    <div id="glossaryCounts"></div><div id="glossaryEntries"></div>
+  </section>
   <section class="composer">
     <h2>Новая группа</h2>
     <p class="meta">Клавиши: Tab / Shift+Tab — источник; 1–9 — размер; Enter — предпросмотр/подтверждение; Esc — отмена; Ctrl+Z — удалить последнюю группу.</p>
@@ -25,6 +35,7 @@
   <section><h2>История ParagraphDisposition</h2><p>Это проверенные человеком физические абзацы, намеренно исключённые из translation alignment. Это не GAP.</p><div id="dispositions"></div></section>
   <section><h2>Границы JOIN / BREAK</h2><p>Это отдельная семантическая проверка между уже подтверждёнными группами.</p><div id="boundaries"></div></section>
   <dialog id="previewDialog"><h2>Подтверждение группы</h2><div id="previewBody"></div><div class="dialogButtons"><button id="cancelPreview">Отмена (Esc)</button><button id="confirm">Подтвердить (Enter)</button></div></dialog>
+  <dialog id="glossaryDialog"><h2>Добавить в LOTM glossary</h2><div id="glossaryPreview"></div><label>Комментарий <input id="glossaryNote"></label><div class="dialogButtons"><button id="cancelGlossary">Отмена</button><button id="confirmGlossary">Подтвердить</button></div></dialog>
   <script src="/app.js"></script>
 </body>
 </html>

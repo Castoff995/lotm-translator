@@ -6,6 +6,8 @@ from pathlib import Path
 import sys
 import webbrowser
 
+from ..hints.providers import OllamaTranslationHintProvider, SimAlignTokenAlignmentProvider
+from ..hints.service import HintService
 from .server import ReviewHTTPServer
 from .service import ReviewError, ReviewSession
 
@@ -17,6 +19,8 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--host", default="127.0.0.1", help="Local bind address (default: 127.0.0.1)")
     result.add_argument("--port", type=int, default=8765, help="Local port (default: 8765; 0 chooses a free port)")
     result.add_argument("--no-browser", action="store_true", help="Do not open the system browser automatically")
+    result.add_argument("--hint-translation-model", default="qwen3:8b", help="Local Ollama ZH-to-EN model")
+    result.add_argument("--hint-alignment-model", default="bert", help="Local SimAlign model alias or ID")
     return result
 
 
@@ -24,7 +28,12 @@ def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
         session = ReviewSession(args.gold, args.root)
-        server = ReviewHTTPServer((args.host, args.port), session)
+        hints = HintService(
+            session.root / "data" / "cache" / "v2" / "hints",
+            translation_provider=OllamaTranslationHintProvider(model=args.hint_translation_model),
+            alignment_provider=SimAlignTokenAlignmentProvider(model=args.hint_alignment_model),
+        )
+        server = ReviewHTTPServer((args.host, args.port), session, hint_service=hints)
     except (OSError, ReviewError, ValueError) as error:
         print(f"Cannot start Gold review: {error}", file=sys.stderr)
         return 2

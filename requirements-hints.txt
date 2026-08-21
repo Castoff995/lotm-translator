@@ -1,0 +1,3 @@
+# Optional Phase 2 local hints dependencies. Foundation/Gold validation do not import these.
+jieba==0.42.1
+simalign==0.4

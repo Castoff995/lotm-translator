@@ -1,1 +1,125 @@
 :root{font-size:16px;color-scheme:light dark;--accent:#2769d8;--soft:#e8eef9;--line:#a9b2c2;--source-count:3}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f6f7f9;color:#172033}header{position:sticky;top:0;z-index:4;display:flex;justify-content:space-between;gap:1rem;align-items:center;padding:.7rem 1rem;background:#fff;border-bottom:1px solid var(--line)}h1{font-size:1.25rem;margin:0}h2{font-size:1.05rem}p{margin:.3rem 0}.toolbar,.dialogButtons{display:flex;gap:.4rem;flex-wrap:wrap}button,input,select,textarea{font:inherit}button{padding:.42rem .7rem;border:1px solid var(--line);border-radius:.35rem;background:#fff;cursor:pointer}button:hover{border-color:var(--accent)}button:disabled{opacity:.45;cursor:not-allowed}#notice{min-height:2rem;padding:.4rem 1rem;font-weight:600}.error{color:#a20f20}.success{color:#08732b}.progress,section{margin:.6rem 1rem;padding:.65rem;background:#fff;border:1px solid #d7dce5;border-radius:.5rem}.bar{height:.5rem;background:#dfe4ec;border-radius:1rem;overflow:hidden;margin-top:.3rem}.bar span{display:block;height:100%;background:var(--accent);width:0}main{display:grid;grid-template-columns:repeat(var(--source-count),minmax(0,1fr));gap:.6rem;margin:0 1rem}.source{min-width:0;background:#fff;border:2px solid transparent;border-radius:.5rem;padding:.55rem}.source.active{border-color:var(--accent)}.source h2{margin:.1rem 0}.para{border-top:1px solid #e0e3e8;padding:.45rem 0;white-space:pre-wrap;overflow-wrap:anywhere}.para.selected{background:#e9f2ff}.meta{font-size:.78rem;color:#607087}.contextLabel{font-size:.75rem;text-transform:uppercase;color:#607087;margin-top:.5rem}.controls{display:grid;grid-template-columns:repeat(var(--source-count),minmax(0,1fr));gap:.7rem}.control{border:1px solid #d8dde5;padding:.5rem}.control label{display:block;margin:.25rem 0}.control input[type=number]{width:5rem}.gapFields{display:none}.control.gap .gapFields{display:block}.unit,.boundary{border-top:1px solid #d8dde5;padding:.55rem 0}.unitHead,.boundaryHead{display:flex;justify-content:space-between;gap:.5rem}.unitGrid,.previewGrid{display:grid;grid-template-columns:repeat(var(--source-count),minmax(0,1fr));gap:.5rem}.cell{background:#f6f7f9;padding:.45rem;white-space:pre-wrap;overflow-wrap:anywhere}dialog{width:min(1100px,95vw);max-height:90vh;overflow:auto;border:1px solid var(--line);border-radius:.6rem}details{font-size:.82rem;margin-top:.25rem}code{overflow-wrap:anywhere}@media(max-width:900px){main,.controls,.unitGrid,.previewGrid{grid-template-columns:1fr}header{position:static;align-items:flex-start;flex-direction:column}}
+
+/* Explicit control colors avoid native color-scheme text becoming invisible
+   against the application's custom light backgrounds. */
+button {
+  color: #172033;
+  background: #f8fafc;
+  border-color: #5b6b82;
+  font-weight: 500;
+}
+.toolbar button {
+  color: #10233f;
+  background: #ffffff;
+  border-color: #52647d;
+  font-weight: 650;
+}
+button:hover:not(:disabled) {
+  color: #0c3473;
+  background: #e5efff;
+  border-color: #1559b7;
+}
+button:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+button:disabled {
+  color: #556274;
+  background: #e2e7ee;
+  border-color: #9aa6b5;
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --accent: #78adff;
+    --line: #64748b;
+  }
+  body {
+    color: #e7edf7;
+    background: #0f1724;
+  }
+  header,
+  section,
+  .progress,
+  .source,
+  dialog {
+    color: #e7edf7;
+    background: #182235;
+    border-color: #526079;
+  }
+  button,
+  .toolbar button {
+    color: #f8fbff;
+    background: #27364d;
+    border-color: #8190a8;
+  }
+  button:hover:not(:disabled) {
+    color: #ffffff;
+    background: #344968;
+    border-color: #b0bdd0;
+  }
+  button:focus-visible {
+    outline-color: #7db4ff;
+  }
+  button:disabled {
+    color: #aab6c8;
+    background: #202b3d;
+    border-color: #536178;
+  }
+  input,
+  select,
+  textarea {
+    color: #f2f6fc;
+    background: #111b2c;
+    border-color: #718099;
+  }
+  .cell {
+    background: #111b2c;
+  }
+  .para,
+  .control,
+  .unit,
+  .boundary {
+    border-color: #46546b;
+  }
+  .para.selected {
+    background: #17365f;
+  }
+  .meta,
+  .contextLabel {
+    color: #b4c0d2;
+  }
+  .bar {
+    background: #354258;
+  }
+}
+
+.assistPanel{border-left:4px solid var(--accent)}
+.panelHead{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.panelHead h2{margin:.1rem 0}
+.hintGrid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:.6rem}
+.hintGrid>div,.termComposer{border:1px solid #d8dde5;border-radius:.45rem;padding:.65rem}
+.tokenLine{font-size:1.1rem;line-height:2;white-space:pre-wrap}
+.hintToken{display:inline;border-radius:.2rem;padding:.1rem .04rem;cursor:pointer}
+.hintToken.lexicalHover{background:#ffe08a;color:#172033;outline:2px solid #d28b00}
+.hintToken.manualSelected{background:#b7d5ff;color:#10233f;outline:2px solid #2769d8}
+.hintToken.knownTerm{border-bottom:2px dotted transparent}
+.showKnown .hintToken.knownTerm{border-bottom-color:#08732b;background:#e2f7e9}
+.knownToggle{display:block;margin:.45rem 0}
+.termComposer{margin-top:.8rem}
+.termComposer label{display:block;margin:.6rem 0}
+.termComposer input{width:min(45rem,100%)}
+.glossaryTools{display:flex;gap:.8rem;align-items:end;flex-wrap:wrap}
+.glossaryTools label{display:grid;gap:.2rem}
+.glossaryEntry{border-top:1px solid #d8dde5;padding:.55rem 0}
+#hintStatus,#glossaryCounts{font-weight:600;margin:.5rem 0}
+
+@media(max-width:900px){.hintGrid{grid-template-columns:1fr}}
+
+@media (prefers-color-scheme: dark) {
+  .hintGrid>div,.termComposer,.glossaryEntry{border-color:#46546b}
+  .showKnown .hintToken.knownTerm{color:#e7edf7;background:#17472d;border-bottom-color:#71d89a}
+}
