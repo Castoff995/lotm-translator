@@ -1,5 +1,11 @@
 # LOTM local translator
 
+> **Architecture status:** `src/lotm_translator/` is the v1 prototype and
+> legacy benchmark baseline. New production architecture lives in
+> `src/lotm_v2/` and is governed by [Architecture v2](docs/architecture/v2.md)
+> and its [guardrails](docs/architecture/guardrails.md). Do not evolve v1
+> alignment modules into v2 incrementally.
+
 Local, privacy-preserving toolchain for preparing a Chinese-to-Russian
 translation corpus for *Lord of the Mysteries*. It is deliberately split into
 two stages:

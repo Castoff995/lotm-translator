@@ -4,6 +4,13 @@ lotm/
 # Derived corpora and local models may be large or contain licensed source text.
 data/raw/
 data/processed/
+data/normalized/
+data/alignment/
+data/grouping/
+data/review/
+data/training/
+data/cache/
+data/reports/
 official_ru_scans/
 models/
 *.gguf
