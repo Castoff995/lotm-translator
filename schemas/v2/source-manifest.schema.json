@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://castoff995.github.io/lotm-translator/schemas/v2/source-manifest.schema.json",
+  "title": "LOTM v2 Source Manifest",
+  "type": "object",
+  "required": ["schema_version", "source", "chapters"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "source": {
+      "type": "object",
+      "required": ["source_id", "work_id", "language", "role", "edition", "format", "normalization_version"],
+      "properties": {
+        "source_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+        "work_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+        "language": {"enum": ["zh", "en", "ru"]},
+        "role": {"enum": ["original", "official", "secondary"]},
+        "edition": {"type": "string", "minLength": 1},
+        "format": {"enum": ["epub", "text", "ocr"]},
+        "normalization_version": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "chapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["number", "raw_location", "sha256"],
+        "properties": {
+          "number": {"type": "integer", "minimum": 1},
+          "raw_location": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://castoff995.github.io/lotm-translator/schemas/v2/gold-chapter.schema.json",
+  "title": "LOTM v2 Gold Chapter",
+  "type": "object",
+  "required": ["schema_version", "status", "work_id", "chapter", "sources", "alignment_units", "boundaries"],
+  "$defs": {
+    "gap": {
+      "type": "object",
+      "required": ["reason"],
+      "properties": {
+        "reason": {"enum": ["addition", "omission", "translator_note", "edition_difference"]},
+        "note": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "side": {
+      "oneOf": [
+        {"type": "object", "required": ["paragraphs"], "properties": {"paragraphs": {"type": "array", "minItems": 1, "items": {"type": "string"}}}, "additionalProperties": false},
+        {"type": "object", "required": ["gap"], "properties": {"gap": {"$ref": "#/$defs/gap"}}, "additionalProperties": false}
+      ]
+    }
+  },
+  "properties": {
+    "schema_version": {"type": "string"},
+    "status": {"enum": ["draft", "confirmed"]},
+    "work_id": {"type": "string"},
+    "chapter": {"type": "integer", "minimum": 1},
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "language", "normalized_path", "normalized_sha256"],
+        "properties": {
+          "source_id": {"type": "string"},
+          "language": {"enum": ["zh", "en", "ru"]},
+          "normalized_path": {"type": "string", "minLength": 1},
+          "normalized_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "alignment_units": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "zh", "en", "ru", "flags"],
+        "properties": {
+          "id": {"type": "string"},
+          "zh": {"$ref": "#/$defs/side"},
+          "en": {"$ref": "#/$defs/side"},
+          "ru": {"$ref": "#/$defs/side"},
+          "flags": {"type": "array", "items": {"enum": ["addition", "omission", "translator_note", "edition_difference", "scene_break", "uncertain"]}},
+          "note": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "boundaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["after", "decision"],
+        "properties": {
+          "after": {"type": "string"},
+          "decision": {"enum": ["JOIN", "BREAK"]},
+          "note": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "notes": {"type": ["string", "null"]}
+  }
+}

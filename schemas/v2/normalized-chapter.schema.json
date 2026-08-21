@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://castoff995.github.io/lotm-translator/schemas/v2/normalized-chapter.schema.json",
+  "title": "LOTM v2 Normalized Chapter",
+  "type": "object",
+  "required": ["schema_version", "work_id", "chapter", "source_id", "language", "paragraphs"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "chapter_id": {"type": "string"},
+    "work_id": {"type": "string"},
+    "chapter": {"type": "integer", "minimum": 1},
+    "source_id": {"type": "string"},
+    "language": {"enum": ["zh", "en", "ru"]},
+    "metadata": {"type": "object"},
+    "paragraphs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "index", "raw_text", "normalized_text", "paragraph_type", "metadata", "provenance"],
+        "properties": {
+          "id": {"type": "string"},
+          "index": {"type": "integer", "minimum": 1},
+          "raw_text": {"type": "string", "minLength": 1},
+          "normalized_text": {"type": "string"},
+          "paragraph_type": {"enum": ["story", "dialogue", "heading", "translator_note", "footnote", "separator", "metadata", "unknown"]},
+          "metadata": {"type": "object"},
+          "provenance": {
+            "type": ["object", "null"],
+            "properties": {
+              "source_manifest": {"type": "string"},
+              "raw_location": {"type": "string"},
+              "raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+              "raw_paragraph_index": {"type": "integer", "minimum": 1},
+              "normalization_version": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

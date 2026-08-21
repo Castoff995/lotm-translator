@@ -1,0 +1,6 @@
+"""LOTM Translator v2 foundation (Architecture phases 0–2)."""
+
+NORMALIZED_SCHEMA_VERSION = "2.0"
+SOURCE_MANIFEST_SCHEMA_VERSION = "1.0"
+GOLD_SCHEMA_VERSION = "1.0-draft"
+
