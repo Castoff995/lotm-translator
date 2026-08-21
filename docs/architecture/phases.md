@@ -17,3 +17,8 @@
 Task 004 is a narrow Phase 1 amendment discovered during the Phase 2 pilot. It
 adds structured EPUB ingestion and DOM provenance only; it does not start Phase
 3 or make paragraph-correspondence decisions.
+
+Task 004A is a second narrow Phase 1 amendment. It freezes source navigation to
+canonical corpus chapter identity before EPUB paragraphization. Source-local
+numbering resets and ancillary navigation entries remain source metadata, not
+Paragraph alignment or Gold decisions.

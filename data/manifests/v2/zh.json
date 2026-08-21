@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "source": {
     "source_id": "zh",
     "work_id": "lotm",
@@ -19,5 +19,8 @@
       "paragraphization_sha256": "56c661bc4f0fd82986192709ca029510a5fe01ffbcf6c10920ecf9c01207a09b",
       "paragraphization_version": "1"
     }
-  ]
+  ],
+  "chapter_map_artifact": "data/manifests/v2/chapter-maps/zh.json",
+  "chapter_map_sha256": "4ddbdbe7080bf43c965987b8c28b4d3edd47acc2d2a5c1df79afd7e0205d0194",
+  "chapter_map_version": "1"
 }

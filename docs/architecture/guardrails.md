@@ -33,6 +33,14 @@ to recover physical Paragraphs. It must freeze explicit chapter slices and DOM
 provenance in a versioned artifact. It is not paragraph alignment and may not
 invoke hints, Gold mutation, or Phase 3 evidence.
 
+Approved Phase 1 source-identity amendment (Task 004A): a versioned Source
+Chapter Map may classify EPUB navigation entries and map source-local numbering
+to canonical `ChapterId`. The registered map is the frozen authority for that
+source revision. Do not silently reassign a canonical chapter, treat `toc_index`
+or a local number as canonical identity, replace a frozen map, infer universal
+volume semantics, or migrate identities referenced by human Gold. Such a change
+requires an explicit source revision/migration architecture decision.
+
 ## Phase 0–2 prohibitions
 
 Task 001 must not implement BGE/SONAR/AWESOME-align, Bertalign ensembles,

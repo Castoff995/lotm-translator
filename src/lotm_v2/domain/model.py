@@ -175,6 +175,16 @@ class SourceManifest:
     schema_version: str
     descriptor: SourceDescriptor
     chapters: tuple[SourceChapter, ...] = ()
+    chapter_map_artifact: str | None = None
+    chapter_map_sha256: str | None = None
+    chapter_map_version: str | None = None
+
+    def __post_init__(self) -> None:
+        fields = (self.chapter_map_artifact, self.chapter_map_sha256, self.chapter_map_version)
+        if any(fields) and not all(fields):
+            raise ValueError("Chapter map path, hash and version must be set together")
+        if self.chapter_map_sha256 and not re.fullmatch(r"[0-9a-f]{64}", self.chapter_map_sha256):
+            raise ValueError("Invalid chapter map checksum")
 
     def chapter(self, number: int) -> SourceChapter:
         for item in self.chapters:
@@ -205,6 +215,19 @@ class SourceManifest:
             paragraphization_sha256=artifact_sha256, paragraphization_version=artifact_version,
         )
         return replace(self, chapters=tuple(updated if item.number == number else item for item in self.chapters))
+
+    def with_chapter_map(self, artifact_path: str, artifact_sha256: str, artifact_version: str) -> "SourceManifest":
+        requested = (artifact_path, artifact_sha256, artifact_version)
+        existing = (self.chapter_map_artifact, self.chapter_map_sha256, self.chapter_map_version)
+        if any(existing) and existing != requested:
+            raise ValueError(
+                "Confirmed chapter map cannot be replaced for the same source revision; "
+                "create an explicit source revision/migration"
+            )
+        return self if existing == requested else replace(
+            self, chapter_map_artifact=artifact_path,
+            chapter_map_sha256=artifact_sha256, chapter_map_version=artifact_version,
+        )
 
 
 @dataclass(frozen=True)

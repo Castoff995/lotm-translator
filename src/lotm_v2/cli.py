@@ -55,6 +55,7 @@ def build_parser() -> argparse.ArgumentParser:
     epub_generate.add_argument("--chapter", type=int, required=True)
     epub_generate.add_argument("--toc-index", type=int, help="Explicit navigation entry index when chapter labels are ambiguous")
     epub_generate.add_argument("--output", type=Path, required=True)
+    epub_generate.add_argument("--root", type=Path, default=Path.cwd())
 
     epub_check = commands.add_parser("epub-artifact-check", help="Validate EPUB DOM selectors, hashes, order and coverage")
     epub_check.add_argument("manifest", type=Path)
@@ -67,6 +68,26 @@ def build_parser() -> argparse.ArgumentParser:
     epub_register.add_argument("artifact", type=Path)
     epub_register.add_argument("--chapter", type=int, required=True)
     epub_register.add_argument("--root", type=Path, default=Path.cwd())
+
+    map_generate = commands.add_parser("chapter-map-generate", help="Generate a source navigation to canonical chapter proposal")
+    map_generate.add_argument("manifest", type=Path)
+    map_generate.add_argument("--output", type=Path, required=True)
+    map_generate.add_argument("--canonical-start", type=int, default=1)
+    map_generate.add_argument("--root", type=Path, default=Path.cwd())
+
+    map_check = commands.add_parser("chapter-map-check", help="Validate a Source Chapter Map proposal")
+    map_check.add_argument("manifest", type=Path)
+    map_check.add_argument("chapter_map", type=Path)
+    map_check.add_argument("--root", type=Path, default=Path.cwd())
+
+    map_register = commands.add_parser("chapter-map-register", help="Validate and freeze a Source Chapter Map")
+    map_register.add_argument("manifest", type=Path)
+    map_register.add_argument("chapter_map", type=Path)
+    map_register.add_argument("--root", type=Path, default=Path.cwd())
+
+    map_inspect = commands.add_parser("chapter-map-inspect", help="Show registered Chapter Map identity summary")
+    map_inspect.add_argument("manifest", type=Path)
+    map_inspect.add_argument("--root", type=Path, default=Path.cwd())
 
     normalize = commands.add_parser("normalize", help="Conservatively normalize one ingested chapter")
     normalize.add_argument("manifest", type=Path)
@@ -139,8 +160,12 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Immutable raw EPUB ingested: {output}")
         elif args.command == "epub-artifact-generate":
             from .normalize.epub_artifact import generate_artifact, save_artifact
+            from .ingest.epub import load_epub_package
+            from .ingest.chapter_map import load_registered_chapter_map
             manifest = load_manifest(args.manifest)
-            artifact = generate_artifact(args.book, manifest, args.chapter, args.toc_index)
+            package = load_epub_package(args.book)
+            chapter_map = load_registered_chapter_map(manifest, PathPolicy(args.root), package) if manifest.chapter_map_artifact else None
+            artifact = generate_artifact(args.book, manifest, args.chapter, args.toc_index, chapter_map)
             try:
                 source = manifest.chapter(args.chapter)
                 if source.sha256 != artifact.raw_epub_sha256:
@@ -152,11 +177,13 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "epub-artifact-check":
             from .ingest.epub import load_epub_package
             from .normalize.epub_artifact import load_artifact as load_epub_artifact, validate_artifact as validate_epub_artifact
+            from .ingest.chapter_map import load_registered_chapter_map
             paths = PathPolicy(args.root)
             manifest = load_manifest(args.manifest)
             source = manifest.chapter(args.chapter)
             artifact = load_epub_artifact(args.artifact)
-            validate_epub_artifact(artifact, load_epub_package(paths.resolve(source.raw_location)), manifest, args.chapter)
+            package = load_epub_package(paths.resolve(source.raw_location))
+            validate_epub_artifact(artifact, package, manifest, args.chapter, load_registered_chapter_map(manifest, paths, package))
             print(f"EPUB artifact is valid: {args.artifact} ({len(artifact.paragraphs)} paragraphs; status={artifact.status})")
         elif args.command == "epub-artifact-register":
             from .normalize.epub_artifact import register_artifact as register_epub_artifact
@@ -164,6 +191,32 @@ def main(argv: list[str] | None = None) -> int:
             updated = register_epub_artifact(manifest, args.manifest, args.artifact, args.chapter, PathPolicy(args.root))
             source = updated.chapter(args.chapter)
             print(f"EPUB artifact frozen: {source.paragraphization_artifact} sha256={source.paragraphization_sha256}")
+        elif args.command == "chapter-map-generate":
+            from .ingest.chapter_map import generate_chapter_map, save_chapter_map
+            from .ingest.epub import load_epub_package
+            paths = PathPolicy(args.root); manifest = load_manifest(args.manifest)
+            package = load_epub_package(paths.resolve(manifest.chapters[0].raw_location))
+            value = generate_chapter_map(manifest, package, args.canonical_start)
+            save_chapter_map(args.output, value)
+            print(f"Chapter Map proposal created: {args.output} ({len(value.entries)} navigation entries; status=draft)")
+        elif args.command == "chapter-map-check":
+            from .ingest.chapter_map import load_chapter_map, validate_chapter_map, chapter_map_summary
+            from .ingest.epub import load_epub_package
+            paths = PathPolicy(args.root); manifest = load_manifest(args.manifest); value = load_chapter_map(args.chapter_map)
+            validate_chapter_map(value, manifest, load_epub_package(paths.resolve(manifest.chapters[0].raw_location)))
+            print(json.dumps(chapter_map_summary(value), ensure_ascii=False, indent=2))
+        elif args.command == "chapter-map-register":
+            from .ingest.chapter_map import register_chapter_map
+            updated = register_chapter_map(load_manifest(args.manifest), args.manifest, args.chapter_map, PathPolicy(args.root))
+            print(f"Chapter Map frozen: {updated.chapter_map_artifact} sha256={updated.chapter_map_sha256}")
+        elif args.command == "chapter-map-inspect":
+            from .ingest.chapter_map import chapter_map_summary, load_registered_chapter_map
+            from .ingest.epub import load_epub_package
+            paths = PathPolicy(args.root); manifest = load_manifest(args.manifest)
+            package = load_epub_package(paths.resolve(manifest.chapters[0].raw_location))
+            value = load_registered_chapter_map(manifest, paths, package)
+            if value is None: raise ValueError("Source Manifest has no registered Chapter Map")
+            print(json.dumps(chapter_map_summary(value), ensure_ascii=False, indent=2))
         elif args.command == "normalize":
             paths = PathPolicy(args.root)
             manifest = load_manifest(args.manifest)

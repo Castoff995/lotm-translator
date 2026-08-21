@@ -5,6 +5,7 @@ Structured EPUB is a Phase 1 source-recovery workflow:
 ```text
 immutable EPUB package
 -> package/spine + EPUB2 NCX or EPUB3 nav inspection
+-> registered Source Chapter Map resolves canonical chapter identity
 -> explicit chapter slice proposal
 -> versioned DOM paragraphization artifact
 -> validation and explicit registration/freeze
@@ -26,15 +27,28 @@ message when they are absent.
 ```powershell
 .\.venv\Scripts\python.exe -m src.lotm_v2.cli epub-inspect book.epub
 .\.venv\Scripts\python.exe -m src.lotm_v2.cli ingest-epub data/manifests/v2/en.json book.epub --chapter 1 --root .
-.\.venv\Scripts\python.exe -m src.lotm_v2.cli epub-artifact-generate data/manifests/v2/en.json book.epub --chapter 1 --output data/manifests/v2/paragraphization/en/ch_0001_epub.json
+.\.venv\Scripts\python.exe -m src.lotm_v2.cli epub-artifact-generate data/manifests/v2/en.json book.epub --chapter 1 --output data/manifests/v2/paragraphization/en/ch_0001_epub.json --root .
 .\.venv\Scripts\python.exe -m src.lotm_v2.cli epub-artifact-check data/manifests/v2/en.json data/manifests/v2/paragraphization/en/ch_0001_epub.json --chapter 1 --root .
 .\.venv\Scripts\python.exe -m src.lotm_v2.cli epub-artifact-register data/manifests/v2/en.json data/manifests/v2/paragraphization/en/ch_0001_epub.json --chapter 1 --root .
 .\.venv\Scripts\python.exe -m src.lotm_v2.cli normalize data/manifests/v2/en.json --chapter 1 --root .
 ```
 
-When a publisher restarts chapter numbering in later volumes, generation stops
-as ambiguous. A human selects the intended navigation entry with
-`--toc-index N`; that choice is recorded in the artifact.
+Before a Source Chapter Map exists, a human may select a navigation entry with
+`--toc-index N` for inspection/draft work. For scalable ingestion, register the
+source map first:
+
+```powershell
+.\.venv\Scripts\python.exe -m src.lotm_v2.cli chapter-map-generate data/manifests/v2/zh.json --output data/manifests/v2/chapter-maps/zh.json --root .
+.\.venv\Scripts\python.exe -m src.lotm_v2.cli chapter-map-check data/manifests/v2/zh.json data/manifests/v2/chapter-maps/zh.json --root .
+.\.venv\Scripts\python.exe -m src.lotm_v2.cli chapter-map-register data/manifests/v2/zh.json data/manifests/v2/chapter-maps/zh.json --root .
+.\.venv\Scripts\python.exe -m src.lotm_v2.cli chapter-map-inspect data/manifests/v2/zh.json --root .
+```
+
+After registration, `--chapter` is canonical and resolves through the frozen
+map. Any supplied `--toc-index` must match that entry. TOC index remains an
+exact EPUB locator; numbering scope plus local number is source-facing
+numbering; neither replaces canonical `ChapterId`. Details are in
+[`chapter-identity.md`](chapter-identity.md).
 
 ## Reading and block rules
 
@@ -68,3 +82,9 @@ candidate coverage and records artifact path/version/checksum in the source
 manifest. Normalization accepts only that registered artifact. Parser or source
 drift therefore fails closed instead of changing which text an existing stable
 Paragraph ID denotes.
+
+When the source manifest registers a Chapter Map, artifact registration and
+normalization also verify that the artifact's canonical chapter, TOC index,
+label, href, and fragment match the frozen map entry. The map reference lives
+at source level in the manifest, so normalized Paragraph serialization does not
+churn merely to duplicate source-catalogue metadata.

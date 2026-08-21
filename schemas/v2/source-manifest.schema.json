@@ -36,7 +36,15 @@
         },
         "additionalProperties": false
       }
-    }
+    },
+    "chapter_map_artifact": {"type": ["string", "null"]},
+    "chapter_map_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "chapter_map_version": {"type": ["string", "null"]}
+  },
+  "dependentRequired": {
+    "chapter_map_artifact": ["chapter_map_sha256", "chapter_map_version"],
+    "chapter_map_sha256": ["chapter_map_artifact", "chapter_map_version"],
+    "chapter_map_version": ["chapter_map_artifact", "chapter_map_sha256"]
   },
   "additionalProperties": false
 }

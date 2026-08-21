@@ -14,13 +14,13 @@ from ..infrastructure.corpus_io import save_manifest
 from ..infrastructure.json_io import read_json, write_json
 from ..infrastructure.paths import PathPolicy
 from ..ingest.epub import EpubPackage, document_bytes, load_epub_package, require_epub_dependencies
+from ..ingest.chapter_map import SourceChapterMap, parse_chapter_label
 
 
 EXTRACTION_PROFILE = "epub-dom-physical-blocks/1"
 _STRONG = {"p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "figcaption"}
 _CONTAINERS = {"article", "section", "div", "main", "blockquote", "aside"}
 _IGNORED = {"head", "script", "style", "template", "nav", "rt", "rp"}
-_CHINESE = {"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10}
 
 
 @dataclass(frozen=True)
@@ -182,14 +182,7 @@ def structural_candidates(root: Any) -> list[Any]:
 
 
 def _chapter_number(label: str) -> int | None:
-    match = re.search(r"\bchapter\s+(\d+)\b", label, re.IGNORECASE)
-    if match:
-        return int(match.group(1))
-    match = re.search(r"第([一二三四五六七八九十]|\d+)章", label)
-    if match:
-        token = match.group(1)
-        return int(token) if token.isdigit() else _CHINESE.get(token)
-    return None
+    return parse_chapter_label(label)[0]
 
 
 def _element_for_fragment(root: Any, fragment: str | None):
@@ -202,9 +195,14 @@ def _element_for_fragment(root: Any, fragment: str | None):
 
 
 def propose_segments(package: EpubPackage, chapter: int, navigation_index: int | None = None) -> tuple[int, str, str, tuple[EpubSegment, ...]]:
-    matches = [(index, entry) for index, entry in enumerate(package.navigation) if _chapter_number(entry.label) == chapter]
     if navigation_index is not None:
-        matches = [(index, entry) for index, entry in matches if index == navigation_index]
+        if navigation_index < 0 or navigation_index >= len(package.navigation):
+            raise ValueError(f"TOC index is outside navigation: {navigation_index}")
+        matches = [(navigation_index, package.navigation[navigation_index])]
+        if _chapter_number(matches[0][1].label) is None:
+            raise ValueError(f"TOC index does not identify a numeric chapter: {navigation_index}")
+    else:
+        matches = [(index, entry) for index, entry in enumerate(package.navigation) if _chapter_number(entry.label) == chapter]
     if len(matches) != 1:
         raise ValueError(f"Chapter {chapter} TOC mapping is ambiguous: {len(matches)} matches")
     nav_index, current = matches[0]
@@ -278,8 +276,13 @@ def _candidate_refs(package: EpubPackage, segments: Iterable[EpubSegment]) -> tu
     return refs, events
 
 
-def generate_artifact(book_path: Path, manifest: SourceManifest, chapter: int, navigation_index: int | None = None) -> EpubParagraphizationArtifact:
+def generate_artifact(book_path: Path, manifest: SourceManifest, chapter: int, navigation_index: int | None = None, chapter_map: SourceChapterMap | None = None) -> EpubParagraphizationArtifact:
     package = load_epub_package(book_path)
+    if chapter_map is not None:
+        mapped = chapter_map.chapter(chapter)
+        if navigation_index is not None and navigation_index != mapped.toc_index:
+            raise ValueError("Manual toc-index conflicts with registered Chapter Map")
+        navigation_index = mapped.toc_index
     toc_index, label, toc_href, segments = propose_segments(package, chapter, navigation_index)
     refs, events = _candidate_refs(package, segments)
     if not refs:
@@ -332,7 +335,7 @@ def load_artifact(path: Path) -> EpubParagraphizationArtifact:
     return artifact_from_dict(read_json(path))
 
 
-def validate_artifact(artifact: EpubParagraphizationArtifact, package: EpubPackage, manifest: SourceManifest, chapter: int) -> None:
+def validate_artifact(artifact: EpubParagraphizationArtifact, package: EpubPackage, manifest: SourceManifest, chapter: int, chapter_map: SourceChapterMap | None = None) -> None:
     if artifact.schema_version != EPUB_PARAGRAPHIZATION_SCHEMA_VERSION or artifact.extraction_profile != EXTRACTION_PROFILE:
         raise ValueError("Unsupported EPUB paragraphization artifact/profile version")
     if (artifact.work_id, artifact.source_id, artifact.chapter) != (
@@ -341,6 +344,11 @@ def validate_artifact(artifact: EpubParagraphizationArtifact, package: EpubPacka
         raise ValueError("EPUB artifact coordinates do not match source manifest")
     if artifact.raw_epub_sha256 != package.package_sha256:
         raise ValueError("EPUB artifact package checksum mismatch")
+    if chapter_map is not None:
+        mapped = chapter_map.chapter(chapter)
+        expected_href = mapped.toc_href + (f"#{mapped.toc_fragment}" if mapped.toc_fragment else "")
+        if (artifact.toc_index, artifact.toc_label, artifact.toc_href) != (mapped.toc_index, mapped.toc_label, expected_href):
+            raise ValueError("EPUB paragraphization artifact contradicts registered Chapter Map")
     expected, _ = _candidate_refs(package, artifact.segments)
     actual = [ref for group in artifact.paragraphs for ref in group]
     expected_keys = [(ref.spine_index, ref.document_href, ref.dom_path) for ref in expected]
@@ -394,10 +402,11 @@ def confirm_artifact(artifact: EpubParagraphizationArtifact) -> EpubParagraphiza
 
 
 def register_artifact(manifest: SourceManifest, manifest_path: Path, artifact_path: Path, chapter: int, paths: PathPolicy) -> SourceManifest:
+    from ..ingest.chapter_map import load_registered_chapter_map
     artifact = load_artifact(artifact_path)
     source = manifest.chapter(chapter)
     package = load_epub_package(paths.resolve(source.raw_location))
-    validate_artifact(artifact, package, manifest, chapter)
+    validate_artifact(artifact, package, manifest, chapter, load_registered_chapter_map(manifest, paths, package))
     if artifact.status == "draft":
         # Registration is the explicit human-controlled freeze action.
         artifact = confirm_artifact(artifact)

@@ -12,6 +12,7 @@ from ..domain import (
 )
 from ..infrastructure.paths import PathPolicy
 from ..ingest.epub import document_bytes, load_epub_package
+from ..ingest.chapter_map import load_registered_chapter_map
 from .epub_artifact import (
     artifact_file_sha256, load_artifact, readable_text, resolve_dom_path,
     validate_artifact, _parse_document,
@@ -42,7 +43,8 @@ def normalize_epub_manifest_chapter(
     if artifact.status != "confirmed" or artifact.artifact_version != source.paragraphization_version:
         raise ValueError("Registered EPUB artifact status/version mismatch")
     package = load_epub_package(raw_path)
-    validate_artifact(artifact, package, manifest, chapter_number)
+    chapter_map = load_registered_chapter_map(manifest, paths, package)
+    validate_artifact(artifact, package, manifest, chapter_number, chapter_map)
 
     roots: dict[str, tuple[bytes, object]] = {}
     chapter_id = ChapterId(manifest.descriptor.work_id, chapter_number)

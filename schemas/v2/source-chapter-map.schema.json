@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://castoff995.github.io/lotm-translator/schemas/v2/source-chapter-map.schema.json",
+  "title": "LOTM v2 Source Chapter Map",
+  "type": "object",
+  "required": ["schema_version", "map_version", "status", "work_id", "source_id", "raw_source_location", "raw_source_sha256", "navigation_kind", "entries", "diagnostics"],
+  "properties": {
+    "schema_version": {"const": "1.0-draft"},
+    "map_version": {"type": "string", "minLength": 1},
+    "status": {"enum": ["draft", "confirmed"]},
+    "work_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "source_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "raw_source_location": {"type": "string", "minLength": 1},
+    "raw_source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "navigation_kind": {"enum": ["ncx", "epub3_nav"]},
+    "entries": {"type": "array", "items": {"$ref": "#/$defs/entry"}},
+    "diagnostics": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": ["kind", "toc_index", "toc_label", "toc_href", "toc_fragment"],
+      "properties": {
+        "kind": {"enum": ["chapter", "ancillary", "ambiguous"]},
+        "toc_index": {"type": "integer", "minimum": 0},
+        "toc_label": {"type": "string", "minLength": 1},
+        "toc_href": {"type": "string", "minLength": 1},
+        "toc_fragment": {"type": ["string", "null"]},
+        "canonical_chapter": {"type": "integer", "minimum": 1},
+        "source_chapter_ordinal": {"type": "integer", "minimum": 1},
+        "numbering_scope": {"type": "integer", "minimum": 1},
+        "local_chapter_number": {"type": "integer", "minimum": 1},
+        "local_number_text": {"type": "string"},
+        "ancillary_kind": {"enum": ["author_note", "announcement", "partition_summary", "front_matter", "back_matter", "other"]},
+        "note": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {"if": {"properties": {"kind": {"const": "chapter"}}}, "then": {"required": ["canonical_chapter", "source_chapter_ordinal", "numbering_scope"]}},
+        {"if": {"properties": {"kind": {"const": "ancillary"}}}, "then": {"required": ["ancillary_kind"]}},
+        {
+          "if": {
+            "properties": {
+              "kind": {"const": "ancillary"},
+              "ancillary_kind": {"const": "other"}
+            },
+            "required": ["kind", "ancillary_kind"]
+          },
+          "then": {"required": ["note"]}
+        }
+      ]
+    }
+  }
+}

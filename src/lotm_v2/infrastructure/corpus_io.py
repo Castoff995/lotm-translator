@@ -35,6 +35,9 @@ def manifest_to_dict(manifest: SourceManifest) -> dict[str, Any]:
             }
             for chapter in manifest.chapters
         ],
+        "chapter_map_artifact": manifest.chapter_map_artifact,
+        "chapter_map_sha256": manifest.chapter_map_sha256,
+        "chapter_map_version": manifest.chapter_map_version,
     }
 
 
@@ -55,7 +58,11 @@ def manifest_from_dict(payload: dict[str, Any]) -> SourceManifest:
         )
         for item in payload.get("chapters", [])
     )
-    return SourceManifest(str(payload["schema_version"]), descriptor, chapters)
+    return SourceManifest(
+        str(payload["schema_version"]), descriptor, chapters,
+        payload.get("chapter_map_artifact"), payload.get("chapter_map_sha256"),
+        payload.get("chapter_map_version"),
+    )
 
 
 def save_manifest(path: Path, manifest: SourceManifest) -> None:
