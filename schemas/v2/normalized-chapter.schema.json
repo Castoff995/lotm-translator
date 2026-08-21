@@ -26,22 +26,49 @@
           "metadata": {"type": "object"},
           "provenance": {
             "type": ["object", "null"],
-            "required": ["source_manifest", "raw_location", "raw_sha256", "start_line", "end_line", "normalization_version"],
+            "required": ["source_manifest", "raw_location", "raw_sha256", "location_kind", "normalization_version"],
             "properties": {
               "source_manifest": {"type": "string"},
               "raw_location": {"type": "string"},
               "raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-              "start_line": {"type": "integer", "minimum": 1},
-              "end_line": {"type": "integer", "minimum": 1},
+              "location_kind": {"enum": ["line_span", "epub_dom"]},
+              "start_line": {"type": ["integer", "null"], "minimum": 1},
+              "end_line": {"type": ["integer", "null"], "minimum": 1},
+              "epub_fragments": {
+                "type": "array",
+                "items": {"$ref": "#/$defs/epub_fragment"}
+              },
               "raw_paragraph_index": {"type": ["integer", "null"], "minimum": 1},
               "normalization_version": {"type": "string"},
               "paragraphization_artifact": {"type": ["string", "null"]},
               "paragraphization_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
               "paragraphization_version": {"type": ["string", "null"]}
-            }
+            },
+            "allOf": [{"if": {"type": "object"}, "then": {"oneOf": [
+              {"required": ["start_line", "end_line", "epub_fragments"], "properties": {"location_kind": {"const": "line_span"}, "start_line": {"type": "integer"}, "end_line": {"type": "integer"}, "epub_fragments": {"maxItems": 0}}},
+              {"required": ["start_line", "end_line", "epub_fragments"], "properties": {"location_kind": {"const": "epub_dom"}, "start_line": {"type": "null"}, "end_line": {"type": "null"}, "epub_fragments": {"minItems": 1}}}
+            ]}}]
           }
         }
       }
+    }
+  },
+  "$defs": {
+    "epub_fragment": {
+      "type": "object",
+      "required": ["document_href", "spine_index", "dom_path", "element_tag", "element_id", "document_sha256", "fragment_sha256", "start_offset", "end_offset"],
+      "properties": {
+        "document_href": {"type": "string", "minLength": 1},
+        "spine_index": {"type": "integer", "minimum": 0},
+        "dom_path": {"type": "string", "pattern": "^/"},
+        "element_tag": {"type": "string", "minLength": 1},
+        "element_id": {"type": ["string", "null"]},
+        "document_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "fragment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "start_offset": {"type": ["integer", "null"], "minimum": 0},
+        "end_offset": {"type": ["integer", "null"], "minimum": 1}
+      },
+      "additionalProperties": false
     }
   }
 }

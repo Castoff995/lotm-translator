@@ -1,0 +1,960 @@
+{
+  "schema_version": "1.0-draft",
+  "artifact_version": "1",
+  "status": "confirmed",
+  "work_id": "lotm",
+  "source_id": "en",
+  "chapter": 1,
+  "raw_epub_sha256": "452d90496d8dc6db4a96ef4d817eaa24c5baea62ab629af27bb8abdc0b25eb1d",
+  "extraction_profile": "epub-dom-physical-blocks/1",
+  "toc_index": 4,
+  "toc_label": "Chapter 1: Crimson",
+  "toc_href": "EPUB/text/ch005.xhtml#chapter-1-crimson",
+  "segments": [
+    {
+      "document_href": "EPUB/text/ch005.xhtml",
+      "spine_index": 6,
+      "start_dom_path": "/html[1]/body[1]/section[1]",
+      "end_dom_path": null
+    }
+  ],
+  "paragraphs": [
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/h2[1]",
+          "element_tag": "h2",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "b90e9f0108457f2115107ade81d7911397984223c045d37b553bfb06063bf32e",
+          "structural_type": "heading",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[1]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "e6aa9d0226aa62649e7feaf7fffbc718cefcf2881d36c8559972356735413305",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[2]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "9ed6b902b03830112d2a09dd6931e6baecd25050b912887dde94883f925aa60d",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[3]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "f510dd90db4b0701f914572b3d6b43ccb2cd1de9c5fb13e07b6fca9e6a0adb17",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[4]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "acb9df38d189fba65258e20a0fee116c5f48f83861ff8bd83bd93b2fd8ee73c5",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[5]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "b314859c781528b71d5d0161060408a8bf637d381a004b9c5af21702f32f9e58",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[7]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "c99a0614d8f1064d9493f653991e38a02d5b8f02b6b273772849db72f8a590ce",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[8]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "10b88848ea6689a3bd379e4ef34dbb61843ec12864c5ed6e7f51d16323d96dba",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[9]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "746635d15337c6ecb6984645b69e1b7af820cd6e37dc6b0fbfa6b917ccbea4bf",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[10]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "c4dc9ef04573b709e9b08c50cfb961547a1ea3345f2f3388cfb7e2351466e180",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[11]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "d92c2cf6740312912b568d82eb6a5b3ffa99e8e977d662a6d6176453e77704dd",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[12]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "59fa19192bdb23c31b9566bc7cbcc8e580c53c6af0025c636fa63c89cb17dfc1",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[13]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "532c2329397b31fdce7fa2bec0c4da95313f8dbd6221d34c5223dd71614d003c",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[14]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "4191fa0146e98c6b121a4f3be1c8c8f4a130dd48b993e287427e30cd09e19d9b",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[15]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "f2db64f8596043d3d9b0564d92c950bc8ad2711887b8781e1981f65ee7bc3fd3",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[16]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "4101a1b3983a203fa079b3772d9546e668639b379f63b62416588ac579183dcf",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[17]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "59ac9be78d91b0f2fdf5cf14f72a0d30e93ca2aa3a59decdad29cad38d6f3c85",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[18]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "b15674d47af1bf1e28e2d003e7a4c6f848d2d23969562cf1f0b7a487768df2f1",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[19]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "2fd92bf5adb2a7ff0e7bcce1447573b3e1a03947694ac2f4f2a4e2552dd22aec",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[20]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "e982da72c697091328006beb05239df778c76372e9f950d8669614c593f04348",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[21]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "9bda2b74dbc1c3144c2ea59827a03c7d01337f5c19b2c8c2120cca5dad7d66eb",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[22]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "8db44d046ada0776c13324447d4a1eb6be9d2fdf0e21886267dbdba4cf31a974",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[23]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "4f12c1072cab518a2330dff06dec93089e21350f915dd97d85e0f614157372ec",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[24]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "377b0231936d9154679b900d371ababa28bd154efec7437e4a7ddd8a4c5148a9",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[25]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "0d5e1752ef71b37a345a360a8d6eeed06db85f5a113d94e368528ba8ae8fd828",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[26]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "19cd34c87764a5726174a7475ee4f65ceabb46ac5cc59987bd91c22466536ee4",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[27]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "6a97dc0bae3ed6b9017e399c26421cf4d4357289381cab963531f559340edc5e",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[28]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "5cd986658af8900403153ed9fe6f2b961d9441427fa643114bd96dc52dc6edca",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[29]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "2b280086ca3da59d1e690299b44a4669c712fa63671402065bb53f825eb4c630",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[30]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "6a509c3d34de5c9fab112632b5113dbb783fa3021edee1bba414f01c9bc0e895",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[31]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "735d75c63202a117ec7e9e7e9c0b34338138a08abe66b111c70f4a2998b2241a",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[32]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "259f033b7bc262dee7f1ac7105bee955ec77b3c65df53bb9cd9a8e6e361cf5db",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[33]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "fbaeaa00eef6427d27663a63399dd86f188471974dfd449bfccd9c9dabec4b5d",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[34]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "4c5a721df896569057a469925123165f87f2627c5db55ce76ad9019de955087e",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[35]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "186b92c74efc1b1e7b1ffb3d6c0f0e832cd96f273d2a071313de20ab99c829e4",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[36]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "8d692aa8b4a886c3a7048d3c59d3de9131cf20b581477f818c667516aad5c245",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[37]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "49603d5d4a98ba48cf2cce79e30c011f1ab0afd9637ee567717832b6a63cf7d0",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[38]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "e82eece8c54cfb0e5e6ab9a6d1fb75ee255bb9a4c3debbe4d9986b74e312ebae",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[39]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "24bc9f7c0c52264bb63ab09676adeb60d4acc14cee5d6fa23b57c8344ff31a7f",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[40]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "bc9c952aca6e52e53c223e39c12a05f784b9cf07a4b2de4a41b8bffb0e0219f6",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[41]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "edafc6893893512a62530dee2c58aec29b8baf24169625313bd79b3feef7cad6",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[42]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "331ef52338829b626f7a9d43a85250505ef9699ce55830955c5467be03dfa1df",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[43]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "bcbf70a3fc6554e2a0ceafb3755b352feb4e38e3372c8a9a3f69ea8408f9177e",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[44]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "6d689b9ca685aec2d14acbaea565b660ff91612a023d514c965a4dc28ba49f48",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[45]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "1ba24a411ca8171faa534a0b5a01203080809f217cb6bc02bd2bf6c5444f8b8b",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[46]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "6a60dde10ad5cdf1176e70d4e45f87036857e5d6bd55fc5fb43cfd6a95f148f7",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[47]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "e1ade6059b7ab5caf13e16c9776138b1408e7ffa791d95bd557aecfef73c05f5",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[48]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "aa735737619f92b6ae095963e962c139161595379137fefbbb26dc3623a06a0d",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[49]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "9d08f06d58f90a2d260cbaa3a7c683d586452ce3bf9601b9591365b96d8d68fb",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[50]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "26f2e206965dcc992c66b341e81990cbcb19495b782ba4ffff39b06764b3518c",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[51]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "cf2004ad6b240901d735063712d73126900a213488d18026b503a208359b4fa1",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[52]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "794a5acd8c26ca2fd83cb8bf819409de04df94cb45bb81c91724b6362646551b",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[53]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "c6addd01a645c316498d345635bdd35f7f4cd5093c5ba29c24a8cc0c4d998df0",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[55]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "2e879d3554423ab7643de68aeb8029fe117e2338ce192fe6be6dacdec288ed27",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[56]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "63038c228fa324c27865a95a019fd05bf5dbeef7bf755415879a80a5f2741c95",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[57]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "ff639811cc1a20c161b6f6ed3c99042a8b24dc7ed411637090159cde2edcf929",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[58]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "d921b3eac95f2b8729ba41dafc8e594eab36e1eb0d284d4ada0d302581b209e5",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[59]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "a4ad1e273a1c51683569abb6297473d07a71e9a768c3f08f77d91cbe8d88db26",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[60]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "e491e7ae4b8245ce37a1d8e92ce89ee2925d7de0fdda2f786be74faee5523f96",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[61]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "f60c997543800086070a8896994661845856ef7cd1e3833d9cb796fa5adf2fbc",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[62]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "fa829e70396964a4da54592db7356a755e6e6b924a9c2c1cdaa74b693058afed",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[63]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "2ad2a98ff11a1e4e4877722f616c29bc796e4330ed6093b0889ab83233658278",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[64]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "a032e7911aa2afb61deb079a86b31a17c2df20b8044a73c64a1d5d3f2d483edb",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[65]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "4a1583ffa1b2062c4acaf8546914828db8baecac6115fa6bfe39d58884e0ddd9",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[66]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "d4f0183ee773cfa032308840b695879ed88b536bba30f9e3660724a473554226",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[67]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "7fe89c40d2dc017df455edf9199aa91d4a708229b0cba114be950d231118ecee",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[68]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "cae55e7f1b68079583df3dcddf7597f956f55575afe8c8b1714a1deff17baf73",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/p[69]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "cf8800c5add9727e06252769e8d4ae7594d8723d8c3f29499b2836c6c553cc4a",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/ul[1]/li[1]",
+          "element_tag": "li",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "f7ee71346fc94ca935e66f2bca34afd652f200773850b0db19bccc4c74fc76fd",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[1]/ul[1]/li[2]",
+          "element_tag": "li",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "d2316490574f56ec6b789e94537c40dde8feddb0be741ba1380ecba11c8ebe0f",
+          "has_ruby": false
+        }
+      ]
+    },
+    {
+      "fragments": [
+        {
+          "document_href": "EPUB/text/ch005.xhtml",
+          "spine_index": 6,
+          "dom_path": "/html[1]/body[1]/section[2]/aside[1]/p[1]",
+          "element_tag": "p",
+          "document_sha256": "f826996c7ceec75c7eeeb6f25ca0c92521ab53430e54541a73c060c7dd035799",
+          "fragment_sha256": "88d3d4f110d97bd865d187bde76b721b3ba316a307dbfecaec29a450dbbe4c0c",
+          "structural_type": "footnote",
+          "has_ruby": false
+        }
+      ]
+    }
+  ],
+  "structural_events": [
+    {
+      "kind": "structural_separator",
+      "document_href": "EPUB/text/ch005.xhtml",
+      "dom_path": "/html[1]/body[1]/section[1]/hr[1]"
+    },
+    {
+      "kind": "structural_separator",
+      "document_href": "EPUB/text/ch005.xhtml",
+      "dom_path": "/html[1]/body[1]/section[2]/hr[1]"
+    }
+  ]
+}

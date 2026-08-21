@@ -13,3 +13,7 @@
 | 8 — Semantic grouping | Learn/predict `JOIN`/`BREAK` after alignment. | Grouping is evaluated separately against gold boundary labels. |
 | 9 — Dataset export | Apply quality gates and export training examples. | Deterministic dataset build passes coverage and provenance gates. |
 | 10 — LoRA | Train and evaluate the local translation adapter. | Training is reproducible and evaluated against held-out gold data. |
+
+Task 004 is a narrow Phase 1 amendment discovered during the Phase 2 pilot. It
+adds structured EPUB ingestion and DOM provenance only; it does not start Phase
+3 or make paragraph-correspondence decisions.

@@ -3,6 +3,7 @@
 from .model import (
     Chapter,
     ChapterId,
+    EpubDomFragment,
     Language,
     Paragraph,
     ParagraphId,
@@ -10,6 +11,7 @@ from .model import (
     ParagraphizationMode,
     ParagraphType,
     Provenance,
+    ProvenanceLocationKind,
     SourceSpan,
     SourceChapter,
     SourceDescriptor,
@@ -20,7 +22,7 @@ from .model import (
 )
 
 __all__ = [
-    "Chapter", "ChapterId", "Language", "Paragraph", "ParagraphId",
-    "ParagraphRef", "ParagraphizationMode", "ParagraphType", "Provenance", "SourceSpan", "SourceChapter",
+    "Chapter", "ChapterId", "EpubDomFragment", "Language", "Paragraph", "ParagraphId",
+    "ParagraphRef", "ParagraphizationMode", "ParagraphType", "Provenance", "ProvenanceLocationKind", "SourceSpan", "SourceChapter",
     "SourceDescriptor", "SourceFormat", "SourceId", "SourceManifest", "SourceRole",
 ]

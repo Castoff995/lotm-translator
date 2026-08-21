@@ -3,9 +3,10 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 from pathlib import Path
 
-from . import SOURCE_MANIFEST_SCHEMA_VERSION
+from . import NORMALIZED_SCHEMA_VERSION, SOURCE_MANIFEST_SCHEMA_VERSION
 from .domain import Chapter, Language, ParagraphizationMode, SourceDescriptor, SourceFormat, SourceId, SourceManifest, SourceRole
 from .gold.model import GoldChapter
 from .gold.draft import create_gold_draft
@@ -13,7 +14,7 @@ from .gold.io import load_gold, save_gold
 from .gold.validation import GoldValidationError, validate_gold_chapter
 from .infrastructure.corpus_io import load_chapter, load_manifest, save_chapter, save_manifest
 from .infrastructure.paths import PathPolicy
-from .ingest import ingest_text_chapter
+from .ingest import ingest_epub_package, ingest_text_chapter, inspect_epub
 from .normalize import normalize_manifest_chapter
 from .normalize.paragraphization import load_artifact, register_artifact, validate_artifact
 
@@ -30,7 +31,7 @@ def build_parser() -> argparse.ArgumentParser:
     manifest.add_argument("--role", choices=[item.value for item in SourceRole], required=True)
     manifest.add_argument("--edition", required=True)
     manifest.add_argument("--format", choices=[item.value for item in SourceFormat], required=True)
-    manifest.add_argument("--normalization-version", default="2.1-draft")
+    manifest.add_argument("--normalization-version", default=NORMALIZED_SCHEMA_VERSION)
     manifest.add_argument("--paragraphization-mode", choices=[item.value for item in ParagraphizationMode], default="blank_lines")
 
     ingest = commands.add_parser("ingest-text", help="Import one UTF-8 chapter into immutable v2 raw storage")
@@ -38,6 +39,34 @@ def build_parser() -> argparse.ArgumentParser:
     ingest.add_argument("input", type=Path)
     ingest.add_argument("--chapter", type=int, required=True)
     ingest.add_argument("--root", type=Path, default=Path.cwd())
+
+    epub_inspect = commands.add_parser("epub-inspect", help="Inspect EPUB package, spine and navigation without corpus mutation")
+    epub_inspect.add_argument("book", type=Path)
+
+    ingest_epub = commands.add_parser("ingest-epub", help="Import one immutable EPUB package authority")
+    ingest_epub.add_argument("manifest", type=Path)
+    ingest_epub.add_argument("book", type=Path)
+    ingest_epub.add_argument("--chapter", type=int, required=True)
+    ingest_epub.add_argument("--root", type=Path, default=Path.cwd())
+
+    epub_generate = commands.add_parser("epub-artifact-generate", help="Generate a reviewable EPUB DOM paragraphization proposal")
+    epub_generate.add_argument("manifest", type=Path)
+    epub_generate.add_argument("book", type=Path)
+    epub_generate.add_argument("--chapter", type=int, required=True)
+    epub_generate.add_argument("--toc-index", type=int, help="Explicit navigation entry index when chapter labels are ambiguous")
+    epub_generate.add_argument("--output", type=Path, required=True)
+
+    epub_check = commands.add_parser("epub-artifact-check", help="Validate EPUB DOM selectors, hashes, order and coverage")
+    epub_check.add_argument("manifest", type=Path)
+    epub_check.add_argument("artifact", type=Path)
+    epub_check.add_argument("--chapter", type=int, required=True)
+    epub_check.add_argument("--root", type=Path, default=Path.cwd())
+
+    epub_register = commands.add_parser("epub-artifact-register", help="Validate and explicitly freeze an EPUB paragraphization artifact")
+    epub_register.add_argument("manifest", type=Path)
+    epub_register.add_argument("artifact", type=Path)
+    epub_register.add_argument("--chapter", type=int, required=True)
+    epub_register.add_argument("--root", type=Path, default=Path.cwd())
 
     normalize = commands.add_parser("normalize", help="Conservatively normalize one ingested chapter")
     normalize.add_argument("manifest", type=Path)
@@ -102,6 +131,39 @@ def main(argv: list[str] | None = None) -> int:
             manifest = load_manifest(args.manifest)
             _, output = ingest_text_chapter(args.input, manifest, args.manifest, args.chapter, PathPolicy(args.root))
             print(f"Immutable raw chapter ingested: {output}")
+        elif args.command == "epub-inspect":
+            print(json.dumps(inspect_epub(args.book), ensure_ascii=False, indent=2))
+        elif args.command == "ingest-epub":
+            manifest = load_manifest(args.manifest)
+            _, output = ingest_epub_package(args.book, manifest, args.manifest, args.chapter, PathPolicy(args.root))
+            print(f"Immutable raw EPUB ingested: {output}")
+        elif args.command == "epub-artifact-generate":
+            from .normalize.epub_artifact import generate_artifact, save_artifact
+            manifest = load_manifest(args.manifest)
+            artifact = generate_artifact(args.book, manifest, args.chapter, args.toc_index)
+            try:
+                source = manifest.chapter(args.chapter)
+                if source.sha256 != artifact.raw_epub_sha256:
+                    raise ValueError("Proposal EPUB differs from the manifest's immutable package")
+            except KeyError:
+                pass
+            save_artifact(args.output, artifact)
+            print(f"EPUB paragraphization proposal created: {args.output} ({len(artifact.paragraphs)} paragraphs; status=draft)")
+        elif args.command == "epub-artifact-check":
+            from .ingest.epub import load_epub_package
+            from .normalize.epub_artifact import load_artifact as load_epub_artifact, validate_artifact as validate_epub_artifact
+            paths = PathPolicy(args.root)
+            manifest = load_manifest(args.manifest)
+            source = manifest.chapter(args.chapter)
+            artifact = load_epub_artifact(args.artifact)
+            validate_epub_artifact(artifact, load_epub_package(paths.resolve(source.raw_location)), manifest, args.chapter)
+            print(f"EPUB artifact is valid: {args.artifact} ({len(artifact.paragraphs)} paragraphs; status={artifact.status})")
+        elif args.command == "epub-artifact-register":
+            from .normalize.epub_artifact import register_artifact as register_epub_artifact
+            manifest = load_manifest(args.manifest)
+            updated = register_epub_artifact(manifest, args.manifest, args.artifact, args.chapter, PathPolicy(args.root))
+            source = updated.chapter(args.chapter)
+            print(f"EPUB artifact frozen: {source.paragraphization_artifact} sha256={source.paragraphization_sha256}")
         elif args.command == "normalize":
             paths = PathPolicy(args.root)
             manifest = load_manifest(args.manifest)

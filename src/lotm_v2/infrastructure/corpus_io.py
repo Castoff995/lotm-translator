@@ -5,8 +5,8 @@ from pathlib import Path
 from typing import Any
 
 from ..domain import (
-    Chapter, ChapterId, Language, Paragraph, ParagraphId, ParagraphizationMode, ParagraphType,
-    Provenance, SourceChapter, SourceDescriptor, SourceFormat, SourceId,
+    Chapter, ChapterId, EpubDomFragment, Language, Paragraph, ParagraphId, ParagraphizationMode, ParagraphType,
+    Provenance, ProvenanceLocationKind, SourceChapter, SourceDescriptor, SourceFormat, SourceId,
     SourceManifest, SourceRole,
 )
 from .json_io import read_json, write_json
@@ -73,8 +73,23 @@ def _provenance_to_dict(provenance: Provenance | None) -> dict[str, Any] | None:
         "source_manifest": provenance.source_manifest,
         "raw_location": provenance.raw_location,
         "raw_sha256": provenance.raw_sha256,
+        "location_kind": provenance.location_kind.value,
         "start_line": provenance.start_line,
         "end_line": provenance.end_line,
+        "epub_fragments": [
+            {
+                "document_href": item.document_href,
+                "spine_index": item.spine_index,
+                "dom_path": item.dom_path,
+                "element_tag": item.element_tag,
+                "element_id": item.element_id,
+                "document_sha256": item.document_sha256,
+                "fragment_sha256": item.fragment_sha256,
+                "start_offset": item.start_offset,
+                "end_offset": item.end_offset,
+            }
+            for item in provenance.epub_fragments
+        ],
         "raw_paragraph_index": provenance.raw_paragraph_index,
         "normalization_version": provenance.normalization_version,
         "paragraphization_artifact": provenance.paragraphization_artifact,
@@ -115,9 +130,24 @@ def chapter_from_dict(payload: dict[str, Any]) -> Chapter:
             source_manifest=str(raw_provenance["source_manifest"]),
             raw_location=str(raw_provenance["raw_location"]),
             raw_sha256=str(raw_provenance["raw_sha256"]),
-            start_line=int(raw_provenance.get("start_line", raw_provenance.get("raw_paragraph_index", 1))),
-            end_line=int(raw_provenance.get("end_line", raw_provenance.get("raw_paragraph_index", 1))),
             normalization_version=str(raw_provenance["normalization_version"]),
+            location_kind=ProvenanceLocationKind(str(raw_provenance.get("location_kind", "line_span"))),
+            start_line=(int(raw_provenance["start_line"]) if raw_provenance.get("start_line") is not None else (
+                int(raw_provenance.get("raw_paragraph_index", 1)) if "location_kind" not in raw_provenance else None
+            )),
+            end_line=(int(raw_provenance["end_line"]) if raw_provenance.get("end_line") is not None else (
+                int(raw_provenance.get("raw_paragraph_index", 1)) if "location_kind" not in raw_provenance else None
+            )),
+            epub_fragments=tuple(
+                EpubDomFragment(
+                    document_href=str(fragment["document_href"]), spine_index=int(fragment["spine_index"]),
+                    dom_path=str(fragment["dom_path"]), element_tag=str(fragment["element_tag"]),
+                    element_id=fragment.get("element_id"), document_sha256=str(fragment["document_sha256"]),
+                    fragment_sha256=str(fragment["fragment_sha256"]),
+                    start_offset=(int(fragment["start_offset"]) if fragment.get("start_offset") is not None else None),
+                    end_offset=(int(fragment["end_offset"]) if fragment.get("end_offset") is not None else None),
+                ) for fragment in raw_provenance.get("epub_fragments", [])
+            ),
             raw_paragraph_index=(int(raw_provenance["raw_paragraph_index"]) if raw_provenance.get("raw_paragraph_index") is not None else None),
             paragraphization_artifact=raw_provenance.get("paragraphization_artifact"),
             paragraphization_sha256=raw_provenance.get("paragraphization_sha256"),

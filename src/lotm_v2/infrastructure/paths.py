@@ -21,6 +21,12 @@ class PathPolicy:
     def raw_chapter(self, source: SourceId, chapter: int) -> Path:
         return self.data / "raw" / "v2" / str(source) / f"ch_{chapter:04d}.txt"
 
+    def raw_epub(self, source: SourceId) -> Path:
+        return self.data / "raw" / "v2" / str(source) / "source.epub"
+
+    def epub_artifact(self, source: SourceId, chapter: int) -> Path:
+        return self.data / "manifests" / "v2" / "paragraphization" / str(source) / f"ch_{chapter:04d}_epub.json"
+
     def normalized_chapter(self, source: SourceId, chapter: int) -> Path:
         return self.data / "normalized" / "v2" / str(source) / f"ch_{chapter:04d}.json"
 

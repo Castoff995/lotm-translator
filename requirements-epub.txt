@@ -1,0 +1,3 @@
+# Optional Phase 1 structured EPUB ingestion dependencies.
+EbookLib==0.20
+lxml==6.1.2

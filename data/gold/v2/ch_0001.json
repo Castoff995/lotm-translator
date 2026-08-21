@@ -8,13 +8,13 @@
       "source_id": "zh",
       "language": "zh",
       "normalized_path": "data/normalized/v2/zh/ch_0001.json",
-      "normalized_sha256": "7109f897a25177fd6b183c046246ccbad34da383443eef35af47395167a90dc2"
+      "normalized_sha256": "ac3bd992e582783a335a97dbca5493eb78b1d03606d2823e3b949f6cc9093858"
     },
     {
       "source_id": "en",
       "language": "en",
       "normalized_path": "data/normalized/v2/en/ch_0001.json",
-      "normalized_sha256": "2ee7f67ac11aff1c5fea5cb29094103856287ea871b0ec004ed47146edea6691"
+      "normalized_sha256": "789d93fed725fea45a78578911e1185f42c50c74fe963c5448be13055decd5b3"
     },
     {
       "source_id": "ru-official",

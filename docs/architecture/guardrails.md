@@ -27,6 +27,12 @@ the concern, propose an architecture amendment, and wait for a decision.
 Minor implementation details that preserve these boundaries do not require a
 separate approval.
 
+Approved narrow Phase 1 amendment (Task 004): structured EPUB ingestion may use
+EbookLib for container/spine/navigation discovery and strict lxml DOM parsing
+to recover physical Paragraphs. It must freeze explicit chapter slices and DOM
+provenance in a versioned artifact. It is not paragraph alignment and may not
+invoke hints, Gold mutation, or Phase 3 evidence.
+
 ## Phase 0–2 prohibitions
 
 Task 001 must not implement BGE/SONAR/AWESOME-align, Bertalign ensembles,

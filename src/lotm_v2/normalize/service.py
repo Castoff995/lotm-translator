@@ -136,6 +136,10 @@ def normalize_text_chapter(
 
 
 def normalize_manifest_chapter(manifest: SourceManifest, manifest_path: Path, chapter_number: int, paths: PathPolicy) -> Chapter:
+    if manifest.descriptor.paragraphization_mode is ParagraphizationMode.EPUB_STRUCTURE:
+        # Lazy import keeps EbookLib/lxml optional for text/OCR workflows.
+        from .epub import normalize_epub_manifest_chapter
+        return normalize_epub_manifest_chapter(manifest, manifest_path, chapter_number, paths)
     source = manifest.chapter(chapter_number)
     raw_path = paths.resolve(source.raw_location)
     content = raw_path.read_bytes()

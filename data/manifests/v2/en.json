@@ -1,23 +1,23 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "source": {
     "source_id": "en",
     "work_id": "lotm",
     "language": "en",
     "role": "official",
-    "edition": "Official English Webnovel EPUB extraction",
+    "edition": "Official English Webnovel structured EPUB",
     "format": "epub",
-    "normalization_version": "2.1-draft",
-    "paragraphization_mode": "blank_lines"
+    "normalization_version": "2.2-draft",
+    "paragraphization_mode": "epub_structure"
   },
   "chapters": [
     {
       "number": 1,
-      "raw_location": "data/raw/v2/en/ch_0001.txt",
-      "sha256": "bc068b2560188c49a88f8c8426c5dfe40380ca48442d1946c72db3f4375b2eed",
-      "paragraphization_artifact": null,
-      "paragraphization_sha256": null,
-      "paragraphization_version": null
+      "raw_location": "data/raw/v2/en/source.epub",
+      "sha256": "452d90496d8dc6db4a96ef4d817eaa24c5baea62ab629af27bb8abdc0b25eb1d",
+      "paragraphization_artifact": "data/manifests/v2/paragraphization/en/ch_0001_epub.json",
+      "paragraphization_sha256": "df8dd6240b627b205e0970d745c43c2bd65be7325e1b3af7634ff02636ffca77",
+      "paragraphization_version": "1"
     }
   ]
 }

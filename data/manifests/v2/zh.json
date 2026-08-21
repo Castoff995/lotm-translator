@@ -1,23 +1,23 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "source": {
     "source_id": "zh",
     "work_id": "lotm",
     "language": "zh",
     "role": "original",
-    "edition": "Chinese original EPUB extraction",
+    "edition": "Chinese original structured EPUB",
     "format": "epub",
-    "normalization_version": "2.1-draft",
-    "paragraphization_mode": "blank_lines"
+    "normalization_version": "2.2-draft",
+    "paragraphization_mode": "epub_structure"
   },
   "chapters": [
     {
       "number": 1,
-      "raw_location": "data/raw/v2/zh/ch_0001.txt",
-      "sha256": "7c24a6ae29d24864a3746a8c6793bab17a03d96aecfde62ed75fa3d098bb807b",
-      "paragraphization_artifact": null,
-      "paragraphization_sha256": null,
-      "paragraphization_version": null
+      "raw_location": "data/raw/v2/zh/source.epub",
+      "sha256": "cf080c3d9e55cc9262264259c04888769ded1e92f65aad49334cd20e8e526114",
+      "paragraphization_artifact": "data/manifests/v2/paragraphization/zh/ch_0001_epub.json",
+      "paragraphization_sha256": "56c661bc4f0fd82986192709ca029510a5fe01ffbcf6c10920ecf9c01207a09b",
+      "paragraphization_version": "1"
     }
   ]
 }

@@ -17,7 +17,7 @@
         "edition": {"type": "string", "minLength": 1},
         "format": {"enum": ["epub", "text", "ocr"]},
         "normalization_version": {"type": "string", "minLength": 1},
-        "paragraphization_mode": {"enum": ["blank_lines", "one_per_line", "manual_spans"]}
+        "paragraphization_mode": {"enum": ["blank_lines", "one_per_line", "manual_spans", "epub_structure"]}
       },
       "additionalProperties": false
     },

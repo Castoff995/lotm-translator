@@ -45,6 +45,36 @@ class ParagraphizationMode(str, Enum):
     BLANK_LINES = "blank_lines"
     ONE_PER_LINE = "one_per_line"
     MANUAL_SPANS = "manual_spans"
+    EPUB_STRUCTURE = "epub_structure"
+
+
+class ProvenanceLocationKind(str, Enum):
+    LINE_SPAN = "line_span"
+    EPUB_DOM = "epub_dom"
+
+
+@dataclass(frozen=True)
+class EpubDomFragment:
+    document_href: str
+    spine_index: int
+    dom_path: str
+    element_tag: str
+    document_sha256: str
+    fragment_sha256: str
+    element_id: str | None = None
+    start_offset: int | None = None
+    end_offset: int | None = None
+
+    def __post_init__(self) -> None:
+        if not self.document_href or self.spine_index < 0 or not self.dom_path.startswith("/") or not self.element_tag:
+            raise ValueError("Invalid EPUB DOM fragment locator")
+        for name, value in (("document", self.document_sha256), ("fragment", self.fragment_sha256)):
+            if not re.fullmatch(r"[0-9a-f]{64}", value):
+                raise ValueError(f"Invalid EPUB {name} checksum")
+        if (self.start_offset is None) != (self.end_offset is None):
+            raise ValueError("EPUB text offsets must be set together")
+        if self.start_offset is not None and (self.start_offset < 0 or self.end_offset <= self.start_offset):
+            raise ValueError("EPUB text offsets must form a non-empty half-open span")
 
 
 @dataclass(frozen=True, order=True)
@@ -117,6 +147,8 @@ class SourceDescriptor:
             raise ValueError(f"Invalid work id: {self.work_id!r}")
         if not self.edition.strip() or not self.normalization_version.strip():
             raise ValueError("Edition and normalization version are required")
+        if self.paragraphization_mode is ParagraphizationMode.EPUB_STRUCTURE and self.source_format is not SourceFormat.EPUB:
+            raise ValueError("epub_structure paragraphization requires format=epub")
 
 
 @dataclass(frozen=True)
@@ -180,17 +212,25 @@ class Provenance:
     source_manifest: str
     raw_location: str
     raw_sha256: str
-    start_line: int
-    end_line: int
     normalization_version: str
+    location_kind: ProvenanceLocationKind = ProvenanceLocationKind.LINE_SPAN
+    start_line: int | None = None
+    end_line: int | None = None
+    epub_fragments: tuple[EpubDomFragment, ...] = ()
     raw_paragraph_index: int | None = None
     paragraphization_artifact: str | None = None
     paragraphization_sha256: str | None = None
     paragraphization_version: str | None = None
 
     def __post_init__(self) -> None:
-        if self.start_line < 1 or self.end_line < self.start_line:
-            raise ValueError("Provenance line span must be 1-based and ordered")
+        if self.location_kind is ProvenanceLocationKind.LINE_SPAN:
+            if self.start_line is None or self.end_line is None or self.start_line < 1 or self.end_line < self.start_line:
+                raise ValueError("Provenance line span must be 1-based and ordered")
+            if self.epub_fragments:
+                raise ValueError("Line-span provenance cannot contain EPUB DOM fragments")
+        elif self.location_kind is ProvenanceLocationKind.EPUB_DOM:
+            if self.start_line is not None or self.end_line is not None or not self.epub_fragments:
+                raise ValueError("EPUB provenance requires DOM fragments and no line numbers")
         if self.raw_paragraph_index is not None and self.raw_paragraph_index < 1:
             raise ValueError("Raw paragraph index must be positive")
         if not re.fullmatch(r"[0-9a-f]{64}", self.raw_sha256):
