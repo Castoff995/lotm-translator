@@ -30,5 +30,6 @@
   {"zh": "鲁恩王国的大学", "en": "Loen Kingdom’s universities", "ru": "Университеты Королевства Лоэн", "category": "organization", "status": "confirmed"},
   {"zh": "风暴之主", "en": "Lord of Storms", "ru": "Повелитель Бурь", "category": "term", "status": "confirmed"},
   {"zh": "知识与智慧之神", "en": "God of Knowledge and Wisdom", "ru": "Бог Знаний и Мудрости", "category": "term", "status": "confirmed"},
-  {"zh": "大地母神", "en": "Earth Mother Goddess", "ru": "Богиня Земли", "category": "term", "status": "confirmed"}
+  {"zh": "大地母神", "en": "Earth Mother Goddess", "ru": "Богиня Земли", "category": "term", "status": "confirmed"},
+  {"zh": "苏勒", "en": "soli", "ru": "сули", "category": "currency", "status": "confirmed", "note": "Название денежной единицы не склоняется: один сули, пять сули, двадцать сули. Не заменять на «соль», «солей» или «соли»."}
 ]

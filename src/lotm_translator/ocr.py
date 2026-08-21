@@ -32,6 +32,11 @@ _KNOWN_WRAPPED_HYPHENS = {
 _RUSSIAN_DICTIONARY = None
 _OCR_LEXICON = None
 _RUSSIAN_MORPHOLOGY = None
+_CYRILLIC_ALPHABET = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"
+# Apple Live Text occasionally reads the Cyrillic ``г`` as a Latin ``r``.
+# This is an OCR-shape preference, not an unconditional replacement: the
+# reconstructed word must still be confirmed by the Russian dictionary.
+_PREFERRED_SINGLE_LATIN_REPAIRS = {"r": "г", "R": "Г"}
 
 
 def _ocr_joinable_prefixes() -> set[str]:
@@ -87,6 +92,26 @@ def _known_hyphenated_word(word: str, dictionary) -> bool:
     if morphology:
         return morphology.word_is_known(word.lower())
     return bool(dictionary and dictionary.lookup(word.lower()))
+
+
+def _repair_one_latin_letter_in_russian_word(token: str, dictionary) -> str:
+    """Repair one foreign OCR letter only when the Russian result is unique."""
+    latin_positions = [index for index, char in enumerate(token) if char.isascii() and char.isalpha()]
+    if len(latin_positions) != 1 or not any(char.isalpha() and not char.isascii() for char in token):
+        return token
+    position = latin_positions[0]
+    preferred = _PREFERRED_SINGLE_LATIN_REPAIRS.get(token[position])
+    if preferred:
+        preferred_candidate = token[:position] + preferred + token[position + 1:]
+        if _known_russian_word(preferred_candidate, dictionary):
+            return preferred_candidate
+    replacements = _CYRILLIC_ALPHABET.upper() if token[position].isupper() else _CYRILLIC_ALPHABET.lower()
+    matches = []
+    for replacement in replacements:
+        candidate = token[:position] + replacement + token[position + 1:]
+        if _known_russian_word(candidate, dictionary):
+            matches.append(candidate)
+    return matches[0] if len(set(matches)) == 1 else token
 
 
 def _fix_dictionary_confirmed_wraps(line: str) -> str:
@@ -260,6 +285,7 @@ def clean_ocr_chapter_for_review(source: Path, output: Path, report_path: Path) 
     line_map = {item.get("draft_line"): item for item in json.loads(map_path.read_text(encoding="utf-8"))} if map_path.exists() else {}
     cleaned_lines: list[str] = []
     candidates: list[dict[str, object]] = []
+    dictionary = _russian_dictionary()
 
     # Apple Live Text occasionally inserts a cluster of 1–3-character page
     # artefacts between two normal book lines (for example ``BE / CH / C``).
@@ -285,6 +311,9 @@ def clean_ocr_chapter_for_review(source: Path, output: Path, report_path: Path) 
         # remain untouched and are sent to review rather than guessed.
         if letters and all(char in _LOOKALIKE_CHARS for char in letters):
             return token.translate(_LATIN_LOOKALIKES)
+        repaired = _repair_one_latin_letter_in_russian_word(token, dictionary)
+        if repaired != token:
+            return repaired
         return token
 
     for number, raw in enumerate(raw_lines, start=1):
@@ -324,7 +353,7 @@ def clean_ocr_chapter_for_review(source: Path, output: Path, report_path: Path) 
         if re.search(r"[.!?…][А-ЯЁ]", line):
             reasons.append("missing_space_after_sentence")
         hyphen_words = [word.lower() for word in re.findall(r"\b[А-Яа-яЁё]+-[А-Яа-яЁё]+\b", line)]
-        if any(word not in _KNOWN_TRUE_HYPHENS for word in hyphen_words):
+        if any(not _known_hyphenated_word(word, dictionary) for word in hyphen_words):
             reasons.append("hyphenated_word_requires_photo_check")
         if reasons:
             # ``line`` is retained for opening the source photo; ``output_line``

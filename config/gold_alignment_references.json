@@ -1,0 +1,121 @@
+{
+  "fan75_ru_split_chapter_1": {
+    "chapter": 1,
+    "status": "manual_gold_reference",
+    "output": "data/processed/fan75_final_aligment/ch_0001_ru_fan_75.txt",
+    "units": 97,
+    "note": "Существующий проверенный эталон разбивки fan_75; зарегистрирован отдельно от эталона связки."
+  },
+  "official_ru_split_chapter_1": {
+    "chapter": 1,
+    "status": "manual_gold_reference",
+    "output": "data/processed/off_final_aligment/ch_0001_ru_official.txt",
+    "units": 105,
+    "note": "Существующий проверенный эталон разбивки official; зарегистрирован отдельно от эталона связки."
+  },
+  "fan75_official_ru": {
+    "chapter": 1,
+    "status": "manual_gold_reference",
+    "alignment": "data/processed/fan75_vs_official_bertalign/ch_0001_alignment.json",
+    "html": "data/processed/fan75_vs_official_bertalign/ch_0001_comparison_v2.html",
+    "left_source": "data/processed/fan75_final_aligment/ch_0001_ru_fan_75.txt",
+    "right_source": "data/processed/off_final_aligment/ch_0001_ru_official.txt",
+    "note": "Ручной эталон связки fan_75 ↔ официальный русский. Все группы проверены пользователем; использовать как контрольный пример для будущего автоматического выравнивания."
+  },
+  "fan75_ru_split_chapter_2": {
+    "chapter": 2,
+    "status": "manual_gold_reference",
+    "output": "data/processed/fan75_final_aligment/ch_0002_ru_fan_75.txt",
+    "units": 121,
+    "note": "Существующий проверенный эталон разбивки fan_75; зарегистрирован отдельно от эталона связки."
+  },
+  "official_ru_split_chapter_2": {
+    "chapter": 2,
+    "status": "manual_gold_reference",
+    "output": "data/processed/off_final_aligment/ch_0002_ru_official.txt",
+    "units": 117,
+    "note": "Существующий проверенный эталон разбивки official; зарегистрирован отдельно от эталона связки."
+  },
+  "fan75_official_ru_chapter_2": {
+    "chapter": 2,
+    "status": "manual_gold_reference",
+    "alignment": "data/processed/fan75_vs_official_bertalign/ch_0002_alignment.json",
+    "html": "data/processed/fan75_vs_official_bertalign/ch_0002_comparison_v2.html",
+    "left_source": "data/processed/fan75_final_aligment/ch_0002_ru_fan_75.txt",
+    "right_source": "data/processed/off_final_aligment/ch_0002_ru_official.txt",
+    "note": "Ручной эталон связки fan_75 ↔ официальный русский после удаления заголовка official и служебного мусора fan_75. Все абзацы покрыты ровно один раз."
+  },
+  "fan75_ru_split_chapter_3": {
+    "chapter": 3,
+    "status": "manual_gold_reference",
+    "output": "data/processed/fan75_final_aligment/ch_0003_ru_fan_75.txt",
+    "units": 114,
+    "note": "Существующий проверенный эталон разбивки fan_75; зарегистрирован отдельно от эталона связки."
+  },
+  "official_ru_split_chapter_3": {
+    "chapter": 3,
+    "status": "manual_gold_reference",
+    "output": "data/processed/off_final_aligment/ch_0003_ru_official.txt",
+    "units": 132,
+    "note": "Существующий проверенный эталон разбивки official; зарегистрирован отдельно от эталона связки."
+  },
+  "fan75_official_ru_chapter_3": {
+    "chapter": 3,
+    "status": "manual_gold_reference",
+    "alignment": "data/processed/fan75_vs_official_bertalign/ch_0003_alignment.json",
+    "html": "data/processed/fan75_vs_official_bertalign/ch_0003_comparison_v3.html",
+    "left_source": "data/processed/fan75_final_aligment/ch_0003_ru_fan_75.txt",
+    "right_source": "data/processed/off_final_aligment/ch_0003_ru_official.txt",
+    "note": "Ручной эталон связки fan_75 ↔ официальный русский. Сноска беты и интерфейсный хвост fan_75 удалены; все абзацы покрыты ровно один раз."
+  },
+  "fan75_ru_split_chapter_4": {
+    "chapter": 4,
+    "status": "manual_gold_reference",
+    "source": "data/raw/qwen_10/ru_fan_75/ch_0004_ru_fan_75.txt",
+    "output": "data/processed/fan75_final_aligment/ch_0004_ru_fan_75.txt",
+    "units": 128,
+    "note": "Эталон разбивки fan_75. Учтены неразрывные реплики с авторскими ремарками, внутренняя речь с троеточием и служебный хвост MirNovel."
+  },
+  "official_ru_split_chapter_4": {
+    "chapter": 4,
+    "status": "manual_gold_reference",
+    "source": "data/raw/official_ru_apple/chapters/ch_0004_ru_official_apple_reviewed.txt",
+    "output": "data/processed/off_final_aligment/ch_0004_ru_official.txt",
+    "units": 143,
+    "note": "Эталон разбивки официального русского OCR. Учтены OCR-дефисы вместо длинного тире, троеточия из трёх точек, авторские ремарки и служебный мусор."
+  },
+  "fan75_official_ru_chapter_4": {
+    "chapter": 4,
+    "status": "manual_gold_reference",
+    "alignment": "data/processed/fan75_vs_official_bertalign/ch_0004_alignment.json",
+    "html": "data/processed/fan75_vs_official_bertalign/ch_0004_comparison_v2.html",
+    "left_source": "data/processed/fan75_final_aligment/ch_0004_ru_fan_75.txt",
+    "right_source": "data/processed/off_final_aligment/ch_0004_ru_official.txt",
+    "note": "Ручной эталон связки fan_75 ↔ официальный русский. Группы 41–45 объединены в одну смысловую группу; все абзацы обеих версий покрыты ровно один раз."
+  },
+  "fan75_ru_split_chapter_5": {
+    "chapter": 5,
+    "status": "manual_gold_reference",
+    "source": "data/raw/qwen_10/ru_fan_75/ch_0005_ru_fan_75.txt",
+    "output": "data/processed/fan75_final_aligment/ch_0005_ru_fan_75.txt",
+    "units": 104,
+    "note": "Эталон разбивки fan_75. Сохраняет авторские абзацы внутренней речи, реплик с ремарками и описаний; разделители сцен *** удалены из текста с сохранением границы сцен."
+  },
+  "official_ru_split_chapter_5": {
+    "chapter": 5,
+    "status": "manual_gold_reference",
+    "source": "data/raw/official_ru_apple/chapters/ch_0005_ru_official_apple_reviewed.txt",
+    "output": "data/processed/off_final_aligment/ch_0005_ru_official.txt",
+    "units": 134,
+    "note": "Эталон разбивки official OCR. Учтены авторские реплики, внутренние монологи, примечания переводчика, сцены ритуала и границы реплика → авторская строка → реплика."
+  },
+  "fan75_official_ru_chapter_5": {
+    "chapter": 5,
+    "status": "manual_gold_reference",
+    "alignment": "data/processed/fan75_vs_official_bertalign/ch_0005_alignment.json",
+    "html": "data/processed/fan75_vs_official_bertalign/ch_0005_comparison_v2.html",
+    "left_source": "data/processed/fan75_final_aligment/ch_0005_ru_fan_75.txt",
+    "right_source": "data/processed/off_final_aligment/ch_0005_ru_official.txt",
+    "note": "Ручной эталон связки fan_75 ↔ официальный русский. Official абзац 21 вручную перенесён из группы 16 в группу 17; все абзацы покрыты ровно один раз."
+  }
+}

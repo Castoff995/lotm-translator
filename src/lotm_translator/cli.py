@@ -17,10 +17,15 @@ from .corpus_status import build_status
 from .official_alignment_text import prepare_official_alignment_text
 from .official_triples import build_official_triples
 from .comparison_report import render_comparison, render_comparison_html
+from .sentence_units import split_russian_sentences, split_russian_with_razdel_rules
+from .bertalign_comparison import render_bertalign_html
+from .paired_group_units import build_paired_group_units
+from .qwen_paragraphs import split_direct_with_qwen, split_with_qwen
 from .qwen_alignment import prepare_alignment
 from .sequential_alignment import align_sequential
 from .embedding_alignment import align_pair, review_boundary, score_bertalign_groups, validate_pair
 from .text import clean_story_text
+from .multilingual_units import prepare_zh_en
 
 
 def import_text_directory(source: Path, output: Path, language: str, source_label: str) -> int:
@@ -86,6 +91,13 @@ def main() -> None:
     status_command.add_argument("output", type=Path, nargs="?", default=Path("data/processed/corpus_status.json"))
     status_command.add_argument("--chapters", type=int, default=10)
 
+    corpus_studio_command = commands.add_parser("corpus-studio", help="Open the local Corpus Studio shell (Sources and OCR tab).")
+    corpus_studio_command.add_argument("--root", type=Path, default=Path.cwd(), help="Project root; defaults to the current folder.")
+
+    prepare_zh_en_command = commands.add_parser("prepare-zh-en", help="Create clean Chinese/English sources and paragraph units; no alignment groups.")
+    prepare_zh_en_command.add_argument("--root", type=Path, default=Path.cwd())
+    prepare_zh_en_command.add_argument("--chapters", type=int, default=10)
+
     official_alignment_text_command = commands.add_parser("prepare-official-alignment-text", help="Create a derived paragraph-unit copy of reviewed official OCR.")
     official_alignment_text_command.add_argument("source", type=Path)
     official_alignment_text_command.add_argument("output", type=Path)
@@ -109,6 +121,26 @@ def main() -> None:
     comparison_html_command = commands.add_parser("render-comparison-html", help="Create a two-column local HTML comparison viewer.")
     comparison_html_command.add_argument("source_json", type=Path)
     comparison_html_command.add_argument("output_html", type=Path)
+
+    sentence_command = commands.add_parser("split-russian-sentences", help="Create a derived Russian copy with one sentence per paragraph.")
+    sentence_command.add_argument("source", type=Path)
+    sentence_command.add_argument("output", type=Path)
+
+    razdel_sentence_command = commands.add_parser("split-russian-razdel-rules", help="Use Razdel plus project-specific Russian paragraph rules.")
+    razdel_sentence_command.add_argument("source", type=Path)
+    razdel_sentence_command.add_argument("output", type=Path)
+
+    qwen_sentence_command = commands.add_parser("qwen-split-russian-paragraphs", help="Apply Russian paragraph rules through local Qwen.")
+    qwen_sentence_command.add_argument("source", type=Path)
+    qwen_sentence_command.add_argument("output", type=Path)
+    qwen_sentence_command.add_argument("--rules", type=Path, default=Path("config/russian_paragraph_rules.md"))
+    qwen_sentence_command.add_argument("--model", default="qwen3:14b")
+
+    qwen_direct_sentence_command = commands.add_parser("qwen-split-russian-direct", help="Create a comparison-only direct Qwen paragraph split.")
+    qwen_direct_sentence_command.add_argument("source", type=Path)
+    qwen_direct_sentence_command.add_argument("output", type=Path)
+    qwen_direct_sentence_command.add_argument("--rules", type=Path, default=Path("config/russian_paragraph_rules.md"))
+    qwen_direct_sentence_command.add_argument("--model", default="qwen3:14b")
 
     ocr_command = commands.add_parser("ocr-russian", help="Run local Russian OCR on scanned page images.")
     ocr_command.add_argument("input", type=Path, help="Directory containing JPG, PNG, TIFF, or WEBP page scans")
@@ -235,6 +267,26 @@ def main() -> None:
     bertalign_command.add_argument("output", type=Path)
     bertalign_command.add_argument("--max-align", type=int, default=5)
 
+    bertalign_html_command = commands.add_parser("render-bertalign-html", help="Create a human-readable side-by-side HTML view of a Bertalign report.")
+    bertalign_html_command.add_argument("alignment", type=Path)
+    bertalign_html_command.add_argument("left", type=Path)
+    bertalign_html_command.add_argument("right", type=Path)
+    bertalign_html_command.add_argument("output", type=Path)
+    bertalign_html_command.add_argument("--left-label", default="fan_75")
+    bertalign_html_command.add_argument("--right-label", default="official")
+
+    paired_units_command = commands.add_parser("build-paired-group-units", help="Create canonical Russian units from an approved fan_75 ↔ official alignment.")
+    paired_units_command.add_argument("alignment", type=Path)
+    paired_units_command.add_argument("fan", type=Path)
+    paired_units_command.add_argument("official", type=Path)
+    paired_units_command.add_argument("output", type=Path)
+    paired_units_command.add_argument("manifest", type=Path)
+
+    pair_editor_command = commands.add_parser("edit-english-russian-pair", help="Open a local editor for English ↔ approved Russian-group alignment.")
+    pair_editor_command.add_argument("alignment", type=Path)
+    pair_editor_command.add_argument("english", type=Path)
+    pair_editor_command.add_argument("russian_groups", type=Path)
+
     validate_embedding_command = commands.add_parser("validate-bge-pair", help="Stop at the first weak BGE alignment group and save its review context.")
     validate_embedding_command.add_argument("alignment", type=Path)
     validate_embedding_command.add_argument("left", type=Path)
@@ -295,6 +347,18 @@ def main() -> None:
     elif args.command == "render-comparison-html":
         count = render_comparison_html(args.source_json, args.output_html)
         print(f"Two-column comparison created: {count} groups")
+    elif args.command == "split-russian-sentences":
+        count = split_russian_sentences(args.source, args.output)
+        print(f"Russian sentence units created: {count} in {args.output}")
+    elif args.command == "split-russian-razdel-rules":
+        count = split_russian_with_razdel_rules(args.source, args.output)
+        print(f"Razdel Russian paragraph units created: {count} in {args.output}")
+    elif args.command == "qwen-split-russian-paragraphs":
+        result = split_with_qwen(args.source, args.rules, args.output, args.model)
+        print(f"Qwen Russian paragraph copy created: {len([part for part in result.split(chr(10) + chr(10)) if part.strip()])} in {args.output}")
+    elif args.command == "qwen-split-russian-direct":
+        result = split_direct_with_qwen(args.source, args.rules, args.output, args.model)
+        print(f"Direct Qwen comparison copy created: {len([part for part in result.split(chr(10) + chr(10)) if part.strip()])} in {args.output}")
     elif args.command == "download-mirnovel":
         try:
             count = download_chapters(args.start_url, args.output, args.count, args.delay, args.refresh)
@@ -348,6 +412,15 @@ def main() -> None:
 
         report = bertalign_pair(args.left, args.right, args.output, args.max_align)
         print(f"Bertalign aligned {report['left_paragraphs']} and {report['right_paragraphs']} paragraphs in {args.output}")
+    elif args.command == "render-bertalign-html":
+        count = render_bertalign_html(args.alignment, args.left, args.right, args.output, args.left_label, args.right_label)
+        print(f"Bertalign HTML comparison created: {count} groups in {args.output}")
+    elif args.command == "build-paired-group-units":
+        count = build_paired_group_units(args.alignment, args.fan, args.official, args.output, args.manifest)
+        print(f"Canonical Russian pair units created: {count} in {args.output}")
+    elif args.command == "edit-english-russian-pair":
+        from .alignment_editor_ui import launch
+        launch(args.alignment, args.english, args.russian_groups)
     elif args.command == "validate-bge-pair":
         report = validate_pair(args.alignment, args.left, args.right, args.output, args.minimum_similarity)
         print(f"BGE validation status: {report['status']} in {args.output}")
@@ -397,6 +470,12 @@ def main() -> None:
     elif args.command == "review-ocr-ui":
         from .ocr_review_ui import launch
         launch(args.qwen_review, args.candidates, args.images)
+    elif args.command == "corpus-studio":
+        from .corpus_studio_ui import launch
+        launch(args.root)
+    elif args.command == "prepare-zh-en":
+        result = prepare_zh_en(args.root, args.chapters)
+        print(f"Prepared {len(result['zh'])} Chinese and {len(result['en'])} English chapters; alignment was not run.")
 
 
 if __name__ == "__main__":

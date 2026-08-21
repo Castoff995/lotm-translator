@@ -1,0 +1,170 @@
+{
+  "status": "prepared_not_gold",
+  "chapters": 10,
+  "languages": {
+    "zh": [
+      {
+        "chapter": 1,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\zh\\0001_第一章 绯红.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\01_zh_source\\ch_0001_zh_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\02_zh_units\\ch_0001_zh_units.txt",
+        "paragraphs": 69,
+        "units_count": 88
+      },
+      {
+        "chapter": 2,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\zh\\0002_第二章 情况.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\01_zh_source\\ch_0002_zh_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\02_zh_units\\ch_0002_zh_units.txt",
+        "paragraphs": 76,
+        "units_count": 93
+      },
+      {
+        "chapter": 3,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\zh\\0003_第三章 梅丽莎（第一更求推荐票）.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\01_zh_source\\ch_0003_zh_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\02_zh_units\\ch_0003_zh_units.txt",
+        "paragraphs": 72,
+        "units_count": 85
+      },
+      {
+        "chapter": 4,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\zh\\0004_第四章 占卜（第二更求推荐票）.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\01_zh_source\\ch_0004_zh_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\02_zh_units\\ch_0004_zh_units.txt",
+        "paragraphs": 105,
+        "units_count": 120
+      },
+      {
+        "chapter": 5,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\zh\\0005_第五章 仪式（第三更求推荐票）.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\01_zh_source\\ch_0005_zh_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\02_zh_units\\ch_0005_zh_units.txt",
+        "paragraphs": 117,
+        "units_count": 148
+      },
+      {
+        "chapter": 6,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\zh\\0006_第六章 非凡者.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\01_zh_source\\ch_0006_zh_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\02_zh_units\\ch_0006_zh_units.txt",
+        "paragraphs": 91,
+        "units_count": 114
+      },
+      {
+        "chapter": 7,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\zh\\0007_第七章 代号.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\01_zh_source\\ch_0007_zh_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\02_zh_units\\ch_0007_zh_units.txt",
+        "paragraphs": 92,
+        "units_count": 117
+      },
+      {
+        "chapter": 8,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\zh\\0008_第八章 新的时代.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\01_zh_source\\ch_0008_zh_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\02_zh_units\\ch_0008_zh_units.txt",
+        "paragraphs": 139,
+        "units_count": 168
+      },
+      {
+        "chapter": 9,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\zh\\0009_第九章 笔记.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\01_zh_source\\ch_0009_zh_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\02_zh_units\\ch_0009_zh_units.txt",
+        "paragraphs": 85,
+        "units_count": 114
+      },
+      {
+        "chapter": 10,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\zh\\0010_第十章 常态.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\01_zh_source\\ch_0010_zh_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\02_zh_units\\ch_0010_zh_units.txt",
+        "paragraphs": 95,
+        "units_count": 132
+      }
+    ],
+    "en": [
+      {
+        "chapter": 1,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\en\\0005_Chapter 1_ Crimson.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\03_en_source\\ch_0001_en_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\04_en_units\\ch_0001_en_units.txt",
+        "paragraphs": 67,
+        "units_count": 116
+      },
+      {
+        "chapter": 2,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\en\\0006_Chapter 2_ Situation.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\03_en_source\\ch_0002_en_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\04_en_units\\ch_0002_en_units.txt",
+        "paragraphs": 76,
+        "units_count": 140
+      },
+      {
+        "chapter": 3,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\en\\0007_Chapter 3_ Melissa.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\03_en_source\\ch_0003_en_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\04_en_units\\ch_0003_en_units.txt",
+        "paragraphs": 68,
+        "units_count": 139
+      },
+      {
+        "chapter": 4,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\en\\0008_Chapter 4_ Divination.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\03_en_source\\ch_0004_en_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\04_en_units\\ch_0004_en_units.txt",
+        "paragraphs": 100,
+        "units_count": 180
+      },
+      {
+        "chapter": 5,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\en\\0009_Chapter 5_ Ritual.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\03_en_source\\ch_0005_en_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\04_en_units\\ch_0005_en_units.txt",
+        "paragraphs": 100,
+        "units_count": 170
+      },
+      {
+        "chapter": 6,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\en\\0010_Chapter 6_ Beyonder.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\03_en_source\\ch_0006_en_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\04_en_units\\ch_0006_en_units.txt",
+        "paragraphs": 75,
+        "units_count": 112
+      },
+      {
+        "chapter": 7,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\en\\0011_Chapter 7_ Code Names.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\03_en_source\\ch_0007_en_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\04_en_units\\ch_0007_en_units.txt",
+        "paragraphs": 82,
+        "units_count": 128
+      },
+      {
+        "chapter": 8,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\en\\0012_Chapter 8_ A New Era.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\03_en_source\\ch_0008_en_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\04_en_units\\ch_0008_en_units.txt",
+        "paragraphs": 120,
+        "units_count": 192
+      },
+      {
+        "chapter": 9,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\en\\0013_Chapter 9_ The Notebook.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\03_en_source\\ch_0009_en_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\04_en_units\\ch_0009_en_units.txt",
+        "paragraphs": 83,
+        "units_count": 142
+      },
+      {
+        "chapter": 10,
+        "raw": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\raw\\qwen_10\\en\\0014_Chapter 10_ The Norm.txt",
+        "source": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\03_en_source\\ch_0010_en_source.txt",
+        "units": "C:\\Users\\250fps\\Documents\\ChatGPT\\LOTM TRANSLATOR\\data\\corpus\\04_en_units\\ch_0010_en_units.txt",
+        "paragraphs": 82,
+        "units_count": 135
+      }
+    ]
+  }
+}
