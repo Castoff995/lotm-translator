@@ -9,7 +9,7 @@ import webbrowser
 from ..hints.providers import OllamaTranslationHintProvider, SimAlignTokenAlignmentProvider
 from ..hints.service import HintService
 from .server import ReviewHTTPServer
-from .service import ReviewError, ReviewSession
+from .service import ReviewError, ReviewWorkspace
 
 
 def parser() -> argparse.ArgumentParser:
@@ -27,7 +27,7 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
-        session = ReviewSession(args.gold, args.root)
+        session = ReviewWorkspace(args.gold, args.root)
         hints = HintService(
             session.root / "data" / "cache" / "v2" / "hints",
             translation_provider=OllamaTranslationHintProvider(model=args.hint_translation_model),
@@ -40,7 +40,11 @@ def main(argv: list[str] | None = None) -> int:
     url = f"http://{args.host}:{server.server_port}/"
     print(f"Human Gold Review Tool: {url}")
     print(f"Gold: {session.gold_path}")
-    print("Press Ctrl+C to stop. Changes are saved after each confirmed action.")
+    if session.session_document is None:
+        print("Confirmed Gold opened read-only; no writable session was created.")
+    else:
+        print(f"Review session: {session.session_document.session_id} ({session.session_document.status.value})")
+        print("Press Ctrl+C to stop. Human actions autosave to the ignored session; Gold changes only on Publish.")
     if not args.no_browser:
         webbrowser.open(url)
     try:

@@ -9,8 +9,9 @@
 <body data-token="__REVIEW_TOKEN__">
   <header>
     <div><h1>Human Gold Review Tool</h1><p id="identity">Загрузка…</p></div>
-    <div class="toolbar"><button id="fontDown">A−</button><button id="fontUp">A+</button><button id="openHints">ZH hints</button><button id="openGlossary">LOTM Glossary</button><button id="undo">Отменить последнее действие (Ctrl+Z)</button><button id="finish">Полная проверка</button></div>
+    <div class="toolbar"><button id="fontDown">A−</button><button id="fontUp">A+</button><button id="openHints">ZH hints</button><button id="openGlossary">LOTM Glossary</button><button id="undo">Отменить последнее действие (Ctrl+Z)</button><button id="finish">Полная проверка</button><button id="publish" class="publishButton">Опубликовать в Gold</button><button id="discard" class="dangerButton">Отбросить сессию</button></div>
   </header>
+  <section id="sessionBanner" class="sessionBanner" role="status"></section>
   <div id="notice" role="status"></div>
   <section class="progress"><div id="progressText"></div><div class="bar"><span id="progressBar"></span></div></section>
   <main id="columns"></main>
@@ -34,7 +35,7 @@
   <section><h2>Группы и откат</h2><div id="units"></div></section>
   <section><h2>История ParagraphDisposition</h2><p>Это проверенные человеком физические абзацы, намеренно исключённые из translation alignment. Это не GAP.</p><div id="dispositions"></div></section>
   <section><h2>Границы JOIN / BREAK</h2><p>Это отдельная семантическая проверка между уже подтверждёнными группами.</p><div id="boundaries"></div></section>
-  <dialog id="previewDialog"><h2>Подтверждение группы</h2><div id="previewBody"></div><div class="dialogButtons"><button id="cancelPreview">Отмена (Esc)</button><button id="confirm">Подтвердить (Enter)</button></div></dialog>
+  <dialog id="previewDialog"><h2>Подтверждение группы</h2><div id="previewBody"></div><div class="dialogButtons"><button id="cancelPreview">Отмена (Esc)</button><button id="confirm">Подтвердить в сессии (Enter)</button></div></dialog>
   <dialog id="glossaryDialog"><h2>Добавить в LOTM glossary</h2><div id="glossaryPreview"></div><label>Комментарий <input id="glossaryNote"></label><div class="dialogButtons"><button id="cancelGlossary">Отмена</button><button id="confirmGlossary">Подтвердить</button></div></dialog>
   <script src="/app.js"></script>
 </body>

@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 from ..domain import Language, Paragraph
 from ..glossary import GlossaryDuplicateError, GlossaryService
 from ..hints import HintService, bundle_to_dict
-from .service import ReviewError, ReviewSession
+from .service import ReviewError, ReviewWorkspace
 
 
 STATIC_DIR = Path(__file__).with_name("static")
@@ -21,7 +21,7 @@ STATIC_DIR = Path(__file__).with_name("static")
 
 class ReviewHTTPServer(ThreadingHTTPServer):
     def __init__(
-        self, address: tuple[str, int], session: ReviewSession,
+        self, address: tuple[str, int], session: ReviewWorkspace,
         hint_service: HintService | None = None,
         glossary_service: GlossaryService | None = None,
     ) -> None:
@@ -133,6 +133,14 @@ class ReviewHandler(BaseHTTPRequestHandler):
                 )
             elif route == "/api/finish":
                 result = self.server.session.finish()
+            elif route == "/api/publish":
+                if payload.get("confirm") is not True:
+                    raise ReviewError("Explicit publication confirmation is required")
+                result = self.server.session.publish()
+            elif route == "/api/discard":
+                if payload.get("confirm") is not True:
+                    raise ReviewError("Explicit discard confirmation is required")
+                result = self.server.session.discard()
             else:
                 self._json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
                 return

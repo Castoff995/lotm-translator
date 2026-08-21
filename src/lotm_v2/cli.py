@@ -115,6 +115,13 @@ def build_parser() -> argparse.ArgumentParser:
     validate = commands.add_parser("gold-validate", help="Validate a manually edited gold chapter")
     validate.add_argument("gold", type=Path)
     validate.add_argument("--root", type=Path, default=Path.cwd())
+
+    session_list = commands.add_parser("review-session-list", help="List ignored active human review sessions")
+    session_list.add_argument("--root", type=Path, default=Path.cwd())
+
+    session_status = commands.add_parser("review-session-status", help="Inspect the active session for one Gold target")
+    session_status.add_argument("gold", type=Path)
+    session_status.add_argument("--root", type=Path, default=Path.cwd())
     return parser
 
 
@@ -249,6 +256,21 @@ def main(argv: list[str] | None = None) -> int:
             gold, chapters = _load_gold_sources(args.gold, args.root)
             validate_gold_chapter(gold, chapters)
             print(f"Gold chapter is valid: {args.gold} ({gold.status.value})")
+        elif args.command == "review-session-list":
+            from .review.session_io import active_session_metadata
+            paths = PathPolicy(args.root)
+            print(json.dumps(active_session_metadata(paths.review_sessions()), ensure_ascii=False, indent=2))
+        elif args.command == "review-session-status":
+            from .review.session_io import load_session, session_to_dict
+            paths = PathPolicy(args.root)
+            gold = load_gold(args.gold)
+            path = paths.active_review_session(gold.chapter.work_id, gold.chapter.number)
+            payload = {"active": path.exists(), "path": str(path)}
+            if path.exists():
+                document = load_session(path)
+                payload["session"] = session_to_dict(document)
+                payload["session"].pop("working_gold", None)
+            print(json.dumps(payload, ensure_ascii=False, indent=2))
         return 0
     except (OSError, KeyError, ValueError, GoldValidationError) as error:
         parser.exit(2, f"error: {error}\n")

@@ -1,5 +1,5 @@
-"""Human-only Phase 2 Gold Draft annotation tool."""
+"""Human-only Phase 2 Gold review workspace."""
 
-from .service import ReviewError, ReviewSession
+from .service import ReviewError, ReviewWorkspace
 
-__all__ = ["ReviewError", "ReviewSession"]
+__all__ = ["ReviewError", "ReviewWorkspace"]

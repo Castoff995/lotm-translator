@@ -116,10 +116,17 @@ button:disabled {
 .glossaryTools label{display:grid;gap:.2rem}
 .glossaryEntry{border-top:1px solid #d8dde5;padding:.55rem 0}
 #hintStatus,#glossaryCounts{font-weight:600;margin:.5rem 0}
+.sessionBanner{border-left:4px solid var(--accent);background:#eef5ff}
+.sessionBanner details{display:inline-block;margin-left:.5rem}
+.publishButton{border-color:#18733a!important;background:#e7f7ed!important;color:#105b2d!important}
+.dangerButton{border-color:#a33a46!important;background:#fff0f1!important;color:#842432!important}
 
 @media(max-width:900px){.hintGrid{grid-template-columns:1fr}}
 
 @media (prefers-color-scheme: dark) {
   .hintGrid>div,.termComposer,.glossaryEntry{border-color:#46546b}
   .showKnown .hintToken.knownTerm{color:#e7edf7;background:#17472d;border-bottom-color:#71d89a}
+  .sessionBanner{background:#172f50}
+  .publishButton{background:#17472d!important;color:#b9f5ce!important;border-color:#71d89a!important}
+  .dangerButton{background:#4b2028!important;color:#ffd6da!important;border-color:#e58a94!important}
 }

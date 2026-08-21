@@ -36,7 +36,8 @@ For every language choose how many consecutive paragraphs belong to the next
 unit. There is no hard group-size limit. Select `GAP` instead when that source
 has no corresponding paragraph, then choose a structured reason and optionally
 write a note. Press Preview, inspect the complete three-sided group, and press
-Confirm. Only confirmation changes the Gold Draft.
+Confirm. Confirmation changes only the active Review Session working copy; it
+does not publish the decision to tracked Gold.
 
 Alternatively, use `Record ParagraphDisposition` for the current paragraph of
 one source when a human has reviewed it and decided that it must not participate
@@ -102,18 +103,70 @@ has no routes that can create AlignmentUnit, GAP, ParagraphDisposition,
 JOIN/BREAK, or move cursors. Glossary confirmation is a terminology decision,
 not a Gold alignment decision.
 
-## Save, resume and corrections
+## Session lifecycle, save and resume
 
-Every confirmed unit, disposition, boundary, undo, or rollback is written atomically to the
-same Gold JSON. Closing the server loses no confirmed work. Reopen the same file
-to resume from its validated paragraph prefix.
+Review uses this explicit lifecycle:
+
+```text
+tracked Gold baseline
+-> ignored persistent Review Session
+-> atomic autosave after each human action
+-> deterministic resume and full validation
+-> explicit publication to tracked Gold
+```
+
+The familiar launch command resolves a deterministic active session path under
+`data/review_sessions/v2/<work_id>/ch_NNNN.active.json`. At most one writable
+session exists for a target chapter. Reopening the same Gold automatically
+resumes that session with the same session ID, working Gold, cursors, units,
+dispositions and boundaries; the user never passes a session path.
+
+Every confirmed unit, disposition, boundary, undo, or rollback atomically
+autosaves only the ignored session document. The target Gold file remains
+byte-identical until `Publish to Gold`. Session JSON stores stable paragraph
+references and human decisions, not source text, glossary data, machine hints,
+hover state or lexical scores.
 
 `Undo last action` removes the most recent AlignmentUnit or disposition and any
 boundary that becomes invalid. `Rollback to AlignmentUnit N` explicitly keeps
 the review history before and through N, deletes downstream units, dispositions
 and boundaries, and lets the reviewer rebuild them. This
-is safer than silently rewriting later stable unit references. Confirmed Gold
-opens read-only; Task 003 intentionally provides no implicit reopen operation.
+is safer than silently rewriting later stable unit references. `Discard
+session` archives only the ignored working session and never rewrites Gold.
+Confirmed Gold opens read-only and does not implicitly create a writable
+session.
+
+Active sessions are discoverable for source-migration guardrails:
+
+```powershell
+.\.venv\Scripts\python.exe -m src.lotm_v2.cli review-session-list
+.\.venv\Scripts\python.exe -m src.lotm_v2.cli review-session-status data\gold\v2\ch_0001.json
+```
+
+## Compatibility contracts
+
+Reviewer app version, session JSON schema, review semantics, and Gold schema are
+independent compatibility dimensions. An app-version difference alone is
+allowed when the other contracts remain supported. Opening a compatible
+session updates only `last_opened_with_reviewer`; it never silently changes the
+session schema or semantics. Unsupported schema/semantics fail closed. A schema
+migration must be explicitly registered, preserve a backup, and preserve the
+meaning of human decisions.
+
+| Change | App version | Session schema | Review semantics | Old session reusable? |
+|---|---|---|---|---|
+| Theme/CSS | may change | same | same | YES |
+| Button wording | may change | same | same | YES |
+| Non-semantic refactor | may change | same | same | YES |
+| Session JSON shape | change as needed | bump | usually same | only with declared compatible migration |
+| Cursor meaning | change | maybe same | BUMP | NO without explicit compatibility/migration |
+| Paragraph/source changes | unrelated | unrelated | unrelated | NO if source hash changes |
+| Gold schema change | change | maybe | maybe | only if Gold schema compatibility exists |
+
+Each session freezes target Gold baseline SHA-256 plus normalized source IDs,
+paths, schema versions, paragraph counts and hashes. A normalized-source
+mismatch blocks writable resume. An external Gold change blocks publication;
+human decisions are never remapped automatically to a new source revision.
 
 ## Boundary review
 
@@ -125,7 +178,7 @@ of adjacent confirmed alignment units, Boundary Review records only:
 
 The tool does not build TrainingBlocks.
 
-## Validation and finish
+## Validation and publication
 
 Partial validation runs at open and before every save. It permits unfinished
 text but requires valid references, sequential unit IDs, exactly one partial
@@ -133,9 +186,18 @@ fate per consumed paragraph, no duplicate or skipped paragraphs, contiguous
 monotonic ranges, valid explicit GAPs/dispositions, prefix-consistent cursors,
 and valid existing boundaries.
 
-`Full Gold validation` rechecks source hashes and then invokes the authoritative
-full validator. It requires every physical paragraph to have exactly one fate
-(AlignmentUnit XOR ParagraphDisposition) and a JOIN or BREAK after every
-internal unit. Success reports that the draft is structurally
-complete but does not change `status` to `confirmed`; confirmation requires a
-separate explicit human/architectural action.
+`Full Gold validation` rechecks compatibility and source hashes and then invokes
+the authoritative full validator. It requires every physical paragraph to have
+exactly one fate (AlignmentUnit XOR ParagraphDisposition) and a JOIN or BREAK
+after every internal unit. Success only reports that the session is ready.
+
+`Publish to Gold` first shows target, chapter, AlignmentUnit,
+ParagraphDisposition and boundary counts, source-verification state, and full
+validation result. It requires a separate explicit confirmation. Publication
+then rechecks compatibility, sources, partial/full invariants and the original
+Gold baseline hash, records a publication intent, atomically replaces Gold,
+verifies the resulting hash, and archives the session as `published`. If a
+crash occurs after the Gold write but before finalization, a later launch
+recognizes the matching expected hash and safely finishes the archive step
+without rewriting Gold. Publication does not automatically change Gold status
+from `draft` to `confirmed`.

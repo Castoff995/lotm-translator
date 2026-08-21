@@ -8,6 +8,7 @@ data/normalized/
 data/alignment/
 data/grouping/
 data/review/
+data/review_sessions/
 data/training/
 data/cache/
 data/reports/
@@ -20,3 +21,6 @@ __pycache__/
 .venv/
 .venv-directml/
 .venv-bertalign/
+
+*.epub
+/cache/

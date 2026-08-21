@@ -41,6 +41,23 @@ or a local number as canonical identity, replace a frozen map, infer universal
 volume semantics, or migrate identities referenced by human Gold. Such a change
 requires an explicit source revision/migration architecture decision.
 
+Approved Phase 2 persistence amendment (Task 004.1): unfinished human review is
+stored in ignored, versioned Review Sessions rather than tracked Gold. Ordinary
+review actions autosave only the session; Gold changes only through explicit,
+fully validated, optimistic and atomic publication. Sessions freeze normalized
+source snapshots and the target Gold baseline. They must never silently remap
+human decisions, reinterpret unsupported review semantics, reopen confirmed
+Gold, or mix hints/glossary data into review truth.
+
+Because Review Sessions are ignored by Git, a clean working tree is no longer
+sufficient evidence that a source/Paragraph migration is safe. Before changing
+normalized source bytes, paragraphization, source identity, canonical chapter
+mapping, or stable Paragraph IDs, run the active-session discovery command and
+check relevance to the affected source/chapter. A relevant active session is a
+human-WIP guardrail and requires an explicit publish, discard/archive, or
+approved migration decision first. An unrelated session does not automatically
+block ordinary code or documentation work.
+
 ## Phase 0–2 prohibitions
 
 Task 001 must not implement BGE/SONAR/AWESOME-align, Bertalign ensembles,

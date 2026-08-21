@@ -1,6 +1,8 @@
 """Single serialization/deserialization boundary for gold JSON."""
 from __future__ import annotations
 
+import hashlib
+import json
 from pathlib import Path
 from typing import Any
 
@@ -107,3 +109,12 @@ def save_gold(path: Path, gold: GoldChapter) -> None:
 
 def load_gold(path: Path) -> GoldChapter:
     return gold_from_dict(read_json(path))
+
+
+def gold_json_bytes(gold: GoldChapter) -> bytes:
+    """Return the exact UTF-8 representation produced by the Gold writer."""
+    return (json.dumps(gold_to_dict(gold), ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+
+
+def gold_document_sha256(gold: GoldChapter) -> str:
+    return hashlib.sha256(gold_json_bytes(gold)).hexdigest()

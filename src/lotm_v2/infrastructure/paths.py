@@ -36,6 +36,15 @@ class PathPolicy:
     def gold_chapter(self, chapter: int) -> Path:
         return self.data / "gold" / "v2" / f"ch_{chapter:04d}.json"
 
+    def review_sessions(self) -> Path:
+        return self.data / "review_sessions" / "v2"
+
+    def active_review_session(self, work_id: str, chapter: int) -> Path:
+        return self.review_sessions() / work_id / f"ch_{chapter:04d}.active.json"
+
+    def archived_review_session(self, work_id: str, chapter: int, session_id: str, status: str) -> Path:
+        return self.review_sessions() / work_id / "archive" / f"ch_{chapter:04d}.{session_id}.{status}.json"
+
     def relative(self, path: Path) -> str:
         return path.resolve().relative_to(self.root.resolve()).as_posix()
 
