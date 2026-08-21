@@ -55,6 +55,26 @@
         }
       }
     },
+    "paragraph_dispositions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["paragraph_id", "reason", "after_alignment_unit"],
+        "properties": {
+          "paragraph_id": {"type": "string"},
+          "reason": {"enum": ["heading", "metadata", "separator", "footnote", "publisher_note", "translator_note", "non_story_content", "other"]},
+          "note": {"type": ["string", "null"]},
+          "after_alignment_unit": {"type": "integer", "minimum": 0}
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"reason": {"const": "other"}}, "required": ["reason"]},
+            "then": {"required": ["note"], "properties": {"note": {"type": "string", "minLength": 1}}}
+          }
+        ],
+        "additionalProperties": false
+      }
+    },
     "boundaries": {
       "type": "array",
       "items": {

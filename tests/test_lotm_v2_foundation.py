@@ -15,7 +15,8 @@ from src.lotm_v2.domain import (
 from src.lotm_v2.gold.io import load_gold, save_gold
 from src.lotm_v2.gold.model import (
     BoundaryDecision, GoldAlignmentSide, GoldAlignmentUnit, GoldBoundary,
-    GoldChapter, GoldFlag, GoldGap, GoldSourceRef, GoldStatus, alignment_unit_id,
+    GoldChapter, GoldFlag, GoldGap, GoldSourceRef, GoldStatus,
+    ParagraphDisposition, ParagraphDispositionReason, alignment_unit_id,
 )
 from src.lotm_v2.gold.validation import GoldValidationError, validate_gold_chapter
 from src.lotm_v2.infrastructure.corpus_io import load_chapter, load_manifest, save_chapter, save_manifest
@@ -122,6 +123,10 @@ class FoundationTests(unittest.TestCase):
 
 
 class GoldValidationTests(unittest.TestCase):
+    def test_aligned_paragraph_counts_as_covered(self) -> None:
+        gold, chapters = valid_fixture()
+        validate_gold_chapter(gold, chapters)
+
     def test_gold_serialization_round_trip_and_valid_chapter(self) -> None:
         gold, chapters = valid_fixture()
         validate_gold_chapter(gold, chapters)
@@ -179,6 +184,72 @@ class GoldValidationTests(unittest.TestCase):
         )
         gold = GoldChapter("1.0-draft", GoldStatus.DRAFT, zh.id, tuple(source_ref(item) for item in (zh, en, ru)), (unit,), ())
         validate_gold_chapter(gold, (zh, en, ru))
+
+    def test_dispositioned_paragraph_counts_as_covered(self) -> None:
+        zh = make_chapter(Language.ZH, "zh", 1)
+        en = make_chapter(Language.EN, "en", 1)
+        ru = make_chapter(Language.RU, "ru-official", 1)
+        unit = GoldAlignmentUnit(
+            alignment_unit_id(zh.id, 1),
+            GoldAlignmentSide(gap=GoldGap(GoldFlag.EDITION_DIFFERENCE)),
+            side(en, 1), side(ru, 1),
+        )
+        disposition = ParagraphDisposition(
+            zh.paragraphs[0].id, ParagraphDispositionReason.METADATA,
+            "Source legal metadata", after_alignment_unit=0,
+        )
+        gold = GoldChapter(
+            "1.0-draft", GoldStatus.DRAFT, zh.id,
+            tuple(source_ref(item) for item in (zh, en, ru)),
+            (unit,), (), None, (disposition,),
+        )
+        validate_gold_chapter(gold, (zh, en, ru))
+
+    def test_paragraph_both_aligned_and_dispositioned_is_rejected(self) -> None:
+        gold, chapters = valid_fixture()
+        disposition = ParagraphDisposition(
+            chapters[0].paragraphs[0].id, ParagraphDispositionReason.HEADING,
+            after_alignment_unit=0,
+        )
+        broken = GoldChapter(
+            gold.schema_version, gold.status, gold.chapter, gold.sources,
+            gold.alignment_units, gold.boundaries, gold.notes, (disposition,),
+        )
+        with self.assertRaisesRegex(GoldValidationError, "both aligned and dispositioned"):
+            validate_gold_chapter(broken, chapters)
+
+    def test_duplicate_disposition_is_rejected(self) -> None:
+        gold, chapters = valid_fixture()
+        disposition = ParagraphDisposition(
+            chapters[0].paragraphs[0].id, ParagraphDispositionReason.METADATA,
+            after_alignment_unit=0,
+        )
+        broken = GoldChapter(
+            gold.schema_version, gold.status, gold.chapter, gold.sources,
+            (), (), None, (disposition, disposition),
+        )
+        with self.assertRaisesRegex(GoldValidationError, "dispositioned 2 times"):
+            validate_gold_chapter(broken, chapters)
+
+    def test_invalid_disposition_reference_is_rejected(self) -> None:
+        gold, chapters = valid_fixture()
+        disposition = ParagraphDisposition(
+            ParagraphId("lotm", SourceId("zh"), 1, 999),
+            ParagraphDispositionReason.METADATA, after_alignment_unit=0,
+        )
+        broken = GoldChapter(
+            gold.schema_version, gold.status, gold.chapter, gold.sources,
+            gold.alignment_units, gold.boundaries, gold.notes, (disposition,),
+        )
+        with self.assertRaisesRegex(GoldValidationError, "Invalid disposition paragraph reference"):
+            validate_gold_chapter(broken, chapters)
+
+    def test_other_disposition_requires_note(self) -> None:
+        with self.assertRaisesRegex(ValueError, "requires a note"):
+            ParagraphDisposition(
+                ParagraphId("lotm", SourceId("zh"), 1, 1),
+                ParagraphDispositionReason.OTHER,
+            )
 
 
 if __name__ == "__main__":

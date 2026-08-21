@@ -5,10 +5,11 @@ from pathlib import Path
 from typing import Any
 
 from ..domain import ChapterId, Language, ParagraphId, SourceId
-from ..infrastructure.json_io import read_json, write_json
+from ..infrastructure.json_io import read_json, write_json_atomic
 from .model import (
     BoundaryDecision, GoldAlignmentSide, GoldAlignmentUnit, GoldBoundary,
     GoldChapter, GoldFlag, GoldGap, GoldSourceRef, GoldStatus,
+    ParagraphDisposition, ParagraphDispositionReason,
 )
 
 
@@ -46,6 +47,15 @@ def gold_to_dict(gold: GoldChapter) -> dict[str, Any]:
             }
             for unit in gold.alignment_units
         ],
+        "paragraph_dispositions": [
+            {
+                "paragraph_id": str(disposition.paragraph_id),
+                "reason": disposition.reason.value,
+                "note": disposition.note,
+                "after_alignment_unit": disposition.after_alignment_unit,
+            }
+            for disposition in gold.paragraph_dispositions
+        ],
         "boundaries": [
             {"after": boundary.after, "decision": boundary.decision.value, "note": boundary.note}
             for boundary in gold.boundaries
@@ -75,17 +85,25 @@ def gold_from_dict(payload: dict[str, Any]) -> GoldChapter:
         GoldBoundary(str(item["after"]), BoundaryDecision(str(item["decision"])), item.get("note"))
         for item in payload.get("boundaries", [])
     )
+    dispositions = tuple(
+        ParagraphDisposition(
+            paragraph_id=ParagraphId.parse(str(item["paragraph_id"])),
+            reason=ParagraphDispositionReason(str(item["reason"])),
+            note=item.get("note"),
+            after_alignment_unit=int(item.get("after_alignment_unit", 0)),
+        )
+        for item in payload.get("paragraph_dispositions", [])
+    )
     return GoldChapter(
         schema_version=str(payload["schema_version"]), status=GoldStatus(str(payload["status"])),
         chapter=chapter, sources=sources, alignment_units=units, boundaries=boundaries,
-        notes=payload.get("notes"),
+        notes=payload.get("notes"), paragraph_dispositions=dispositions,
     )
 
 
 def save_gold(path: Path, gold: GoldChapter) -> None:
-    write_json(path, gold_to_dict(gold))
+    write_json_atomic(path, gold_to_dict(gold))
 
 
 def load_gold(path: Path) -> GoldChapter:
     return gold_from_dict(read_json(path))
-

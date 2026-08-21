@@ -29,8 +29,11 @@ $python = ".\.venv\Scripts\python.exe"
 
 Edit `data/gold/v2/ch_0001.json` manually. Populate `alignment_units` with
 stable paragraph IDs, use structured GAP objects when a side has no
-counterpart, and add one `JOIN` or `BREAK` entry after every unit except the
-last. Keep `status` as `draft` until human review is complete.
+counterpart, add explicit `paragraph_dispositions` for reviewed physical
+paragraphs intentionally excluded from translation alignment, and add one
+`JOIN` or `BREAK` entry after every unit except the last. Every physical
+paragraph must have exactly one fate: AlignmentUnit XOR ParagraphDisposition.
+Keep `status` as `draft` until human review is complete.
 
 ```powershell
 & $python -m src.lotm_v2.cli gold-validate data\gold\v2\ch_0001.json

@@ -29,5 +29,8 @@ def create_gold_draft(chapters: tuple[Chapter, ...], normalized_paths: tuple[Pat
     return GoldChapter(
         schema_version=GOLD_SCHEMA_VERSION, status=GoldStatus.DRAFT,
         chapter=chapter_id, sources=sources,
-        notes="Generated draft. Alignment units and JOIN/BREAK boundaries require human review.",
+        notes=(
+            "Generated draft. Alignment units, paragraph dispositions, and JOIN/BREAK "
+            "boundaries require human review."
+        ),
     )

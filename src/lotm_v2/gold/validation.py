@@ -4,7 +4,7 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass
 
-from ..domain import Chapter, Language, ParagraphId, ParagraphType
+from ..domain import Chapter, Language, ParagraphId
 from .model import GoldAlignmentSide, GoldChapter, alignment_unit_id
 
 
@@ -36,11 +36,10 @@ def collect_gold_issues(gold: GoldChapter, chapters: tuple[Chapter, ...]) -> tup
             issues.append(f"Source language mismatch for {source_id}")
 
     paragraph_by_id = {str(paragraph.id): paragraph for chapter in chapters for paragraph in chapter.paragraphs}
-    expected_story = {
+    expected_paragraphs = {
         str(paragraph.id) for chapter in chapters for paragraph in chapter.paragraphs
-        if paragraph.paragraph_type in {ParagraphType.STORY, ParagraphType.DIALOGUE}
     }
-    used: Counter[str] = Counter()
+    aligned: Counter[str] = Counter()
     last_index = {Language.ZH: 0, Language.EN: 0, Language.RU: 0}
     unit_ids: list[str] = []
     for unit_index, unit in enumerate(gold.alignment_units, start=1):
@@ -54,7 +53,7 @@ def collect_gold_issues(gold: GoldChapter, chapters: tuple[Chapter, ...]) -> tup
             indices: list[int] = []
             for paragraph_id in _side_items(side):
                 key = str(paragraph_id)
-                used[key] += 1
+                aligned[key] += 1
                 paragraph = paragraph_by_id.get(key)
                 if paragraph is None:
                     issues.append(f"Invalid paragraph reference: {key}")
@@ -69,11 +68,30 @@ def collect_gold_issues(gold: GoldChapter, chapters: tuple[Chapter, ...]) -> tup
                     issues.append(f"Non-monotonic alignment at unit {unit.id} ({language.value})")
                 last_index[language] = indices[-1]
 
-    for paragraph_id, count in used.items():
+    for paragraph_id, count in aligned.items():
         if count > 1:
-            issues.append(f"Paragraph used {count} times: {paragraph_id}")
-    for paragraph_id in sorted(expected_story - set(used)):
-        issues.append(f"Missing story paragraph: {paragraph_id}")
+            issues.append(f"Paragraph used {count} times in AlignmentUnits: {paragraph_id}")
+
+    dispositioned: Counter[str] = Counter()
+    last_anchor = -1
+    for disposition in gold.paragraph_dispositions:
+        key = str(disposition.paragraph_id)
+        dispositioned[key] += 1
+        if key not in paragraph_by_id:
+            issues.append(f"Invalid disposition paragraph reference: {key}")
+        if disposition.after_alignment_unit > len(gold.alignment_units):
+            issues.append(f"Disposition anchor exceeds AlignmentUnit count: {key}")
+        if disposition.after_alignment_unit < last_anchor:
+            issues.append("Paragraph dispositions must have monotonic alignment anchors")
+        last_anchor = disposition.after_alignment_unit
+    for paragraph_id, count in dispositioned.items():
+        if count > 1:
+            issues.append(f"Paragraph dispositioned {count} times: {paragraph_id}")
+    for paragraph_id in sorted(set(aligned) & set(dispositioned)):
+        issues.append(f"Paragraph is both aligned and dispositioned: {paragraph_id}")
+    covered = set(aligned) | set(dispositioned)
+    for paragraph_id in sorted(expected_paragraphs - covered):
+        issues.append(f"Missing Gold fate for physical paragraph: {paragraph_id}")
 
     expected_after = unit_ids[:-1]
     actual_after = [boundary.after for boundary in gold.boundaries]

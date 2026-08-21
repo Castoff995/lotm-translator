@@ -22,6 +22,17 @@ class GoldFlag(str, Enum):
     UNCERTAIN = "uncertain"
 
 
+class ParagraphDispositionReason(str, Enum):
+    HEADING = "heading"
+    METADATA = "metadata"
+    SEPARATOR = "separator"
+    FOOTNOTE = "footnote"
+    PUBLISHER_NOTE = "publisher_note"
+    TRANSLATOR_NOTE = "translator_note"
+    NON_STORY_CONTENT = "non_story_content"
+    OTHER = "other"
+
+
 class BoundaryDecision(str, Enum):
     JOIN = "JOIN"
     BREAK = "BREAK"
@@ -84,6 +95,20 @@ class GoldSourceRef:
 
 
 @dataclass(frozen=True)
+class ParagraphDisposition:
+    paragraph_id: ParagraphId
+    reason: ParagraphDispositionReason
+    note: str | None = None
+    after_alignment_unit: int = 0
+
+    def __post_init__(self) -> None:
+        if self.after_alignment_unit < 0:
+            raise ValueError("Disposition alignment anchor cannot be negative")
+        if self.reason == ParagraphDispositionReason.OTHER and not (self.note and self.note.strip()):
+            raise ValueError("ParagraphDisposition reason 'other' requires a note")
+
+
+@dataclass(frozen=True)
 class GoldChapter:
     schema_version: str
     status: GoldStatus
@@ -92,6 +117,7 @@ class GoldChapter:
     alignment_units: tuple[GoldAlignmentUnit, ...] = ()
     boundaries: tuple[GoldBoundary, ...] = ()
     notes: str | None = None
+    paragraph_dispositions: tuple[ParagraphDisposition, ...] = ()
 
     def __post_init__(self) -> None:
         source_ids = [str(source.source_id) for source in self.sources]
@@ -103,4 +129,3 @@ def alignment_unit_id(chapter: ChapterId, index: int) -> str:
     if index < 1:
         raise ValueError("Alignment unit index must be positive")
     return f"{chapter.work_id}:{chapter.number:04d}:a{index:06d}"
-
