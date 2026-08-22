@@ -329,6 +329,11 @@ class ReviewSessionTests(unittest.TestCase):
         self.assertIn("generation!==hintRequestGeneration", javascript)
         self.assertIn("bundle.paragraph_id!==target.id", javascript)
         self.assertIn("data-hint-target", javascript)
+        generic_hint_loader = javascript.split("async function openHintTarget", 1)[1].split("function openHintPanelTarget", 1)[0]
+        self.assertNotIn("scrollIntoView", generic_hint_loader)
+        explicit_hint_opener = javascript.split("function openHintPanelTarget", 1)[1].split("function openHints", 1)[0]
+        self.assertIn("$('#hintsPanel').hidden", explicit_hint_opener)
+        self.assertIn("scrollIntoView", explicit_hint_opener)
         for control_id in ("hintPrevious", "hintNext", "hintGoTo", "hintGo", "hintCursor", "hintRetry"):
             self.assertIn(f'id="{control_id}"', html)
 
