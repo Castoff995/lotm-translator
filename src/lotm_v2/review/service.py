@@ -455,6 +455,265 @@ class ReviewWorkspace:
             self._autosave(candidate)
             return self.snapshot()
 
+    def _correction_unit_index(self, unit_id: str) -> int:
+        matches = [index for index, unit in enumerate(self.gold.alignment_units) if unit.id == unit_id]
+        if len(matches) != 1:
+            raise ReviewError(f"AlignmentUnit does not exist or is ambiguous: {unit_id}")
+        return matches[0]
+
+    def _require_correction_preview_baseline(self, expected_working_gold_sha256: str) -> None:
+        if expected_working_gold_sha256 != gold_document_sha256(self.gold):
+            raise ReviewError(
+                "Correction preview is stale because the Review Session working Gold changed; preview again"
+            )
+
+    def _require_safe_correction_unit(
+        self, unit: GoldAlignmentUnit, operation: str, minimum_side_size: int = 1,
+    ) -> None:
+        for language in LANGUAGE_ORDER:
+            side = _side(unit, language)
+            if side.gap:
+                raise ReviewError(f"{operation} requires paragraph-backed zh/en/ru sides; {language.value} is GAP")
+            if len(side.paragraphs) < minimum_side_size:
+                raise ReviewError(
+                    f"{operation} requires at least {minimum_side_size} Paragraphs on every side; "
+                    f"{language.value} has {len(side.paragraphs)}"
+                )
+        if unit.flags or unit.note is not None:
+            raise ReviewError(
+                f"{operation} is unsafe for a unit with flags or a unit note; their child/merged ownership is ambiguous"
+            )
+
+    def _renumber_units(self, units: tuple[GoldAlignmentUnit, ...]) -> tuple[GoldAlignmentUnit, ...]:
+        return tuple(
+            replace(unit, id=alignment_unit_id(self.gold.chapter, position))
+            for position, unit in enumerate(units, start=1)
+        )
+
+    def _split_candidate(
+        self, unit_id: str, first_counts: dict[str, Any],
+    ) -> tuple[GoldChapter, dict[Language, int], int]:
+        self._ensure_writable()
+        if self.gold.status is not GoldStatus.DRAFT:
+            raise ReviewError("Split is allowed only for writable Draft Gold")
+        index = self._correction_unit_index(unit_id)
+        unit = self.gold.alignment_units[index]
+        self._require_safe_correction_unit(unit, "Split", minimum_side_size=2)
+        if not isinstance(first_counts, dict):
+            raise ReviewError("Split requires a first_counts object")
+
+        leading: dict[Language, GoldAlignmentSide] = {}
+        trailing: dict[Language, GoldAlignmentSide] = {}
+        for language in LANGUAGE_ORDER:
+            raw_count = first_counts.get(language.value)
+            if isinstance(raw_count, bool) or not isinstance(raw_count, int):
+                raise ReviewError(f"Split count for {language.value} must be an integer")
+            paragraphs = _side(unit, language).paragraphs
+            if raw_count < 1 or raw_count >= len(paragraphs):
+                raise ReviewError(
+                    f"Split count for {language.value} must be between 1 and {len(paragraphs) - 1}"
+                )
+            leading[language] = GoldAlignmentSide(paragraphs=paragraphs[:raw_count])
+            trailing[language] = GoldAlignmentSide(paragraphs=paragraphs[raw_count:])
+
+        child_a = GoldAlignmentUnit(
+            unit.id, leading[Language.ZH], leading[Language.EN], leading[Language.RU],
+        )
+        child_b = GoldAlignmentUnit(
+            unit.id, trailing[Language.ZH], trailing[Language.EN], trailing[Language.RU],
+        )
+        old_units = self.gold.alignment_units
+        new_units = self._renumber_units(old_units[:index] + (child_a, child_b) + old_units[index + 1:])
+        old_positions = {old.id: position for position, old in enumerate(old_units)}
+        boundaries = tuple(
+            replace(
+                boundary,
+                after=new_units[
+                    old_positions[boundary.after]
+                    if old_positions[boundary.after] < index
+                    else old_positions[boundary.after] + 1
+                ].id,
+            )
+            for boundary in self.gold.boundaries
+        )
+        old_number = index + 1
+        dispositions = tuple(
+            replace(
+                item,
+                after_alignment_unit=(
+                    item.after_alignment_unit + 1
+                    if item.after_alignment_unit >= old_number
+                    else item.after_alignment_unit
+                ),
+            )
+            for item in self.gold.paragraph_dispositions
+        )
+        candidate = replace(
+            self.gold, alignment_units=new_units, boundaries=boundaries,
+            paragraph_dispositions=dispositions,
+        )
+        cursors = self._validate_partial(candidate)
+        return candidate, cursors, index
+
+    def preview_split(self, unit_id: str, first_counts: dict[str, Any]) -> dict[str, Any]:
+        with self._lock:
+            candidate, _, index = self._split_candidate(unit_id, first_counts)
+            old_unit = self.gold.alignment_units[index]
+            old_boundary = next((item for item in self.gold.boundaries if item.after == old_unit.id), None)
+            return {
+                "operation": "split", "unit_id": unit_id,
+                "working_gold_sha256": gold_document_sha256(self.gold),
+                "old_unit": self._unit_payload(old_unit, include_text=True),
+                "children": [
+                    self._unit_payload(candidate.alignment_units[index], include_text=True),
+                    self._unit_payload(candidate.alignment_units[index + 1], include_text=True),
+                ],
+                "old_outgoing_boundary": self._boundary_payload(old_boundary),
+                "warning": (
+                    "Downstream AlignmentUnit IDs will be renumbered. The new internal boundary is unresolved."
+                ),
+            }
+
+    def split_unit(
+        self, unit_id: str, first_counts: dict[str, Any], expected_working_gold_sha256: str,
+    ) -> dict[str, Any]:
+        with self._lock:
+            self._require_correction_preview_baseline(expected_working_gold_sha256)
+            candidate, cursors, _ = self._split_candidate(unit_id, first_counts)
+            self._autosave(candidate, cursors)
+            return self.snapshot()
+
+    def _merge_candidate(
+        self, unit_id: str,
+    ) -> tuple[GoldChapter, dict[Language, int], int]:
+        self._ensure_writable()
+        if self.gold.status is not GoldStatus.DRAFT:
+            raise ReviewError("Merge is allowed only for writable Draft Gold")
+        index = self._correction_unit_index(unit_id)
+        old_units = self.gold.alignment_units
+        if index + 1 >= len(old_units):
+            raise ReviewError("Merge with next requires a following AlignmentUnit")
+        current, following = old_units[index], old_units[index + 1]
+        self._require_safe_correction_unit(current, "Merge")
+        self._require_safe_correction_unit(following, "Merge")
+        internal_anchor = index + 1
+        if any(item.after_alignment_unit == internal_anchor for item in self.gold.paragraph_dispositions):
+            raise ReviewError(
+                "Merge is unsafe because a ParagraphDisposition is anchored between the two units"
+            )
+
+        merged = GoldAlignmentUnit(
+            current.id,
+            GoldAlignmentSide(paragraphs=current.zh.paragraphs + following.zh.paragraphs),
+            GoldAlignmentSide(paragraphs=current.en.paragraphs + following.en.paragraphs),
+            GoldAlignmentSide(paragraphs=current.ru.paragraphs + following.ru.paragraphs),
+        )
+        new_units = self._renumber_units(old_units[:index] + (merged,) + old_units[index + 2:])
+        old_positions = {old.id: position for position, old in enumerate(old_units)}
+        boundaries: list[GoldBoundary] = []
+        for boundary in self.gold.boundaries:
+            old_after = old_positions[boundary.after]
+            if old_after == index:
+                continue
+            new_after = old_after if old_after < index else old_after - 1
+            boundaries.append(replace(boundary, after=new_units[new_after].id))
+        dispositions = tuple(
+            replace(
+                item,
+                after_alignment_unit=(
+                    item.after_alignment_unit - 1
+                    if item.after_alignment_unit > internal_anchor
+                    else item.after_alignment_unit
+                ),
+            )
+            for item in self.gold.paragraph_dispositions
+        )
+        candidate = replace(
+            self.gold, alignment_units=new_units, boundaries=tuple(boundaries),
+            paragraph_dispositions=dispositions,
+        )
+        cursors = self._validate_partial(candidate)
+        return candidate, cursors, index
+
+    def preview_merge(self, unit_id: str) -> dict[str, Any]:
+        with self._lock:
+            candidate, _, index = self._merge_candidate(unit_id)
+            current, following = self.gold.alignment_units[index:index + 2]
+            internal = next((item for item in self.gold.boundaries if item.after == current.id), None)
+            outgoing = next((item for item in self.gold.boundaries if item.after == following.id), None)
+            return {
+                "operation": "merge", "unit_id": unit_id,
+                "working_gold_sha256": gold_document_sha256(self.gold),
+                "current": self._unit_payload(current, include_text=True),
+                "next": self._unit_payload(following, include_text=True),
+                "internal_boundary": self._boundary_payload(internal),
+                "old_outgoing_boundary": self._boundary_payload(outgoing),
+                "result": self._unit_payload(candidate.alignment_units[index], include_text=True),
+                "warning": (
+                    "The internal JOIN/BREAK boundary will be deleted and downstream AlignmentUnit IDs renumbered."
+                ),
+            }
+
+    def merge_with_next(self, unit_id: str, expected_working_gold_sha256: str) -> dict[str, Any]:
+        with self._lock:
+            self._require_correction_preview_baseline(expected_working_gold_sha256)
+            candidate, cursors, _ = self._merge_candidate(unit_id)
+            self._autosave(candidate, cursors)
+            return self.snapshot()
+
+    def _edited_disposition_candidate(
+        self, paragraph_id: str, reason_value: str, note: str | None,
+    ) -> tuple[GoldChapter, dict[Language, int], int, ParagraphDisposition]:
+        self._ensure_writable()
+        if self.gold.status is not GoldStatus.DRAFT:
+            raise ReviewError("Disposition correction is allowed only for writable Draft Gold")
+        matches = [
+            (index, item) for index, item in enumerate(self.gold.paragraph_dispositions)
+            if str(item.paragraph_id) == paragraph_id
+        ]
+        if len(matches) != 1:
+            raise ReviewError(f"ParagraphDisposition does not exist or is ambiguous: {paragraph_id}")
+        index, old = matches[0]
+        try:
+            edited = replace(
+                old, reason=ParagraphDispositionReason(reason_value), note=_optional_text(note),
+            )
+        except ValueError as error:
+            raise ReviewError(str(error)) from error
+        if edited == old:
+            raise ReviewError("Disposition correction does not change reason or note")
+        dispositions = list(self.gold.paragraph_dispositions)
+        dispositions[index] = edited
+        candidate = replace(self.gold, paragraph_dispositions=tuple(dispositions))
+        cursors = self._validate_partial(candidate)
+        return candidate, cursors, index, old
+
+    def preview_disposition_edit(
+        self, paragraph_id: str, reason_value: str, note: str | None = None,
+    ) -> dict[str, Any]:
+        with self._lock:
+            candidate, _, index, old = self._edited_disposition_candidate(paragraph_id, reason_value, note)
+            edited = candidate.paragraph_dispositions[index]
+            paragraph = next(
+                p for chapter in self.chapters for p in chapter.paragraphs if p.id == old.paragraph_id
+            )
+            return {
+                "operation": "edit_disposition", "paragraph_id": paragraph_id,
+                "working_gold_sha256": gold_document_sha256(self.gold),
+                "old": self._disposition_payload(old), "new": self._disposition_payload(edited),
+                "paragraph": _paragraph_payload(paragraph),
+            }
+
+    def edit_disposition(
+        self, paragraph_id: str, reason_value: str, note: str | None,
+        expected_working_gold_sha256: str,
+    ) -> dict[str, Any]:
+        with self._lock:
+            self._require_correction_preview_baseline(expected_working_gold_sha256)
+            candidate, cursors, _, _ = self._edited_disposition_candidate(paragraph_id, reason_value, note)
+            self._autosave(candidate, cursors)
+            return self.snapshot()
+
     def finish(self) -> dict[str, Any]:
         with self._lock:
             self.recheck_integrity()
@@ -550,6 +809,21 @@ class ReviewWorkspace:
                 ]) for language in LANGUAGE_ORDER
             }
         return result
+
+    @staticmethod
+    def _boundary_payload(boundary: GoldBoundary | None) -> dict[str, Any] | None:
+        if boundary is None:
+            return None
+        return {"after": boundary.after, "decision": boundary.decision.value, "note": boundary.note}
+
+    @staticmethod
+    def _disposition_payload(disposition: ParagraphDisposition) -> dict[str, Any]:
+        return {
+            "paragraph_id": str(disposition.paragraph_id),
+            "reason": disposition.reason.value,
+            "note": disposition.note,
+            "after_alignment_unit": disposition.after_alignment_unit,
+        }
 
     def snapshot(self) -> dict[str, Any]:
         with self._lock:

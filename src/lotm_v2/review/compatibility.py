@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from .session_model import ReviewSessionDocument
 
 
-REVIEW_APP_VERSION = "1.1.0"
+REVIEW_APP_VERSION = "1.2.0"
 SESSION_SCHEMA_VERSION = "1.0-draft"
 REVIEW_SEMANTICS_VERSION = "1.0"
 
@@ -71,4 +71,3 @@ def migrate_session_payload(path: Path, payload: dict[str, Any]) -> dict[str, An
         raise ReviewCompatibilityError("Session migrator did not produce the declared target schema")
     write_json_atomic(path, migrated)
     return migrated
-

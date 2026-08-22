@@ -67,6 +67,14 @@ def selection(zh: int = 1, en: int = 1, ru: int = 1) -> dict[str, object]:
     return {"sides": {"zh": {"count": zh}, "en": {"count": en}, "ru": {"count": ru}}}
 
 
+def unit_paragraph_ids(gold: GoldChapter, language: str) -> list[str]:
+    return [
+        str(paragraph_id)
+        for unit in gold.alignment_units
+        for paragraph_id in getattr(unit, language).paragraphs
+    ]
+
+
 class ReviewSessionTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -218,6 +226,193 @@ class ReviewSessionTests(unittest.TestCase):
         self.assertEqual(result["boundaries"], [{"after": after, "decision": "BREAK", "note": None}])
         self.assertEqual(ReviewWorkspace(fixture.gold_path, self.root).snapshot()["boundaries"][0]["decision"], "BREAK")
 
+    def test_split_middle_unit_renumbers_and_preserves_semantic_anchors(self) -> None:
+        fixture = Fixture(self.root, (6, 6, 6))
+        session = ReviewWorkspace(fixture.gold_path, self.root)
+        tracked_gold = fixture.gold_path.read_bytes()
+        session.confirm(selection())
+        session.confirm(selection(3, 3, 3))
+        session.disposition("zh", "metadata", "between units")
+        session.confirm(selection(1, 2, 2))
+        session.set_boundary(session.gold.alignment_units[0].id, "JOIN", "before target")
+        target = session.gold.alignment_units[1]
+        session.set_boundary(target.id, "BREAK", "after target")
+        before_ids = {language: unit_paragraph_ids(session.gold, language) for language in ("zh", "en", "ru")}
+
+        before_preview = session.session_path.read_bytes()
+        preview = session.preview_split(target.id, {"zh": 2, "en": 2, "ru": 2})
+        self.assertEqual(session.session_path.read_bytes(), before_preview)
+        self.assertEqual(
+            [paragraph["index"] for paragraph in preview["children"][0]["selected"]["zh"]], [2, 3],
+        )
+        self.assertEqual(
+            [paragraph["index"] for paragraph in preview["children"][1]["selected"]["zh"]], [4],
+        )
+        self.assertEqual(preview["old_outgoing_boundary"]["decision"], "BREAK")
+        session_before_split = session.session_path.read_bytes()
+        self.assertEqual(fixture.gold_path.read_bytes(), tracked_gold)
+
+        result = session.split_unit(
+            target.id, {"zh": 2, "en": 2, "ru": 2}, preview["working_gold_sha256"],
+        )
+        self.assertNotEqual(session.session_path.read_bytes(), session_before_split)
+        self.assertEqual(
+            [unit["id"] for unit in result["units"]],
+            [alignment_unit_id(session.gold.chapter, index) for index in range(1, 5)],
+        )
+        self.assertEqual(
+            result["boundaries"],
+            [
+                {"after": alignment_unit_id(session.gold.chapter, 1), "decision": "JOIN", "note": "before target"},
+                {"after": alignment_unit_id(session.gold.chapter, 3), "decision": "BREAK", "note": "after target"},
+            ],
+        )
+        self.assertNotIn(alignment_unit_id(session.gold.chapter, 2), {item["after"] for item in result["boundaries"]})
+        self.assertEqual(result["dispositions"][0]["after_alignment_unit"], 3)
+        for language in ("zh", "en", "ru"):
+            self.assertEqual(unit_paragraph_ids(session.gold, language), before_ids[language])
+            self.assertEqual(len(unit_paragraph_ids(session.gold, language)), len(set(unit_paragraph_ids(session.gold, language))))
+        self.assertEqual(fixture.gold_path.read_bytes(), tracked_gold)
+
+        reopened = ReviewWorkspace(fixture.gold_path, self.root)
+        self.assertEqual(reopened.gold, session.gold)
+        self.assertEqual(reopened.snapshot()["progress"]["cursors"], result["progress"]["cursors"])
+
+    def test_split_rejects_gap_small_sides_ambiguous_metadata_and_invalid_counts(self) -> None:
+        eligible_fixture = Fixture(self.root / "eligible", (3, 3, 3))
+        eligible = ReviewWorkspace(eligible_fixture.gold_path, self.root / "eligible")
+        eligible.confirm(selection(2, 2, 2))
+        session_bytes = eligible.session_path.read_bytes()
+        for counts in ({"zh": 0, "en": 1, "ru": 1}, {"zh": 2, "en": 1, "ru": 1}, {"zh": 3, "en": 1, "ru": 1}):
+            with self.assertRaisesRegex(ReviewError, "Split count for zh"):
+                eligible.preview_split(eligible.gold.alignment_units[0].id, counts)
+        self.assertEqual(eligible.session_path.read_bytes(), session_bytes)
+
+        small_fixture = Fixture(self.root / "small", (3, 3, 3))
+        small = ReviewWorkspace(small_fixture.gold_path, self.root / "small")
+        small.confirm(selection(1, 2, 2))
+        with self.assertRaisesRegex(ReviewError, "at least 2 Paragraphs"):
+            small.preview_split(small.gold.alignment_units[0].id, {"zh": 1, "en": 1, "ru": 1})
+
+        gap_fixture = Fixture(self.root / "gap", (3, 3, 3))
+        gap = ReviewWorkspace(gap_fixture.gold_path, self.root / "gap")
+        gap.confirm({"sides": {"zh": {"gap": True, "reason": "omission"}, "en": {"count": 2}, "ru": {"count": 2}}})
+        with self.assertRaisesRegex(ReviewError, "paragraph-backed"):
+            gap.preview_split(gap.gold.alignment_units[0].id, {"zh": 1, "en": 1, "ru": 1})
+
+        noted_fixture = Fixture(self.root / "noted", (3, 3, 3))
+        noted = ReviewWorkspace(noted_fixture.gold_path, self.root / "noted")
+        payload = selection(2, 2, 2)
+        payload["note"] = "ambiguous ownership"
+        noted.confirm(payload)
+        with self.assertRaisesRegex(ReviewError, "flags or a unit note"):
+            noted.preview_split(noted.gold.alignment_units[0].id, {"zh": 1, "en": 1, "ru": 1})
+
+    def test_merge_middle_units_concatenates_and_remaps_boundaries_and_disposition(self) -> None:
+        fixture = Fixture(self.root, (6, 6, 6))
+        session = ReviewWorkspace(fixture.gold_path, self.root)
+        tracked_gold = fixture.gold_path.read_bytes()
+        session.confirm(selection())
+        session.confirm(selection())
+        session.confirm(selection(2, 2, 2))
+        session.disposition("zh", "metadata", "after merged pair")
+        session.confirm(selection(1, 2, 2))
+        units = session.gold.alignment_units
+        session.set_boundary(units[0].id, "JOIN", "before pair")
+        session.set_boundary(units[1].id, "BREAK", "removed internal")
+        session.set_boundary(units[2].id, "JOIN", "outgoing")
+        before_ids = {language: unit_paragraph_ids(session.gold, language) for language in ("zh", "en", "ru")}
+
+        before_preview = session.session_path.read_bytes()
+        preview = session.preview_merge(units[1].id)
+        self.assertEqual(session.session_path.read_bytes(), before_preview)
+        self.assertEqual(preview["internal_boundary"]["decision"], "BREAK")
+        self.assertEqual(preview["old_outgoing_boundary"]["decision"], "JOIN")
+        self.assertEqual(
+            [paragraph["index"] for paragraph in preview["result"]["selected"]["zh"]], [2, 3, 4],
+        )
+        result = session.merge_with_next(units[1].id, preview["working_gold_sha256"])
+        self.assertEqual(
+            [unit["id"] for unit in result["units"]],
+            [alignment_unit_id(session.gold.chapter, index) for index in range(1, 4)],
+        )
+        self.assertEqual(
+            result["boundaries"],
+            [
+                {"after": alignment_unit_id(session.gold.chapter, 1), "decision": "JOIN", "note": "before pair"},
+                {"after": alignment_unit_id(session.gold.chapter, 2), "decision": "JOIN", "note": "outgoing"},
+            ],
+        )
+        self.assertEqual(result["dispositions"][0]["after_alignment_unit"], 2)
+        for language in ("zh", "en", "ru"):
+            self.assertEqual(unit_paragraph_ids(session.gold, language), before_ids[language])
+        self.assertEqual(fixture.gold_path.read_bytes(), tracked_gold)
+
+    def test_merge_rejects_gap_ambiguous_unit_and_internal_disposition(self) -> None:
+        gap_fixture = Fixture(self.root / "gap", (3, 3, 3))
+        gap = ReviewWorkspace(gap_fixture.gold_path, self.root / "gap")
+        gap.confirm({"sides": {"zh": {"gap": True, "reason": "omission"}, "en": {"count": 1}, "ru": {"count": 1}}})
+        gap.confirm(selection())
+        with self.assertRaisesRegex(ReviewError, "paragraph-backed"):
+            gap.preview_merge(gap.gold.alignment_units[0].id)
+
+        noted_fixture = Fixture(self.root / "noted", (3, 3, 3))
+        noted = ReviewWorkspace(noted_fixture.gold_path, self.root / "noted")
+        payload = selection()
+        payload["note"] = "ambiguous"
+        noted.confirm(payload)
+        noted.confirm(selection())
+        with self.assertRaisesRegex(ReviewError, "flags or a unit note"):
+            noted.preview_merge(noted.gold.alignment_units[0].id)
+
+        disposition_fixture = Fixture(self.root / "disposition", (3, 3, 3))
+        disposition = ReviewWorkspace(disposition_fixture.gold_path, self.root / "disposition")
+        disposition.confirm(selection())
+        disposition.disposition("zh", "metadata")
+        disposition.confirm(selection(1, 2, 2))
+        session_bytes = disposition.session_path.read_bytes()
+        with self.assertRaisesRegex(ReviewError, "anchored between"):
+            disposition.preview_merge(disposition.gold.alignment_units[0].id)
+        self.assertEqual(disposition.session_path.read_bytes(), session_bytes)
+
+    def test_edit_disposition_changes_only_reason_and_note_and_persists(self) -> None:
+        fixture = Fixture(self.root)
+        session = ReviewWorkspace(fixture.gold_path, self.root)
+        tracked_gold = fixture.gold_path.read_bytes()
+        session.disposition("ru", "footnote", "old note")
+        paragraph_id = str(session.gold.paragraph_dispositions[0].paragraph_id)
+        before_preview = session.session_path.read_bytes()
+        preview = session.preview_disposition_edit(paragraph_id, "metadata", "new note")
+        self.assertEqual(session.session_path.read_bytes(), before_preview)
+        self.assertEqual(preview["old"]["reason"], "footnote")
+        self.assertEqual(preview["new"]["reason"], "metadata")
+        self.assertEqual(preview["old"]["paragraph_id"], preview["new"]["paragraph_id"])
+        result = session.edit_disposition(
+            paragraph_id, "metadata", "new note", preview["working_gold_sha256"],
+        )
+        self.assertEqual(result["dispositions"][0]["paragraph_id"], paragraph_id)
+        self.assertEqual(result["dispositions"][0]["reason"], "metadata")
+        self.assertEqual(result["dispositions"][0]["note"], "new note")
+        self.assertEqual(fixture.gold_path.read_bytes(), tracked_gold)
+        self.assertEqual(ReviewWorkspace(fixture.gold_path, self.root).gold, session.gold)
+        with self.assertRaisesRegex(ReviewError, "requires a note"):
+            session.preview_disposition_edit(paragraph_id, "other", "")
+
+    def test_correction_confirmation_rejects_stale_preview(self) -> None:
+        fixture = Fixture(self.root, (4, 4, 4))
+        session = ReviewWorkspace(fixture.gold_path, self.root)
+        session.confirm(selection(2, 2, 2))
+        session.confirm(selection(2, 2, 2))
+        target = session.gold.alignment_units[0]
+        preview = session.preview_split(target.id, {"zh": 1, "en": 1, "ru": 1})
+        session.set_boundary(target.id, "JOIN")
+        after_intervening_change = session.session_path.read_bytes()
+        with self.assertRaisesRegex(ReviewError, "preview is stale"):
+            session.split_unit(
+                target.id, {"zh": 1, "en": 1, "ru": 1}, preview["working_gold_sha256"],
+            )
+        self.assertEqual(session.session_path.read_bytes(), after_intervening_change)
+
     def test_finish_requires_all_physical_paragraphs_and_boundaries(self) -> None:
         fixture = Fixture(self.root, (2, 2, 2), heading=True)
         session = ReviewWorkspace(fixture.gold_path, self.root)
@@ -310,6 +505,70 @@ class ReviewSessionTests(unittest.TestCase):
             server.server_close()
             thread.join(timeout=3)
 
+    def test_http_correction_previews_and_confirms_are_session_only(self) -> None:
+        fixture = Fixture(self.root, (4, 4, 4))
+        session = ReviewWorkspace(fixture.gold_path, self.root)
+        session.confirm(selection(2, 2, 2))
+        session.confirm(selection())
+        session.disposition("zh", "metadata", "synthetic")
+        server = ReviewHTTPServer(("127.0.0.1", 0), session)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        base = f"http://127.0.0.1:{server.server_port}"
+        headers = {"Content-Type": "application/json", "X-Review-Token": server.review_token}
+        tracked_gold = fixture.gold_path.read_bytes()
+
+        def post(route: str, payload: dict[str, object]) -> dict[str, object]:
+            request = Request(
+                base + route, data=json.dumps(payload).encode("utf-8"), method="POST", headers=headers,
+            )
+            return json.loads(urlopen(request, timeout=3).read())
+
+        try:
+            first_id = session.gold.alignment_units[0].id
+            split_payload = {"unit_id": first_id, "first_counts": {"zh": 1, "en": 1, "ru": 1}}
+            split_preview = post("/api/corrections/split/preview", split_payload)
+            self.assertEqual(len(split_preview["children"]), 2)
+            unconfirmed = Request(
+                base + "/api/corrections/split", data=json.dumps(split_payload).encode("utf-8"),
+                method="POST", headers=headers,
+            )
+            with self.assertRaises(HTTPError) as confirmation_error:
+                urlopen(unconfirmed, timeout=3).read()
+            self.assertEqual(confirmation_error.exception.code, 400)
+            split_result = post("/api/corrections/split", {
+                **split_payload, "confirm": True,
+                "expected_working_gold_sha256": split_preview["working_gold_sha256"],
+            })
+            self.assertEqual(split_result["progress"]["units"], 3)
+
+            merge_preview = post(
+                "/api/corrections/merge/preview", {"unit_id": split_result["units"][0]["id"]},
+            )
+            self.assertEqual(merge_preview["operation"], "merge")
+            merge_result = post("/api/corrections/merge", {
+                "unit_id": split_result["units"][0]["id"], "confirm": True,
+                "expected_working_gold_sha256": merge_preview["working_gold_sha256"],
+            })
+            self.assertEqual(merge_result["progress"]["units"], 2)
+
+            paragraph_id = merge_result["dispositions"][0]["paragraph_id"]
+            edit_payload = {"paragraph_id": paragraph_id, "reason": "footnote", "note": "corrected"}
+            edit_preview = post("/api/corrections/disposition/preview", edit_payload)
+            self.assertEqual(edit_preview["new"]["reason"], "footnote")
+            edit_result = post(
+                "/api/corrections/disposition", {
+                    **edit_payload, "confirm": True,
+                    "expected_working_gold_sha256": edit_preview["working_gold_sha256"],
+                },
+            )
+            self.assertEqual(edit_result["dispositions"][0]["reason"], "footnote")
+            self.assertEqual(fixture.gold_path.read_bytes(), tracked_gold)
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
     def test_reviewer_frontend_preserves_review_contract_and_independent_hint_target(self) -> None:
         static_root = Path(__file__).parents[1] / "src" / "lotm_v2" / "review" / "static"
         javascript = (static_root / "app.js").read_text(encoding="utf-8")
@@ -329,6 +588,15 @@ class ReviewSessionTests(unittest.TestCase):
         self.assertIn("generation!==hintRequestGeneration", javascript)
         self.assertIn("bundle.paragraph_id!==target.id", javascript)
         self.assertIn("data-hint-target", javascript)
+        self.assertIn("/api/corrections/split/preview", javascript)
+        self.assertIn("/api/corrections/merge/preview", javascript)
+        self.assertIn("/api/corrections/disposition/preview", javascript)
+        self.assertIn("data-split", javascript)
+        self.assertIn("data-merge", javascript)
+        self.assertIn("data-edit-disposition", javascript)
+        self.assertIn("expected_working_gold_sha256", javascript)
+        self.assertIn('id="correctionDialog"', html)
+        self.assertIn('id="confirmCorrection" disabled', html)
         generic_hint_loader = javascript.split("async function openHintTarget", 1)[1].split("function openHintPanelTarget", 1)[0]
         self.assertNotIn("scrollIntoView", generic_hint_loader)
         explicit_hint_opener = javascript.split("function openHintPanelTarget", 1)[1].split("function openHints", 1)[0]

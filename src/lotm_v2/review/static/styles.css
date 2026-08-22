@@ -120,6 +120,10 @@ button:disabled {
 .sessionBanner details{display:inline-block;margin-left:.5rem}
 .publishButton{border-color:#18733a!important;background:#e7f7ed!important;color:#105b2d!important}
 .dangerButton{border-color:#a33a46!important;background:#fff0f1!important;color:#842432!important}
+.correctionActions{display:flex;gap:.4rem;flex-wrap:wrap;margin:.4rem 0}
+.correctionControls{display:flex;gap:.7rem;flex-wrap:wrap;margin:.6rem 0}
+.correctionControls label{display:grid;gap:.2rem}
+.correctionWarning{border-left:4px solid #b56b00;padding:.45rem;background:#fff5df}
 .para.hintTarget{outline:3px solid #b56b00;outline-offset:-3px}
 .hintAction{display:block;margin:.35rem 0 .1rem}
 .hintNavigation{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;margin:.55rem 0}
@@ -135,5 +139,6 @@ button:disabled {
   .sessionBanner{background:#172f50}
   .publishButton{background:#17472d!important;color:#b9f5ce!important;border-color:#71d89a!important}
   .dangerButton{background:#4b2028!important;color:#ffd6da!important;border-color:#e58a94!important}
+  .correctionWarning{background:#4a3515;border-left-color:#ffbf66}
   .para.hintTarget{outline-color:#ffbf66}
 }

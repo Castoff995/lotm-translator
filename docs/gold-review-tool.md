@@ -165,6 +165,29 @@ session` archives only the ignored working session and never rewrites Gold.
 Confirmed Gold opens read-only and does not implicitly create a writable
 session.
 
+## Correcting existing Draft Gold
+
+A writable Review Session based on `draft` Gold offers explicit surgical
+corrections next to reviewed units and dispositions. `Split Unit` divides an
+eligible paragraph-backed ZH/EN/RU unit at human-selected per-language counts;
+`Merge with next` concatenates two eligible adjacent units; and `Edit
+disposition` changes only an existing disposition's reason and note. Confirmed
+Gold remains read-only.
+
+Every correction has a read-only preview followed by separate confirmation.
+Split and Merge deterministically renumber downstream AlignmentUnit IDs while
+preserving Paragraph IDs and physical order. Existing boundary decisions follow
+their original semantic adjacency. Split leaves its new internal boundary
+unresolved; Merge explicitly deletes the old internal boundary and transfers
+the second unit's outgoing boundary. ParagraphDisposition anchors are remapped
+to the same physical review positions.
+
+Corrections autosave only the ignored active Review Session. Tracked Gold does
+not change until full validation and explicit `Publish to Gold`. The preview is
+bound to the exact working-Gold hash and fails closed if another action makes it
+stale. Current Ctrl+Z/Undo and Rollback retain their append-workflow behavior;
+surgical corrections are not added to a new undo journal in this version.
+
 Active sessions are discoverable for source-migration guardrails:
 
 ```powershell

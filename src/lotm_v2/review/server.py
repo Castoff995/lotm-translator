@@ -123,6 +123,36 @@ class ReviewHandler(BaseHTTPRequestHandler):
                 result = self.server.session.disposition(
                     str(payload["language"]), str(payload["reason"]), payload.get("note"),
                 )
+            elif route == "/api/corrections/split/preview":
+                result = self.server.session.preview_split(
+                    str(payload["unit_id"]), payload.get("first_counts"),
+                )
+            elif route == "/api/corrections/split":
+                if payload.get("confirm") is not True:
+                    raise ReviewError("Explicit Split confirmation is required")
+                result = self.server.session.split_unit(
+                    str(payload["unit_id"]), payload.get("first_counts"),
+                    str(payload["expected_working_gold_sha256"]),
+                )
+            elif route == "/api/corrections/merge/preview":
+                result = self.server.session.preview_merge(str(payload["unit_id"]))
+            elif route == "/api/corrections/merge":
+                if payload.get("confirm") is not True:
+                    raise ReviewError("Explicit Merge confirmation is required")
+                result = self.server.session.merge_with_next(
+                    str(payload["unit_id"]), str(payload["expected_working_gold_sha256"]),
+                )
+            elif route == "/api/corrections/disposition/preview":
+                result = self.server.session.preview_disposition_edit(
+                    str(payload["paragraph_id"]), str(payload["reason"]), payload.get("note"),
+                )
+            elif route == "/api/corrections/disposition":
+                if payload.get("confirm") is not True:
+                    raise ReviewError("Explicit disposition correction confirmation is required")
+                result = self.server.session.edit_disposition(
+                    str(payload["paragraph_id"]), str(payload["reason"]), payload.get("note"),
+                    str(payload["expected_working_gold_sha256"]),
+                )
             elif route == "/api/undo":
                 result = self.server.session.undo()
             elif route == "/api/rollback":
