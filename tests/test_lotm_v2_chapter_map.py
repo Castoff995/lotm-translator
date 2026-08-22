@@ -14,6 +14,7 @@ from src.lotm_v2.domain import (
     SourceFormat, SourceId, SourceManifest, SourceRole,
 )
 from src.lotm_v2.gold.io import load_gold
+from src.lotm_v2.gold.validation import validate_gold_chapter
 from src.lotm_v2.infrastructure.corpus_io import load_chapter, load_manifest, save_manifest
 from src.lotm_v2.infrastructure.paths import PathPolicy
 from src.lotm_v2.ingest.chapter_map import (
@@ -146,20 +147,26 @@ class ChapterMapTests(unittest.TestCase):
         artifact = load_artifact(root / source_manifest.chapter(1).paragraphization_artifact)
         validate_artifact(artifact, load_epub_package(book), source_manifest, 1, value)
 
-    def test_existing_pilot_ids_hashes_and_gold_are_unchanged(self) -> None:
+    def test_existing_pilot_ids_hashes_and_gold_sources_are_unchanged(self) -> None:
         root = Path(__file__).resolve().parents[1]
         expected = {
             "zh": (70, "ac3bd992e582783a335a97dbca5493eb78b1d03606d2823e3b949f6cc9093858"),
             "en": (71, "789d93fed725fea45a78578911e1185f42c50c74fe963c5448be13055decd5b3"),
             "ru-official": (54, "bc7f4234d0653014146f061f6eef9f623b450bfb01bcc86d751771823d46f03c"),
         }
+        chapters = []
         for source, (count, digest) in expected.items():
             path = root / f"data/normalized/v2/{source}/ch_0001.json"
             chapter = load_chapter(path)
+            chapters.append(chapter)
             self.assertEqual((len(chapter.paragraphs), hashlib.sha256(path.read_bytes()).hexdigest()), (count, digest))
             self.assertEqual([str(item.id) for item in chapter.paragraphs], [f"lotm:{source}:0001:p{index:06d}" for index in range(1, count + 1)])
         gold = load_gold(root / "data/gold/v2/ch_0001.json")
-        self.assertEqual((len(gold.alignment_units), len(gold.paragraph_dispositions), len(gold.boundaries)), (0, 0, 0))
+        self.assertEqual(
+            {str(item.source_id): item.normalized_sha256 for item in gold.sources},
+            {source: digest for source, (_, digest) in expected.items()},
+        )
+        validate_gold_chapter(gold, tuple(chapters))
 
     def test_schemas_parse_and_no_later_phase_dependencies(self) -> None:
         root = Path(__file__).resolve().parents[1]

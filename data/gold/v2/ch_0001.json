@@ -23,7 +23,1232 @@
       "normalized_sha256": "bc7f4234d0653014146f061f6eef9f623b450bfb01bcc86d751771823d46f03c"
     }
   ],
-  "alignment_units": [],
-  "boundaries": [],
+  "alignment_units": [
+    {
+      "id": "lotm:0001:a000001",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000001"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000001"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000001"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000002",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000002",
+          "lotm:zh:0001:p000003",
+          "lotm:zh:0001:p000004"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000002",
+          "lotm:en:0001:p000003",
+          "lotm:en:0001:p000004"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000002"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000003",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000005"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000005"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000003"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000004",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000006"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000006"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000004",
+          "lotm:ru-official:0001:p000005"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000005",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000007",
+          "lotm:zh:0001:p000008"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000007",
+          "lotm:en:0001:p000008"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000006",
+          "lotm:ru-official:0001:p000007"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000006",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000009",
+          "lotm:zh:0001:p000010",
+          "lotm:zh:0001:p000011",
+          "lotm:zh:0001:p000012",
+          "lotm:zh:0001:p000013",
+          "lotm:zh:0001:p000014",
+          "lotm:zh:0001:p000015",
+          "lotm:zh:0001:p000016",
+          "lotm:zh:0001:p000017"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000009",
+          "lotm:en:0001:p000010",
+          "lotm:en:0001:p000011",
+          "lotm:en:0001:p000012",
+          "lotm:en:0001:p000013",
+          "lotm:en:0001:p000014",
+          "lotm:en:0001:p000015",
+          "lotm:en:0001:p000016",
+          "lotm:en:0001:p000017"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000008",
+          "lotm:ru-official:0001:p000009"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000007",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000018"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000018"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000010"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000008",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000019"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000019"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000011"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000009",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000020",
+          "lotm:zh:0001:p000021"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000020",
+          "lotm:en:0001:p000021"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000012",
+          "lotm:ru-official:0001:p000013"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000010",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000022"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000022"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000014"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000011",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000023"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000023"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000015"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000012",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000024"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000024"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000016",
+          "lotm:ru-official:0001:p000017"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000013",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000025"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000025"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000018"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000014",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000026"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000026"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000019"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000015",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000027"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000027"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000020"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000016",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000028"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000028"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000021",
+          "lotm:ru-official:0001:p000022"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000017",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000029"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000029"
+        ]
+      },
+      "ru": {
+        "gap": {
+          "reason": "omission",
+          "note": null
+        }
+      },
+      "flags": [
+        "omission"
+      ],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000018",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000030",
+          "lotm:zh:0001:p000031",
+          "lotm:zh:0001:p000032"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000030",
+          "lotm:en:0001:p000031",
+          "lotm:en:0001:p000032"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000023"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000019",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000033"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000033"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000024"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000020",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000034",
+          "lotm:zh:0001:p000035"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000034",
+          "lotm:en:0001:p000035"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000025"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000021",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000036",
+          "lotm:zh:0001:p000037"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000036"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000026"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000022",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000038",
+          "lotm:zh:0001:p000039",
+          "lotm:zh:0001:p000040"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000037",
+          "lotm:en:0001:p000038",
+          "lotm:en:0001:p000039"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000027",
+          "lotm:ru-official:0001:p000028",
+          "lotm:ru-official:0001:p000029"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000023",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000041"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000040"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000030"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000024",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000042"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000041"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000031"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000025",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000043"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000042"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000032"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000026",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000044"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000043"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000033"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000027",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000045"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000044"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000034"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000028",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000046"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000045"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000035"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000029",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000047"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000046"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000036"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000030",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000048"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000047"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000037"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000031",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000049"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000048"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000038"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000032",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000050"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000049"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000039"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000033",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000051"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000050"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000040"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000034",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000052"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000051"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000041"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000035",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000053"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000052"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000042"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000036",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000054",
+          "lotm:zh:0001:p000055"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000053"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000043"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000037",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000056",
+          "lotm:zh:0001:p000057"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000054",
+          "lotm:en:0001:p000055"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000044"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000038",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000058"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000056"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000045"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000039",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000059",
+          "lotm:zh:0001:p000060",
+          "lotm:zh:0001:p000061"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000057",
+          "lotm:en:0001:p000058",
+          "lotm:en:0001:p000059"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000046",
+          "lotm:ru-official:0001:p000047"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000040",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000062"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000060"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000048"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000041",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000063",
+          "lotm:zh:0001:p000064"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000061",
+          "lotm:en:0001:p000062"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000049"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000042",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000065"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000063"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000050"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000043",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000066"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000064"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000051"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000044",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000067"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000065"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000052"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000045",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000068"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000066"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000053"
+        ]
+      },
+      "flags": [],
+      "note": null
+    },
+    {
+      "id": "lotm:0001:a000046",
+      "zh": {
+        "paragraphs": [
+          "lotm:zh:0001:p000069",
+          "lotm:zh:0001:p000070"
+        ]
+      },
+      "en": {
+        "paragraphs": [
+          "lotm:en:0001:p000067",
+          "lotm:en:0001:p000068"
+        ]
+      },
+      "ru": {
+        "paragraphs": [
+          "lotm:ru-official:0001:p000054"
+        ]
+      },
+      "flags": [],
+      "note": null
+    }
+  ],
+  "paragraph_dispositions": [
+    {
+      "paragraph_id": "lotm:en:0001:p000069",
+      "reason": "metadata",
+      "note": null,
+      "after_alignment_unit": 46
+    },
+    {
+      "paragraph_id": "lotm:en:0001:p000070",
+      "reason": "metadata",
+      "note": null,
+      "after_alignment_unit": 46
+    },
+    {
+      "paragraph_id": "lotm:en:0001:p000071",
+      "reason": "footnote",
+      "note": null,
+      "after_alignment_unit": 46
+    }
+  ],
+  "boundaries": [
+    {
+      "after": "lotm:0001:a000001",
+      "decision": "BREAK",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000002",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000003",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000004",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000005",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000006",
+      "decision": "BREAK",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000007",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000008",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000009",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000010",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000011",
+      "decision": "BREAK",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000012",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000013",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000014",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000015",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000016",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000017",
+      "decision": "BREAK",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000018",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000019",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000020",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000021",
+      "decision": "BREAK",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000022",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000023",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000024",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000025",
+      "decision": "BREAK",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000026",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000027",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000028",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000029",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000030",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000031",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000032",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000033",
+      "decision": "BREAK",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000034",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000035",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000036",
+      "decision": "BREAK",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000037",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000038",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000039",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000040",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000041",
+      "decision": "BREAK",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000042",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000043",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000044",
+      "decision": "JOIN",
+      "note": null
+    },
+    {
+      "after": "lotm:0001:a000045",
+      "decision": "BREAK",
+      "note": null
+    }
+  ],
   "notes": "Generated draft. Alignment units and JOIN/BREAK boundaries require human review."
 }
