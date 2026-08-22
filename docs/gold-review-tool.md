@@ -29,8 +29,13 @@ instead of mixing corpus revisions.
 The main screen builds one column per canonical ZH, EN and RU source from the
 loaded data. It shows paragraph ID, type and normalized text; expand `raw /
 provenance` to inspect raw text, exact source lines and paragraphization data.
-The previous paragraph and the next three provide context but are never selected
-automatically.
+By default, the previous paragraph and four positions beginning at the current
+cursor are displayed. `Контекст вперёд` adjusts that display range independently
+for ZH, EN and RU without moving a cursor or changing an alignment selection.
+The displayed range always expands to include every paragraph selected by the
+current alignment count, even when the saved display-context value is smaller.
+Display-context preferences are browser-local UI state scoped by work, chapter
+and language; they are not Review Session or Gold data.
 
 For every language choose how many consecutive paragraphs belong to the next
 unit. There is no hard group-size limit. Select `GAP` instead when that source
@@ -63,7 +68,7 @@ The Hint Target is an independent UI-only ZH Paragraph selection that persists
 across panel open/close and survives review state changes:
 
 ```text
-review cursor != alignment selection count != Hint Target
+review cursor != alignment selection count != display context != Hint Target
 ```
 
 A reviewer may move this target with:

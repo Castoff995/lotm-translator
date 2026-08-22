@@ -319,6 +319,12 @@ class ReviewSessionTests(unittest.TestCase):
         self.assertIn("$('#previewDialog').close();pending=null", javascript)
         self.assertIn("u.selected[l].map", javascript)
         self.assertNotIn("u.sides[l].selected", javascript)
+        self.assertIn("function visibleForward(language,selected){return Math.max(displayForward[language]||4,selected)}", javascript)
+        self.assertIn("goldReviewDisplayContext:${state.work_id}:${state.chapter}:${language}", javascript)
+        self.assertIn('class="displayContext" data-language="${l}"', javascript)
+        self.assertIn("setDisplayContext(x.dataset.language,x.value)", javascript)
+        display_setter = javascript.split("function setDisplayContext", 1)[1].split("async function load", 1)[0]
+        self.assertNotIn("api(", display_setter)
         self.assertIn("let hintBundle=null,hintParagraph=null,hintTargetId=null", javascript)
         self.assertIn("generation!==hintRequestGeneration", javascript)
         self.assertIn("bundle.paragraph_id!==target.id", javascript)
