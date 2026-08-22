@@ -17,6 +17,15 @@
   <main id="columns"></main>
   <section id="hintsPanel" class="assistPanel" hidden>
     <div class="panelHead"><div><h2>LOCAL MACHINE TRANSLATION HINT</h2><p>Локальная подсказка. Не source truth, не Gold и не решение paragraph alignment.</p></div><button id="closeHints">Закрыть</button></div>
+    <div class="hintNavigation" aria-label="Навигация по китайским абзацам">
+      <button id="hintPrevious">← Предыдущий</button>
+      <strong id="hintTargetMeta">Hint Target не выбран</strong>
+      <button id="hintNext">Следующий →</button>
+      <label>Перейти к № <input id="hintGoTo" type="number" min="1"></label>
+      <button id="hintGo">Открыть</button>
+      <button id="hintCursor">К текущему ZH cursor</button>
+      <button id="hintRetry" hidden>Повторить</button>
+    </div>
     <div id="hintStatus" role="status"></div>
     <div id="hintContent"></div>
   </section>

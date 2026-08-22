@@ -57,9 +57,23 @@ browser; neither is corpus truth.
 
 ## Local Chinese hints and glossary
 
-The optional Phase 2 hints subsystem is opened explicitly with `ZH hints`.
-Nothing is loaded at Review Tool startup. For the current displayed ZH
-Paragraph it may run this local-only pipeline:
+The optional Phase 2 hints subsystem is opened explicitly with a local `ZH hints`
+action on a visible Chinese paragraph. Nothing is loaded at Review Tool startup.
+The Hint Target is an independent UI-only ZH Paragraph selection that persists
+across panel open/close and survives review state changes:
+
+```text
+review cursor != alignment selection count != Hint Target
+```
+
+A reviewer may move this target with:
+
+- `Previous` / `Next` (among physical ZH paragraphs),
+- `Go to index` (1..N),
+- `Jump to current cursor` (selects the Paragraph at `state.sources.zh.cursor`),
+- `Close hints` / `Open ZH hints` (state is preserved between toggles).
+
+For the target paragraph, hints execute this local-only pipeline:
 
 ```text
 normalized ZH text (read-only input)
@@ -90,6 +104,16 @@ glossary entry stores a stable term ID, canonical ZH/EN, nullable canonical RU,
 status (`needs_ru`, `complete`, or `needs_review`), language-specific aliases,
 exact ZH Paragraph character span, notes, and created/updated provenance.
 Duplicate ZH canonical forms or aliases are shown rather than overwritten.
+
+Glossary preview uses the *current Hint Target paragraph ID and selected
+paragraph-local offsets* from `normalized_text`; the same offsets are written
+when terms are added. This keeps terminology evidence tied to a physical paragraph,
+rather than the cursor state.
+
+The hint workflow is intentionally read-only for Review data:
+alignment units, dispositions, boundaries, review session cursor progress, and Gold
+state do not change when navigating hints, opening/closing the panel, or making
+hint and glossary-preview requests.
 
 The `LOTM Glossary` panel supports search, status filtering, counts, and source
 references. Known-term highlighting is opt-in. A new entry starts with

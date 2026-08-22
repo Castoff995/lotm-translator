@@ -7,6 +7,7 @@ import tempfile
 import threading
 import unittest
 from pathlib import Path
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from src.lotm_v2 import GOLD_SCHEMA_VERSION
@@ -282,6 +283,49 @@ class ReviewSessionTests(unittest.TestCase):
             server.server_close()
             thread.join(timeout=3)
 
+    def test_http_preview_and_confirm_preserve_three_three_one_counts(self) -> None:
+        fixture = Fixture(self.root, (4, 4, 2))
+        session = ReviewWorkspace(fixture.gold_path, self.root)
+        server = ReviewHTTPServer(("127.0.0.1", 0), session)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        base = f"http://127.0.0.1:{server.server_port}"
+        headers = {"Content-Type": "application/json", "X-Review-Token": server.review_token}
+        original_gold = fixture.gold_path.read_bytes()
+        body = json.dumps(selection(3, 3, 1)).encode("utf-8")
+        try:
+            preview_request = Request(base + "/api/preview", data=body, method="POST", headers=headers)
+            preview = json.loads(urlopen(preview_request, timeout=3).read())
+            self.assertEqual(
+                {language: len(preview["selected"][language]) for language in ("zh", "en", "ru")},
+                {"zh": 3, "en": 3, "ru": 1},
+            )
+
+            confirm_request = Request(base + "/api/confirm", data=body, method="POST", headers=headers)
+            confirmed = json.loads(urlopen(confirm_request, timeout=3).read())
+            self.assertEqual(confirmed["progress"]["cursors"], {"zh": 3, "en": 3, "ru": 1})
+            self.assertEqual(fixture.gold_path.read_bytes(), original_gold)
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
+
+    def test_reviewer_frontend_preserves_review_contract_and_independent_hint_target(self) -> None:
+        static_root = Path(__file__).parents[1] / "src" / "lotm_v2" / "review" / "static"
+        javascript = (static_root / "app.js").read_text(encoding="utf-8")
+        html = (static_root / "index.html").read_text(encoding="utf-8")
+
+        self.assertIn("{count:Number(box.querySelector('.count').value)}", javascript)
+        self.assertIn("$('#previewDialog').close();pending=null", javascript)
+        self.assertIn("u.selected[l].map", javascript)
+        self.assertNotIn("u.sides[l].selected", javascript)
+        self.assertIn("let hintBundle=null,hintParagraph=null,hintTargetId=null", javascript)
+        self.assertIn("generation!==hintRequestGeneration", javascript)
+        self.assertIn("bundle.paragraph_id!==target.id", javascript)
+        self.assertIn("data-hint-target", javascript)
+        for control_id in ("hintPrevious", "hintNext", "hintGoTo", "hintGo", "hintCursor", "hintRetry"):
+            self.assertIn(f'id="{control_id}"', html)
+
     def test_hints_api_and_glossary_preview_do_not_mutate_gold(self) -> None:
         class Translation:
             provider_id = "synthetic-translation:v1"
@@ -309,26 +353,82 @@ class ReviewSessionTests(unittest.TestCase):
         original_gold = fixture.gold_path.read_bytes()
         try:
             paragraph = fixture.chapters[0].paragraphs[0]
+            future_paragraph = fixture.chapters[0].paragraphs[2]
+            en_paragraph = fixture.chapters[1].paragraphs[0]
+            ru_paragraph = fixture.chapters[2].paragraphs[0]
+            session_path = session.session_path
+            self.assertIsNotNone(session_path)
+            session.confirm(selection())
+            self.assertEqual(session.snapshot()["progress"]["cursors"], {"zh": 1, "en": 1, "ru": 1})
+            session_before = session_path.read_bytes()
             headers = {"Content-Type": "application/json", "X-Review-Token": server.review_token}
+
             hint_request = Request(
                 base + "/api/hints", data=json.dumps({"paragraph_id": str(paragraph.id)}).encode(),
                 method="POST", headers=headers,
             )
             hint = json.loads(urlopen(hint_request, timeout=3).read())
+            self.assertEqual(hint["paragraph_id"], str(paragraph.id))
             self.assertEqual(hint["label"], "LOCAL MACHINE TRANSLATION HINT")
             self.assertEqual(hint["alignments"][0]["score"], 0.8)
+
+            future_hint_request = Request(
+                base + "/api/hints", data=json.dumps({"paragraph_id": str(future_paragraph.id)}).encode(),
+                method="POST", headers=headers,
+            )
+            future_hint = json.loads(urlopen(future_hint_request, timeout=3).read())
+            self.assertEqual(future_hint["paragraph_id"], str(future_paragraph.id))
+
+            invalid_request = Request(
+                base + "/api/hints", data=json.dumps({"paragraph_id": "en:p1"}).encode(),
+                method="POST", headers=headers,
+            )
+            with self.assertRaises(HTTPError) as invalid_id_error:
+                urlopen(invalid_request, timeout=3).read()
+            self.assertEqual(invalid_id_error.exception.code, 400)
+
+            en_request = Request(
+                base + "/api/hints", data=json.dumps({"paragraph_id": str(en_paragraph.id)}).encode(),
+                method="POST", headers=headers,
+            )
+            with self.assertRaises(HTTPError) as en_id_error:
+                urlopen(en_request, timeout=3).read()
+            self.assertEqual(en_id_error.exception.code, 400)
+
+            ru_request = Request(
+                base + "/api/hints", data=json.dumps({"paragraph_id": str(ru_paragraph.id)}).encode(),
+                method="POST", headers=headers,
+            )
+            with self.assertRaises(HTTPError) as ru_id_error:
+                urlopen(ru_request, timeout=3).read()
+            self.assertEqual(ru_id_error.exception.code, 400)
+
+            unknown_request = Request(
+                base + "/api/hints", data=json.dumps({"paragraph_id": "synthetic-work:zh-test:0007:p999999"}).encode(),
+                method="POST", headers=headers,
+            )
+            with self.assertRaises(HTTPError) as unknown_id_error:
+                urlopen(unknown_request, timeout=3).read()
+            self.assertEqual(unknown_id_error.exception.code, 400)
+
             preview_request = Request(
                 base + "/api/glossary/preview",
                 data=json.dumps({
-                    "paragraph_id": str(paragraph.id), "start_offset": 0,
-                    "end_offset": len(paragraph.normalized_text),
-                    "zh_term": paragraph.normalized_text, "en_term": "Synthetic term",
+                    "paragraph_id": str(future_paragraph.id),
+                    "start_offset": 1,
+                    "end_offset": 1 + len(future_paragraph.normalized_text[1:4]),
+                    "zh_term": future_paragraph.normalized_text[1:4],
+                    "en_term": "Synthetic term",
                 }).encode(), method="POST", headers=headers,
             )
             preview = json.loads(urlopen(preview_request, timeout=3).read())
             self.assertFalse(preview["duplicate"])
             self.assertFalse(glossary.path.exists())
+            self.assertEqual(preview["candidate"]["source"]["paragraph_id"], str(future_paragraph.id))
+            self.assertEqual(preview["candidate"]["source"]["start_offset"], 1)
+            self.assertEqual(preview["candidate"]["source"]["end_offset"], 1 + len(future_paragraph.normalized_text[1:4]))
             self.assertEqual(fixture.gold_path.read_bytes(), original_gold)
+            self.assertEqual(session_path.read_bytes(), session_before)
         finally:
             server.shutdown()
             server.server_close()

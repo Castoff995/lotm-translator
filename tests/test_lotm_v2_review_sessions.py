@@ -116,7 +116,7 @@ class PersistentReviewSessionTests(unittest.TestCase):
         workspace = ReviewWorkspace(fixture.gold_path, self.root)
         session_id = workspace.session_document.session_id
         payload = json.loads(self.active_path().read_text(encoding="utf-8"))
-        for compatible_version in ("0.1.0", "99.0.0"):
+        for compatible_version in ("0.1.0", "1.0.0", "99.0.0"):
             payload["created_with_reviewer"] = compatible_version
             payload["last_opened_with_reviewer"] = compatible_version
             write_json_atomic(self.active_path(), payload)

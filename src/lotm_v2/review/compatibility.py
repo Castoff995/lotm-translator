@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from .session_model import ReviewSessionDocument
 
 
-REVIEW_APP_VERSION = "1.0.0"
+REVIEW_APP_VERSION = "1.1.0"
 SESSION_SCHEMA_VERSION = "1.0-draft"
 REVIEW_SEMANTICS_VERSION = "1.0"
 
