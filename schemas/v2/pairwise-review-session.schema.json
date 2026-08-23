@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://castoff995.github.io/lotm-translator/schemas/v2/pairwise-review-session.schema.json",
+  "title": "LOTM v2 Pairwise Review Session",
+  "type": "object",
+  "required": [
+    "session_schema_version", "review_semantics_version", "session_id", "status",
+    "created_with_reviewer", "last_opened_with_reviewer", "created_at", "updated_at",
+    "target_pairwise_gold_path", "target_pairwise_gold_schema_version",
+    "base_pairwise_gold_file_sha256", "work_id", "chapter", "pair_key",
+    "source_snapshot", "bootstrap_trilingual_gold_path",
+    "bootstrap_trilingual_gold_document_sha256", "baseline_gold", "revision",
+    "journal", "request_history", "working_gold", "publication_request_id",
+    "publication_expected_revision", "publication_expected_document_sha256",
+    "publication_started_at", "published_gold_file_sha256", "published_at"
+  ],
+  "properties": {
+    "session_schema_version": {"const": "1.1-draft"},
+    "review_semantics_version": {"const": "1.1"},
+    "session_id": {"type": "string", "format": "uuid"},
+    "status": {"enum": ["active", "published", "discarded"]},
+    "created_with_reviewer": {"type": "string", "minLength": 1},
+    "last_opened_with_reviewer": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "minLength": 1},
+    "updated_at": {"type": "string", "minLength": 1},
+    "target_pairwise_gold_path": {"type": "string", "minLength": 1},
+    "target_pairwise_gold_schema_version": {"const": "1.0-draft"},
+    "base_pairwise_gold_file_sha256": {"$ref": "#/$defs/sha256"},
+    "work_id": {"type": "string", "minLength": 1},
+    "chapter": {"type": "integer", "minimum": 1},
+    "pair_key": {"type": "string", "minLength": 3},
+    "source_snapshot": {
+      "type": "array", "minItems": 2, "maxItems": 2,
+      "items": {"$ref": "pairwise-gold.schema.json#/$defs/source"}
+    },
+    "bootstrap_trilingual_gold_path": {"type": ["string", "null"]},
+    "bootstrap_trilingual_gold_document_sha256": {
+      "anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+    },
+    "baseline_gold": {"$ref": "pairwise-gold.schema.json"},
+    "revision": {"type": "integer", "minimum": 0},
+    "journal": {"type": "array", "items": {"$ref": "#/$defs/event"}},
+    "request_history": {"type": "array", "items": {"$ref": "#/$defs/request"}},
+    "working_gold": {"$ref": "pairwise-gold.schema.json"},
+    "publication_request_id": {"type": ["string", "null"], "format": "uuid"},
+    "publication_expected_revision": {"type": ["integer", "null"], "minimum": 0},
+    "publication_expected_document_sha256": {
+      "anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+    },
+    "publication_started_at": {"type": ["string", "null"]},
+    "published_gold_file_sha256": {
+      "anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+    },
+    "published_at": {"type": ["string", "null"]}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "event": {
+      "type": "object",
+      "required": [
+        "sequence", "request_id", "operation", "payload",
+        "before_working_gold_sha256", "after_working_gold_sha256", "created_at"
+      ],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 1},
+        "request_id": {"type": "string", "format": "uuid"},
+        "operation": {"enum": [
+          "confirm_unit", "disposition", "rollback", "split", "merge",
+          "edit_disposition"
+        ]},
+        "payload": {"type": "object"},
+        "before_working_gold_sha256": {"$ref": "#/$defs/sha256"},
+        "after_working_gold_sha256": {"$ref": "#/$defs/sha256"},
+        "created_at": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "request": {
+      "type": "object",
+      "required": [
+        "request_id", "operation", "payload_sha256", "resulting_revision",
+        "resulting_working_gold_sha256", "created_at"
+      ],
+      "properties": {
+        "request_id": {"type": "string", "format": "uuid"},
+        "operation": {"type": "string", "minLength": 1},
+        "payload_sha256": {"$ref": "#/$defs/sha256"},
+        "resulting_revision": {"type": "integer", "minimum": 1},
+        "resulting_working_gold_sha256": {"$ref": "#/$defs/sha256"},
+        "created_at": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

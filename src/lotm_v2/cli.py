@@ -1,4 +1,4 @@
-"""Dependency-light CLI for Architecture v2 phases 1–2."""
+"""Dependency-light CLI for Architecture v2 foundation through Phase 3 evaluation."""
 from __future__ import annotations
 
 import argparse
@@ -7,11 +7,21 @@ import json
 from pathlib import Path
 
 from . import NORMALIZED_SCHEMA_VERSION, SOURCE_MANIFEST_SCHEMA_VERSION
+from .alignment.evaluation import evaluate_proposal_files
+from .alignment.io import load_proposal
+from .alignment.validation import load_and_validate_proposal, validation_summary
 from .domain import Chapter, Language, ParagraphizationMode, SourceDescriptor, SourceFormat, SourceId, SourceManifest, SourceRole
 from .gold.model import GoldChapter
 from .gold.draft import create_gold_draft
 from .gold.io import load_gold, save_gold
 from .gold.validation import GoldValidationError, validate_gold_chapter
+from .gold.pairwise.bootstrap import inspect_trilingual_bootstrap
+from .gold.pairwise.draft import confirm_pairwise_gold, create_pairwise_gold_draft
+from .gold.pairwise.io import (
+    load_pairwise_gold, pairwise_gold_document_sha256, save_pairwise_gold,
+)
+from .gold.pairwise.model import PairwiseDirection
+from .gold.pairwise.validation import load_and_validate_pairwise_gold, pairwise_validation_summary
 from .infrastructure.corpus_io import load_chapter, load_manifest, save_chapter, save_manifest
 from .infrastructure.paths import PathPolicy
 from .ingest import ingest_epub_package, ingest_text_chapter, inspect_epub
@@ -122,6 +132,46 @@ def build_parser() -> argparse.ArgumentParser:
     session_status = commands.add_parser("review-session-status", help="Inspect the active session for one Gold target")
     session_status.add_argument("gold", type=Path)
     session_status.add_argument("--root", type=Path, default=Path.cwd())
+
+    proposal_validate = commands.add_parser(
+        "alignment-proposal-validate", help="Validate one machine pairwise-alignment proposal read-only",
+    )
+    proposal_validate.add_argument("proposal", type=Path)
+    proposal_validate.add_argument("--root", type=Path, default=Path.cwd())
+
+    alignment_evaluate = commands.add_parser(
+        "alignment-evaluate", help="Evaluate one valid pairwise proposal against fully validated Gold",
+    )
+    alignment_evaluate.add_argument("proposal", type=Path)
+    alignment_evaluate.add_argument("gold", type=Path)
+    alignment_evaluate.add_argument("--root", type=Path, default=Path.cwd())
+    alignment_evaluate.add_argument(
+        "--allow-draft-gold", action="store_true",
+        help="Development-only evaluation against draft Pairwise Gold",
+    )
+
+    pairwise_draft = commands.add_parser("pairwise-gold-draft", help="Create an empty independent Pairwise Gold draft")
+    pairwise_draft.add_argument("left_normalized", type=Path)
+    pairwise_draft.add_argument("right_normalized", type=Path)
+    pairwise_draft.add_argument("--direction", choices=[item.value for item in PairwiseDirection], required=True)
+    pairwise_draft.add_argument("--output", type=Path)
+    pairwise_draft.add_argument("--root", type=Path, default=Path.cwd())
+
+    pairwise_validate = commands.add_parser("pairwise-gold-validate", help="Fully validate independent Pairwise Gold")
+    pairwise_validate.add_argument("pairwise_gold", type=Path)
+    pairwise_validate.add_argument("--root", type=Path, default=Path.cwd())
+
+    pairwise_confirm = commands.add_parser("pairwise-gold-confirm", help="Hash-guard and confirm fully valid Pairwise Gold")
+    pairwise_confirm.add_argument("pairwise_gold", type=Path)
+    pairwise_confirm.add_argument("--expected-document-sha256", required=True)
+    pairwise_confirm.add_argument("--expected-file-sha256", required=True)
+    pairwise_confirm.add_argument("--root", type=Path, default=Path.cwd())
+
+    bootstrap = commands.add_parser("pairwise-bootstrap-inspect", help="Inspect non-authoritative trilingual bootstrap regions")
+    bootstrap.add_argument("trilingual_gold", type=Path)
+    bootstrap.add_argument("--left-source-id", required=True)
+    bootstrap.add_argument("--right-source-id", required=True)
+    bootstrap.add_argument("--root", type=Path, default=Path.cwd())
     return parser
 
 
@@ -258,8 +308,13 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Gold chapter is valid: {args.gold} ({gold.status.value})")
         elif args.command == "review-session-list":
             from .review.session_io import active_session_metadata
+            from .pairwise_review.session_io import active_pairwise_session_metadata
             paths = PathPolicy(args.root)
-            print(json.dumps(active_session_metadata(paths.review_sessions()), ensure_ascii=False, indent=2))
+            print(json.dumps(
+                active_session_metadata(paths.review_sessions())
+                + active_pairwise_session_metadata(paths.pairwise_review_sessions()),
+                ensure_ascii=False, indent=2,
+            ))
         elif args.command == "review-session-status":
             from .review.session_io import load_session, session_to_dict
             paths = PathPolicy(args.root)
@@ -271,6 +326,57 @@ def main(argv: list[str] | None = None) -> int:
                 payload["session"] = session_to_dict(document)
                 payload["session"].pop("working_gold", None)
             print(json.dumps(payload, ensure_ascii=False, indent=2))
+        elif args.command == "alignment-proposal-validate":
+            proposal = load_proposal(args.proposal)
+            validated = load_and_validate_proposal(proposal, args.root)
+            print(json.dumps(validation_summary(validated), ensure_ascii=False, indent=2))
+        elif args.command == "alignment-evaluate":
+            result = evaluate_proposal_files(
+                args.proposal, args.gold, args.root, allow_draft_gold=args.allow_draft_gold,
+            )
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+        elif args.command == "pairwise-gold-draft":
+            paths = PathPolicy(args.root)
+            left_path, right_path = args.left_normalized.resolve(), args.right_normalized.resolve()
+            gold = create_pairwise_gold_draft(
+                load_chapter(left_path), load_chapter(right_path), left_path, right_path,
+                PairwiseDirection(args.direction), paths,
+            )
+            output = args.output or paths.pairwise_gold_chapter(
+                gold.left_source.source_id, gold.right_source.source_id, gold.chapter,
+            )
+            output = paths.require_pairwise_gold_path(
+                output, gold.left_source.source_id, gold.right_source.source_id, gold.chapter,
+            )
+            save_pairwise_gold(output, gold, allow_identical=True)
+            print(json.dumps({
+                "created": str(output), "status": gold.status.value,
+                "document_sha256": pairwise_gold_document_sha256(gold),
+                "inferred_decisions": 0,
+            }, ensure_ascii=False, indent=2))
+        elif args.command == "pairwise-gold-validate":
+            gold = load_pairwise_gold(args.pairwise_gold)
+            PathPolicy(args.root).require_pairwise_gold_path(
+                args.pairwise_gold, gold.left_source.source_id, gold.right_source.source_id, gold.chapter,
+            )
+            print(json.dumps(
+                pairwise_validation_summary(load_and_validate_pairwise_gold(gold, args.root)),
+                ensure_ascii=False, indent=2,
+            ))
+        elif args.command == "pairwise-gold-confirm":
+            gold = confirm_pairwise_gold(
+                args.pairwise_gold, args.root, args.expected_document_sha256,
+                args.expected_file_sha256,
+            )
+            print(json.dumps({
+                "confirmed": str(args.pairwise_gold), "status": gold.status.value,
+                "document_sha256": pairwise_gold_document_sha256(gold),
+            }, ensure_ascii=False, indent=2))
+        elif args.command == "pairwise-bootstrap-inspect":
+            print(json.dumps(inspect_trilingual_bootstrap(
+                args.trilingual_gold, args.root,
+                args.left_source_id, args.right_source_id,
+            ), ensure_ascii=False, indent=2))
         return 0
     except (OSError, KeyError, ValueError, GoldValidationError) as error:
         parser.exit(2, f"error: {error}\n")

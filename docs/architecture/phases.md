@@ -22,3 +22,12 @@ Task 004A is a second narrow Phase 1 amendment. It freezes source navigation to
 canonical corpus chapter identity before EPUB paragraphization. Source-local
 numbering resets and ancillary navigation entries remain source metadata, not
 Paragraph alignment or Gold decisions.
+
+Task 005 establishes the Phase 3 pairwise-proposal and read-only evaluation
+mechanics. Task 005.3 establishes independent human Pairwise Gold truth, a
+dedicated review lifecycle, and confirmed-by-default evaluation. Trilingual
+Gold remains bootstrap/later reconciliation truth rather than an authoritative
+pairwise benchmark. These tasks do not implement a production
+alignment generator, candidate pool, reranker, ensemble, automatic review
+decision, or semantic grouping. Phase 3 remains open until a later generator is
+implemented and evaluated against the frozen protocol.

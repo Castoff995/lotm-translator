@@ -8,11 +8,18 @@ import tempfile
 from typing import Any
 
 
-def read_json(path: Path) -> dict[str, Any]:
-    payload = json.loads(path.read_text(encoding="utf-8"))
+def decode_json_object(data: bytes, context: str = "JSON document") -> dict[str, Any]:
+    try:
+        payload = json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise ValueError(f"Invalid UTF-8 JSON in {context}") from error
     if not isinstance(payload, dict):
-        raise ValueError(f"Expected a JSON object in {path}")
+        raise ValueError(f"Expected a JSON object in {context}")
     return payload
+
+
+def read_json(path: Path) -> dict[str, Any]:
+    return decode_json_object(path.read_bytes(), str(path))
 
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:

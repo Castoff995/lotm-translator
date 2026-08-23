@@ -99,6 +99,8 @@ def active_session_metadata(root: Path) -> list[dict[str, Any]]:
         return []
     result: list[dict[str, Any]] = []
     for path in sorted(root.rglob("*.active.json")):
+        if "pairwise" in path.relative_to(root).parts:
+            continue
         document = load_session(path)
         result.append({
             "session_id": document.session_id,
@@ -118,4 +120,3 @@ def active_session_metadata(root: Path) -> list[dict[str, Any]]:
             "path": str(path),
         })
     return result
-

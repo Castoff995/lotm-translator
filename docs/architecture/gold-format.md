@@ -5,6 +5,20 @@ no dependency, is deterministic and diff-friendly, and has unambiguous schema
 types. YAML comments are attractive for editing, but parser differences and
 implicit scalar conversion would weaken reproducibility.
 
+This document describes the existing trilingual Gold format. Independent
+Phase 3 ZH-EN and ZH-RU benchmark truth uses the separate Pairwise Gold contract
+in [`pairwise-gold.md`](pairwise-gold.md). Trilingual Gold may assist Pairwise
+Review as read-only bootstrap context, but it is not automatically copied or
+scored as authoritative pairwise truth.
+
+Legacy trilingual Gold `1.0-draft` preserves its established acceptance
+semantics: Paragraph references inside one language side must be unique and
+monotonic, but they are not subject to the newer Pairwise within-unit physical
+contiguity invariant. Independent Pairwise Gold and Pairwise Alignment Proposal
+artifacts do require each paragraph-backed side to be one contiguous physical
+Paragraph range. Pairwise validation rules must not be applied retroactively to
+reinterpret existing trilingual human Gold under the unchanged schema version.
+
 A gold chapter contains version/status, normalized source references with
 checksums, alignment units that reference stable paragraph IDs, explicit gaps,
 and independent semantic boundaries. Paragraph text remains canonical in the

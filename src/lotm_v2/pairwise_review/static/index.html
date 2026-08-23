@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pairwise Gold Review Tool</title><link rel="stylesheet" href="/styles.css"></head>
+<body data-token="__REVIEW_TOKEN__">
+<header><div><h1>Pairwise Gold Review Tool</h1><p id="identity">Загрузка…</p></div><div class="toolbar">
+<button id="undo" data-write>Undo</button><button id="validate">Full validation</button><button id="publish" data-write>Publish draft</button><button id="discard" data-write>Discard session</button></div></header>
+<div id="notice" role="status"></div><section id="bootstrap" hidden></section><section id="progress"></section>
+<main id="sources"></main>
+<section id="composer"><h2>Новая pairwise группа</h2><div class="controls">
+<fieldset><legend>Left</legend><label>Количество <input id="leftCount" type="number" min="1" value="1"></label><label><input id="leftGap" type="checkbox"> GAP</label><select id="leftReason"><option>omission</option><option>addition</option><option>translator_note</option><option>edition_difference</option></select></fieldset>
+<fieldset><legend>Right</legend><label>Количество <input id="rightCount" type="number" min="1" value="1"></label><label><input id="rightGap" type="checkbox"> GAP</label><select id="rightReason"><option>omission</option><option>addition</option><option>translator_note</option><option>edition_difference</option></select></fieldset></div>
+<label>Комментарий <input id="note"></label> <button id="useBootstrap" data-write>Use remaining bootstrap span</button> <button id="preview" data-write>Preview</button>
+<div class="disposition"><b>Disposition текущего Paragraph:</b> <select id="dispSide"><option value="left">left</option><option value="right">right</option></select><select id="dispReason"><option>heading</option><option>metadata</option><option>separator</option><option>footnote</option><option>publisher_note</option><option>translator_note</option><option>non_story_content</option><option>other</option></select><input id="dispNote" placeholder="note"><button id="disposition" data-write>Preview disposition</button></div></section>
+<section><h2>Pairwise units / history</h2><label>Rollback: оставить units <input id="rollbackCount" type="number" min="0" value="0"></label><button id="rollback" data-write>Preview rollback</button><div id="units"></div></section>
+<section><h2>ParagraphDispositions</h2><div id="dispositions"></div></section>
+<dialog id="previewDialog"><div class="dialogShell"><div class="dialogHeader"><h2 id="previewTitle">Preview — human confirmation required</h2></div><div id="dialogError" class="dialogError" role="alert"></div><pre id="previewBody" class="dialogBody"></pre><div class="dialogFooter"><span id="dialogPending" role="status"></span><button id="cancelPreview" type="button">Cancel</button><button id="confirm" type="button" data-write>Confirm exact preview</button></div></div></dialog>
+<script src="/app.js"></script></body></html>

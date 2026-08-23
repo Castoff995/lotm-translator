@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://castoff995.github.io/lotm-translator/schemas/v2/pairwise-gold.schema.json",
+  "title": "LOTM v2 Independent Pairwise Gold",
+  "type": "object",
+  "required": [
+    "schema_version", "artifact_type", "status", "work_id", "chapter", "direction",
+    "left_source", "right_source", "alignment_units", "paragraph_dispositions",
+    "provenance", "notes"
+  ],
+  "$defs": {
+    "source": {
+      "type": "object",
+      "required": [
+        "source_id", "language", "normalized_path", "normalized_sha256",
+        "normalized_schema_version", "paragraph_count"
+      ],
+      "properties": {
+        "source_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+        "language": {"enum": ["zh", "en", "ru"]},
+        "normalized_path": {"type": "string", "minLength": 1},
+        "normalized_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "normalized_schema_version": {"type": "string", "minLength": 1},
+        "paragraph_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "gap": {
+      "type": "object",
+      "required": ["reason", "note"],
+      "properties": {
+        "reason": {"enum": ["addition", "omission", "translator_note", "edition_difference"]},
+        "note": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "side": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["paragraphs"],
+          "properties": {
+            "paragraphs": {
+              "type": "array", "minItems": 1, "uniqueItems": true,
+              "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*:[a-z0-9][a-z0-9-]*:[0-9]{4}:p[0-9]{6}$"}
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["gap"],
+          "properties": {"gap": {"$ref": "#/$defs/gap"}},
+          "additionalProperties": false
+        }
+      ]
+    },
+    "disposition": {
+      "type": "object",
+      "required": ["paragraph_id", "reason", "note", "after_alignment_unit"],
+      "properties": {
+        "paragraph_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*:[a-z0-9][a-z0-9-]*:[0-9]{4}:p[0-9]{6}$"},
+        "reason": {"enum": ["heading", "metadata", "separator", "footnote", "publisher_note", "translator_note", "non_story_content", "other"]},
+        "note": {"type": ["string", "null"]},
+        "after_alignment_unit": {"type": "integer", "minimum": 0}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"reason": {"const": "other"}}, "required": ["reason"]},
+          "then": {"properties": {"note": {"type": "string", "minLength": 1}}}
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "schema_version": {"const": "1.0-draft"},
+    "artifact_type": {"const": "pairwise_gold"},
+    "status": {"enum": ["draft", "confirmed"]},
+    "work_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "chapter": {"type": "integer", "minimum": 1},
+    "direction": {"enum": ["zh-en", "zh-ru"]},
+    "left_source": {"$ref": "#/$defs/source"},
+    "right_source": {"$ref": "#/$defs/source"},
+    "alignment_units": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "left", "right", "note"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "left": {"$ref": "#/$defs/side"},
+          "right": {"$ref": "#/$defs/side"},
+          "note": {"type": ["string", "null"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "paragraph_dispositions": {"type": "array", "items": {"$ref": "#/$defs/disposition"}},
+    "provenance": {
+      "type": "object",
+      "required": [
+        "creation_mode", "bootstrap_trilingual_gold_path",
+        "bootstrap_trilingual_gold_document_sha256"
+      ],
+      "properties": {
+        "creation_mode": {"enum": ["empty", "trilingual_bootstrap"]},
+        "bootstrap_trilingual_gold_path": {"type": ["string", "null"]},
+        "bootstrap_trilingual_gold_document_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      },
+      "additionalProperties": false
+    },
+    "notes": {"type": ["string", "null"]}
+  },
+  "allOf": [
+    {"properties": {"left_source": {"properties": {"language": {"const": "zh"}}}}},
+    {
+      "if": {"properties": {"direction": {"const": "zh-en"}}, "required": ["direction"]},
+      "then": {"properties": {"right_source": {"properties": {"language": {"const": "en"}}}}}
+    },
+    {
+      "if": {"properties": {"direction": {"const": "zh-ru"}}, "required": ["direction"]},
+      "then": {"properties": {"right_source": {"properties": {"language": {"const": "ru"}}}}}
+    }
+  ],
+  "additionalProperties": false
+}
